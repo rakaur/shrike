@@ -45,12 +45,11 @@ MUST BE IN shrike-1.0b1
 [X] - a token table based SET, do_set() is horrible
 
 MUST BE IN shrike-1.0b2
-[ ] - registration limitations
-[ ]   . limit email addresses
-[ ]   . limit channels per username
-[ ] - registration authorization
-[ ]   . email
-[ ]   . oper
+[X] - registration limitations
+[X]   . limit email addresses
+[X]   . limit channels per username
+[X] - registration authorization
+[X]   . email
 [X] - help system
 [X] - work out specifics of REHASH (client nick, leave_chans, etc)
 [X] - clean compile on Solaris
@@ -71,6 +70,7 @@ MUST BE IN shrike-1.0b2
 [X]   . we don't need multiple connections, remove it
 [X]   . reading one char sucks, do something about it
 [X]   . rfc1459 casemapping
+[ ] - SENDPASS
 
 MAY BE IN shrike-1.0b2
 [X] - settings mirroring before rehash

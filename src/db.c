@@ -44,7 +44,7 @@ void db_save(void)
       mu = (myuser_t *)n->data;
 
       /* MU <name> <pass> <email> <registered> [lastlogin] [failnum] [lastfail]
-       * [lastfailon] [flags]
+       * [lastfailon] [flags] [key]
        */
       fprintf(f, "MU %s %s %s %ld",
               mu->name, mu->pass, mu->email, (long)mu->registered);
@@ -63,9 +63,14 @@ void db_save(void)
         fprintf(f, " 0 0 0");
 
       if (mu->flags)
-        fprintf(f, " %d\n", mu->flags);
+        fprintf(f, " %d", mu->flags);
       else
-        fprintf(f, " 0\n");
+        fprintf(f, " 0");
+
+      if (mu->key)
+        fprintf(f, " %ld\n", mu->key);
+      else
+        fprintf(f, "\n");
 
       muout++;
     }
@@ -222,6 +227,9 @@ void db_load(void)
         mu->lastfail = sstrdup(strtok(NULL, " "));
         mu->lastfailon = atoi(strtok(NULL, " "));
         mu->flags = atol(strtok(NULL, " "));
+
+        if ((s = strtok(NULL, " ")))
+          mu->key = atoi(s);
 
         slog(0, LG_DEBUG, "db_load(): myuser: %s -> %s", mu->name, mu->email);
       }

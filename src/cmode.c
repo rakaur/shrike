@@ -584,9 +584,6 @@ void check_modes(mychan_t *mychan)
 
   *end = 0;
 
-  printf("\n\nomfg newmodes: %s, omfg key: %s\n\n", newmodes,
-         (newkey) ? newkey : "na");
-
   cmode(svs.nick, mychan->name, newmodes,
         (set_limit) ? itoa(newlimit) : (set_key) ? newkey : "");
 

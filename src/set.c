@@ -57,14 +57,62 @@ static void do_set_email(char *origin, char *name, char *params)
     return;
   }
 
+  if (mu->temp)
+  {
+    if (mu->key == atoi(params))
+    {
+      free(mu->email);
+      mu->email = sstrdup(mu->temp);
+      free(mu->temp);
+      mu->temp = NULL;
+      mu->key = 0;
+
+      snoop("SET:EMAIL:V: \2%s\2 by \2%s\2", mu->email, origin);
+
+      notice(origin, "\2%s\2 has now been verified.", mu->email);
+
+      return;
+    }
+
+    snoop("SET:EMAIL:VF: \2%s\2 by \2%s\2", mu->temp, origin);
+
+    notice(origin, "Verification failed. Invalid key for \2%s\2.", mu->temp);
+
+    return;
+  }
+
+  if (!validemail(params))
+  {
+    notice(origin, "\2%s\2 is not a valid email address.", params);
+    return;
+  }
+
   if (!strcasecmp(mu->email, params))
   {
-    notice(origin, "The email address for \2%s\2 is already set to \2%s\2",
+    notice(origin, "The email address for \2%s\2 is already set to \2%s\2.",
            mu->name, mu->email);
     return;
   }
 
   snoop("SET:EMAIL: \2%s\2 (\2%s\2 -> \2%s\2)", mu->name, mu->email, params);
+
+  if (me.auth == AUTH_EMAIL)
+  {
+    if (mu->temp)
+      free(mu->temp);
+
+    mu->temp = sstrdup(params);
+    mu->key = makekey();
+
+    notice(origin, "An email containing email changing instructions "
+           "has been sent to \2%s\2.", mu->temp);
+    notice(origin, "Your email address will not be changed until you follow "
+           "these instructions.");
+
+    sendemail(mu->name, itoa(mu->key), 3);
+
+    return;
+  }
 
   free(mu->email);
   mu->email = sstrdup(params);

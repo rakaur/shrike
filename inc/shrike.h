@@ -114,6 +114,7 @@ struct me
   char *netname;                /* IRC network name                   */
   char *adminname;              /* SRA's name (for ADMIN)             */
   char *adminemail;             /* SRA's email (for ADMIN             */
+  char *mta;                    /* path to mta program           */
 
   uint8_t loglevel;             /* logging level                      */
   uint32_t maxfd;               /* how many fds do we have?           */
@@ -122,8 +123,15 @@ struct me
   boolean_t connected;          /* are we connected?                  */
   boolean_t bursting;           /* are we bursting?                   */
 
+  uint16_t maxusers;            /* maximum usernames from one email   */
+  uint16_t maxchans;            /* maximum chans from one username    */
+  uint8_t auth;                 /* registration auth type             */
+
   time_t uplinkpong;            /* when the uplink last sent a PONG   */
 } me;
+
+#define AUTH_NORMAL  0
+#define AUTH_EMAIL   1
 
 struct svs
 {
@@ -285,6 +293,9 @@ struct myuser_
   list_t chanacs;
   sra_t *sra;
 
+  unsigned long key;
+  char *temp;
+
   uint32_t flags;
   int32_t hash;
 };
@@ -292,6 +303,7 @@ struct myuser_
 #define MU_HOLD        0x00000001
 #define MU_NEVEROP     0x00000002
 #define MU_NOOP        0x00000004
+#define MU_WAITAUTH    0x00000008
 
 #define MU_IRCOP       0x00000010
 #define MU_SRA         0x00000020

@@ -419,6 +419,148 @@ char *time_ago(time_t event)
   return ret;
 }
 
+/* generate a random number, for use as a key */
+unsigned long makekey(void)
+{
+  unsigned long i, j, k;
+
+  i = rand() % (time(NULL) / cnt.user + 1);
+  j = rand() % (me.start * cnt.chan + 1);
+
+  if (i > j)
+    k = (i - j) + strlen(svs.user);
+  else
+    k = (j - i) + strlen(svs.host);
+
+  /* shorten or pad it to 9 digits */
+  if (k > 1000000000)
+    k = k - 1000000000;
+  if (k < 100000000)
+    k = k + 100000000;
+
+  return k;
+}
+
+int validemail(char *email)
+{
+  int i, valid = 1, chars = 0;
+
+  /* make sure it has @ and . */
+  if (!strchr(email, '@') || !strchr(email, '.'))
+    valid = 0;
+
+  /* check for other bad things */
+  if (strchr(email, '$') || strchr(email, '/') ||
+      strchr(email, ';') || strchr(email, '<') ||
+      strchr(email, '>') || strchr(email, '&'))
+    valid = 0;
+
+  /* make sure there are at least 6 characters besides the above
+   * mentioned @ and .
+   */
+  for (i = strlen(email) - 1; i > 0; i--)
+    if (!(email[i] == '@' || email[i] == '.'))
+      chars++;
+
+  if (chars < 6)
+    valid = 0;
+
+  return valid;
+}
+
+/* send the specified type of email.
+ *
+ * what is what we're sending to, a username.
+ *
+ * param is an extra parameter; email, key, etc.
+ *
+ * If type ==:
+ *   1 - username REGISTER
+ *   2 - username SENDPASS
+ *   3 - username SET:EMAIL
+ */
+void sendemail(char *what, const char *param, int type)
+{
+  myuser_t *mu;
+  char *email, *date, *pass = NULL;
+  char cmdbuf[512], timebuf[256], to[128], from[128], subject[128];
+  FILE *out;
+  time_t t;
+  struct tm tm;
+
+  /* get the username we're talking to */
+  mu = myuser_find(what);
+
+  if (!mu)
+    return;
+
+  if (type == 1 || type == 3)
+    pass = itoa(mu->key);
+  else
+    pass = mu->pass;
+
+  if (type == 3)
+    email = mu->temp;
+  else
+    email = mu->email;
+
+  /* set up the email headers */
+  time(&t);
+  tm = *gmtime(&t);
+  strftime(timebuf, sizeof(timebuf) - 1, "%a, %d %b %Y %H:%M:%S %z", &tm);
+
+  date = timebuf;
+
+  sprintf(from, "%s <%s@%s>", svs.nick, svs.user, svs.host);
+  sprintf(to, "%s <%s>", mu->name, email);
+
+  if (type == 1)
+    strlcpy(subject, "Username Registration", 128);
+  else if (type == 2)
+    strlcpy(subject, "Password Retrieval", 128);
+  else if (type == 3)
+    strlcpy(subject, "Change Email Confirmation", 128);
+
+  /* now set up the email */
+  sprintf(cmdbuf, "%s %s", me.mta, email);
+  out = popen(cmdbuf, "w");
+
+  fprintf(out, "From: %s\n", from);
+  fprintf(out, "To: %s\n", to);
+  fprintf(out, "Subject: %s\n", subject);
+  fprintf(out, "Date: %s\n\n", date);
+
+  fprintf(out, "%s,\n\n", mu->name);
+  fprintf(out, "Thank you for your interest in the %s IRC network.\n\n",
+          me.netname);
+
+  if (type == 1)
+  {
+    fprintf(out, "In order to complete your registration, you must send "
+            "the following command on IRC:\n");
+    fprintf(out, "/MSG %s REGISTER %s KEY %s\n\n", svs.nick, what, pass);
+    fprintf(out, "Thank you for registering your username on the %s IRC "
+            "network!\n", me.netname);
+  }
+  else if (type == 2)
+  {
+    fprintf(out, "Someone has requested the password for %s be sent to the "
+            "corresponding email address. If you did not request this action "
+            "please let us know.\n\n", what);
+    fprintf(out, "The password for %s is %s. Please write this down for "
+            "future reference.\n", what, pass);
+  }
+  else if (type == 3)
+  {
+    fprintf(out, "In order to complete your email change, you must send "
+            "the following command on IRC:\n");
+    fprintf(out, "/MSG %s SET %s EMAIL %s\n\n", svs.nick, what, pass);
+  }
+
+  fprintf(out, ".\n");
+  pclose(out);
+}
+
 /* various access level checkers */
 boolean_t is_founder(mychan_t *mychan, myuser_t *myuser)
 {

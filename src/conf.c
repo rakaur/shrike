@@ -169,6 +169,11 @@ void conf_parse(void)
             me.adminemail = sstrdup(rvalue);
             continue;
           }
+          else if (!strcasecmp("mta", lvalue))
+          {
+            me.mta = sstrdup(rvalue);
+            continue;
+          }
           else if (!strcasecmp("loglevel", lvalue))
           {
             if (!strcasecmp("DEBUG", rvalue))
@@ -185,6 +190,23 @@ void conf_parse(void)
               me.loglevel |= LG_NONE;
             else
               me.loglevel |= LG_NOTICE;
+          }
+          else if (!strcasecmp("maxusers", lvalue))
+          {
+            me.maxusers = atoi(rvalue);
+            continue;
+          }
+          else if (!strcasecmp("maxchans", lvalue))
+          {
+            me.maxchans = atoi(rvalue);
+            continue;
+          }
+          else if (!strcasecmp("auth", lvalue))
+          {
+            if (!strcasecmp("EMAIL", rvalue))
+              me.auth = AUTH_EMAIL;
+            else
+              me.auth = AUTH_NORMAL;
           }
           else if (!strcasecmp("casemapping", lvalue))
           {
@@ -332,11 +354,16 @@ static void copy_me(struct me *src, struct me *dst)
   dst->netname = sstrdup(src->netname);
   dst->adminname = sstrdup(src->adminname);
   dst->adminemail = sstrdup(src->adminemail);
+  dst->mta = sstrdup(src->mta);
   dst->loglevel = src->loglevel;
   dst->maxfd = src->maxfd;
   dst->start = src->start;
   dst->me = src->me;
   dst->uplinkpong = src->uplinkpong;
+  dst->connected = src->connected;
+  dst->maxusers = src->maxusers;
+  dst->maxchans = src->maxchans;
+  dst->auth = src->auth;
 }
 
 static void copy_svs(struct svs *src, struct svs *dst)
@@ -359,6 +386,7 @@ static void free_cstructs(struct me *mesrc, struct svs *svssrc)
   free(mesrc->netname);
   free(mesrc->adminname);
   free(mesrc->adminemail);
+  free(mesrc->mta);
 
   free(svssrc->nick);
   free(svssrc->user);
@@ -390,12 +418,16 @@ boolean_t conf_rehash(void)
   free(me.netname);
   free(me.adminname);
   free(me.adminemail);
+  free(me.mta);
   me.loglevel &= LG_DEBUG;      /* default loglevel */
+  me.maxusers = 0;
+  me.maxchans = 0;
+  me.auth = 0;
   free(svs.nick);
   free(svs.chan);
   svs.leave_chans = ERROR;
 
-  me.pass = me.netname = me.adminname = me.adminemail = NULL;
+  me.pass = me.netname = me.adminname = me.adminemail = me.mta = NULL;
   svs.nick = svs.chan = NULL;
 
   LIST_FOREACH(n, sralist.head)
@@ -551,6 +583,33 @@ boolean_t conf_check(void)
   {
     slog(0, LG_INFO, "conf_check(): no `adminemail' set in %s", config_file);
     return FALSE;
+  }
+
+  if (!me.mta)
+  {
+    slog(0, LG_INFO, "conf_check(): no `mta' set in %s", config_file);
+    return FALSE;
+  }
+
+  if (!me.maxusers)
+  {
+    slog(0, LG_INFO, "conf_check(): no `maxusers' set in %s; "
+         "defaulting to 5", config_file);
+    me.maxusers = 5;
+  }
+
+  if (!me.maxchans)
+  {
+    slog(0, LG_INFO, "conf_check(): no `maxchans' set in %s; "
+         "defaulting to 5", config_file);
+    me.maxchans = 5;
+  }
+
+  if (me.auth != 0 && me.auth != 1)
+  {
+    slog(0, LG_INFO, "conf_check(): no `auth' set in %s; "
+         "defaulting to NORMAL", config_file);
+    me.auth = AUTH_NORMAL;
   }
 
   if (!svs.nick || !svs.user || !svs.host || !svs.real)

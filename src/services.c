@@ -153,7 +153,9 @@ void expire_check(event_t *e)
       if (MU_HOLD & mu->flags)
         continue;
 
-      if ((time(NULL) - mu->lastlogin) >= me.expire)
+      if (((time(NULL) - mu->lastlogin) >= me.expire) ||
+          ((mu->flags & MU_WAITAUTH)
+           && ((time(NULL) - mu->registered) >= 86400)))
       {
         /* kill all their channels */
         for (j = 0; j < HASHSIZE; j++)
@@ -1393,13 +1395,15 @@ static void do_info(char *origin)
 /* REGISTER <username|#channel> <password> [email] */
 static void do_register(char *origin)
 {
-  user_t *u;
+  user_t *u = user_find(origin);
   channel_t *c;
   chanuser_t *cu;
-  myuser_t *mu;
-  mychan_t *mc;
+  myuser_t *mu, *tmu;
+  mychan_t *mc, *tmc;
+  node_t *n;
   char *name = strtok(NULL, " ");
   char *pass = strtok(NULL, " ");
+  uint32_t i, tcnt;
 
   if (!name)
   {
@@ -1423,6 +1427,13 @@ static void do_register(char *origin)
       return;
     }
 
+    /* make sure they're logged in */
+    if (!u->myuser || !u->myuser->identified)
+    {
+      notice(origin, "You are not logged in.");
+      return;
+    }
+
     /* make sure it isn't already registered */
     if ((mc = mychan_find(name)))
     {
@@ -1439,7 +1450,6 @@ static void do_register(char *origin)
       return;
     }
 
-    u = user_find(origin);
     /* make sure they're in it */
     if (!(cu = chanuser_find(c, u)))
     {
@@ -1456,19 +1466,20 @@ static void do_register(char *origin)
       return;
     }
 
-    /* make sure they're logged in */
-    if (!u->myuser || !u->myuser->identified)
+    /* make sure they're within limits */
+    for (i = 0, tcnt = 0; i < HASHSIZE; i++)
     {
-      notice(origin, "You are not logged in.");
-      return;
-    }
+      LIST_FOREACH(n, mclist[i].head)
+      {
+        tmc = (mychan_t *)n->data;
 
-    /* make sure it isn't registered already */
-    mc = mychan_find(name);
-    if (mc != NULL)
+        if (is_founder(tmc, u->myuser))
+          tcnt++;
+      }
+    }
+    if (tcnt >= me.maxchans)
     {
-      notice(origin, "\2%s\2 is already registered to \2%s\2.",
-             name, mc->founder->name);
+      notice(origin, "You have too many channels registered.");
       return;
     }
 
@@ -1506,9 +1517,49 @@ static void do_register(char *origin)
       return;
     }
 
+    if (!strcasecmp("KEY", pass))
+    {
+      if (!(mu = myuser_find(name)))
+      {
+        notice(origin, "No such username: \2%s\2.", name);
+        return;
+      }
+
+      if (!(mu->flags & MU_WAITAUTH))
+      {
+        notice(origin, "\2%s\2 is not awaiting authorization.", name);
+        return;
+      }
+
+      if (mu->key == atoi(email))
+      {
+        mu->key = 0;
+        mu->flags &= ~MU_WAITAUTH;
+
+        snoop("REGISTER:VS: \2%s\2 by \2%s\2", mu->email, origin);
+
+        notice(origin, "\2%s\2 has now been verified.", mu->email);
+
+        return;
+      }
+
+      snoop("REGISTER:VF: \2%s\2 by \2%s\2", mu->email, origin);
+
+      notice(origin, "Verification failed. Invalid key for \2%s\2.",
+             mu->email);
+
+      return;
+    }
+
     if ((strlen(name) > 32) || (strlen(pass) > 32) || (strlen(email) > 256))
     {
       notice(origin, "Invalid parameters specified for \2REGISTER\2.");
+      return;
+    }
+
+    if (!validemail(email))
+    {
+      notice(origin, "\2%s\2 is not a valid email address.", email);
       return;
     }
 
@@ -1518,6 +1569,23 @@ static void do_register(char *origin)
     {
       notice(origin, "\2%s\2 is already registered to \2%s\2.",
              mu->name, mu->email);
+      return;
+    }
+
+    /* make sure they're within limits */
+    for (i = 0, tcnt = 0; i < HASHSIZE; i++)
+    {
+      LIST_FOREACH(n, mulist[i].head)
+      {
+        tmu = (myuser_t *)n->data;
+
+        if (!strcasecmp(email, tmu->email))
+          tcnt++;
+      }
+    }
+    if (tcnt >= me.maxusers)
+    {
+      notice(origin, "\2%s\2 has too many usernames registered.", email);
       return;
     }
 
@@ -1531,6 +1599,19 @@ static void do_register(char *origin)
     mu->registered = time(NULL);
     mu->identified = TRUE;
     mu->lastlogin = time(NULL);
+
+    if (me.auth == AUTH_EMAIL)
+    {
+      mu->key = makekey();
+      mu->flags |= MU_WAITAUTH;
+
+      notice(origin, "An email containing username activiation instructions "
+             "has been sent to \2%s\2.", mu->email);
+      notice(origin, "If you do not complete registration within one day your "
+             "username will expire.");
+
+      sendemail(mu->name, itoa(mu->key), 1);
+    }
 
     notice(origin, "\2%s\2 is now registered to \2%s\2.", mu->name, mu->email);
     notice(origin,
@@ -1626,8 +1707,7 @@ static void do_drop(char *origin)
       }
     }
 
-    snoop("DROP: \2%s\2 by \2%s\2 as \2%s\2", mu->name,
-          u->nick, u->myuser->name);
+    snoop("DROP: \2%s\2 by \2%s\2", mu->name, u->nick);
     if (u->myuser == mu)
       u->myuser = NULL;
     myuser_delete(mu->name);
