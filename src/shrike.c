@@ -107,8 +107,8 @@ static void sighandler(int signum)
 int main(int argc, char *argv[])
 {
   boolean_t have_conf = FALSE;
-  char r, buf[32];
-  int i, pid;
+  char buf[32];
+  int i, pid, r;
   FILE *restart_file, *pid_file;
   struct rlimit rlim;
 

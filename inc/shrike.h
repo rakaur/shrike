@@ -12,6 +12,8 @@
 
 /* *INDENT-OFF* */
 
+#include "sysconf.h"
+
 /* I N C L U D E S */
 #include <stdarg.h>
 #include <stdio.h>
@@ -29,8 +31,6 @@
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
 #endif
-
-#include "sysconf.h"
 
 /* socket stuff */
 #include <netdb.h>

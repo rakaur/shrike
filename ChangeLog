@@ -1,4 +1,13 @@
 ------------------------------------------------------------------------
+r77 | rakaur | 2004-04-29 07:24:24 -0500 (Thu, 29 Apr 2004) | 2 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/doc/RELEASE
+   M /trunk/src/services.c
+
+Added wildcard sanity on KLINE stuff.
+
+------------------------------------------------------------------------
 r76 | rakaur | 2004-04-19 17:56:02 -0500 (Mon, 19 Apr 2004) | 4 lines
 Changed paths:
    M /trunk/ChangeLog
