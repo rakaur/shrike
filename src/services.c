@@ -2075,15 +2075,15 @@ static void do_kline(char *origin)
       {
         if (strchr(s, ':'))
         {
-          for (i = 0; *s != ':'; *s++, i++)
+          for (i = 0; *s != ':'; s++, i++)
             t[i] = *s;
 
           t[++i] = '\0';
           start = atoi(t);
 
-          *s++;                 /* skip past the : */
+          s++;                  /* skip past the : */
 
-          for (i = 0; *s != '\0'; *s++, i++)
+          for (i = 0; *s != '\0'; s++, i++)
             t[i] = *s;
 
           t[++i] = '\0';
@@ -2134,15 +2134,15 @@ static void do_kline(char *origin)
 
       if (strchr(target, ':'))
       {
-        for (i = 0; *target != ':'; *target++, i++)
+        for (i = 0; *target != ':'; target++, i++)
           t[i] = *target;
 
         t[++i] = '\0';
         start = atoi(t);
 
-        *target++;              /* skip past the : */
+        target++;               /* skip past the : */
 
-        for (i = 0; *target != '\0'; *target++, i++)
+        for (i = 0; *target != '\0'; target++, i++)
           t[i] = *target;
 
         t[++i] = '\0';

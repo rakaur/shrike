@@ -2,94 +2,148 @@
  * Copyright (c) 2003-2004 E. Will et al.
  * Rights to this code are documented in doc/LICENSE.
  *
- * `README' file.
+ * General documentation.
  *
  * $$Id$
  */
 
-Welcome to Shrike.  This document is indended to familiarize new users with
-Shrike.  For installation help, see the INSTALL file.
+Shrike -- a set of services for TSora networks
+==============================================
 
-If you have any questions about this program not covered in any of the
-documentation, or need help with the general operation of this program, check
-http://shrike.malkier.net/.
+This program is free but copyrighted software; see the LICENSE file for
+details.
 
-Shrike is a program designed for use on an IRC network.  It provides the
-network with useful commands and most importantly IRC channel mangement.
+Information about Shrike may be found at http://shrike.malkier.net/.
 
-Although Shrike isn't directly based on any other program, it borrows a
-decent amount of code from Darcy Grexton's Cygnus IRC Services.  Credit is
-given. The socket code is mostly from W. Campbell's Sentinel stats program.
+TABLE OF CONTENTS
+-----------------
+  1. Credits
+  2. Presentation
+  3. Installation
+  4. Command line options
+  5. Contact and mailing list
 
-To find out more about credit to given people, see the AUTHORS file.
+1. CREDITS
+----------
 
-Please check the CHANGES file to see all the features/changes done.
+While Shrike isn't directly based on any other program it borrows a decent
+amount of code from Cygnus and Sentinel.
 
-Shrike supports the following command-line options:
+Information about Cygnus can be found at http://www.habber.net/services/.
+Information about Sentinel can be found at http://ircd.botbay.net/sentinel/.
 
-  * -c </path/to/file> - Specify the configuration file
+Currently Shrike consists of the following developers:
+  rakaur, E. Will <rakaur@malkier.net>
+  sycobuny, Stephen Belcher <sycobuny@malkier.net>
+  rintaun, Matt Lanigan <rintaun@projectxero.net>
 
-  * -d                 - Start in debugging mode
+Thanks to testers, contributors, etc:
+  Hwy, W. Campbell <wcampbel@botbay.net>
+  naki, Adam Walls <naki@coreag.net>
+  Rob_X, Mikael <mickek15@hotmail.com>
+  madragoran, Mike Campbell <madragoran@avendesora.net>
+  nenolod, William Pitcock <nenolod@nenolod.net>
 
-  * -h                 - Print the help message and exit
+Special thanks to:
+  Hwy, for your continued patience while I badger you endlessly.
+  sycobuny, for your continued not-killing-me while I badger your code.
+  tanka, for the book I will someday repay you for.
+  dbn, for the original Website.
 
-  * -n                 - Run live (do not fork), used for debuggers
+Files that we didn't write most of:
+  src/confp.c, this was stolen from Sentinel (from csircd).
+  src/event.c, this was stolen from ircd-ratbox.
+  src/match.c, this was stolen from Sentinel (from IRCnet ircd).
 
-  * -v                 - Print the version information and exit
+2. PRESENTATION
+---------------
 
-Shrike handles the following signals:
+Shrike is a set of services for TSora-based IRC networks that allows users to
+manage their channels in a secure and efficient way and allows operators to
+manage various things about their networks.
 
-  * -HUP  - Force a REHASH
+Shrike currently works with:
+  ircd-ratbox 1.3 and 2.x in TS5
+  ircd-hybrid 7.0 or later
+  ircd-hybrid 6.0 or later
+  csircd 1.3 or later
 
-  * -TERM - Force a SHUTDOWN
+Shrike may *possibly* work with other TSora IRCd's running at least TS3.
 
-  * -USR2 - Force a RESTART
+3. INSTALLATION
+---------------
 
-Most of the commands are documented in COMMANDS and in HELP on IRC.
+See the INSTALL file.
 
-Shrike is known to work on the following IRCd's:
+4. COMMAND LINE OPTIONS
+-----------------------
 
-  * ratbox-1.3    (EFnet) - Shrike was designed and coded on this IRCd.
+Normally, Shrike can be run simply by invoking the "shrike" executable.  Shrike
+will then use the defaults specified in the configuraiton file and connect
+to the specified uplink server. Alternatively, any of the following
+command-line options can be specified to change the default behavior:
+  -c </path/to/file> - specify the configuration file
+  -d                 - start in debugging mode
+  -h                 - print the help message and exit
+  -n                 - do not fork into the background
+  -v                 - print the version information and exit
 
-  * hybrid-7      (EFnet) - Shrike is known to work without issue on this IRCd.
+Shrike also handles the following signals:
+  HUP  - force a REHASH
+  TERM - force a SHUTDOWN
+  USR2 - force a RESTART
 
-Shrike is known NOT to work on the following IRCd's:
+Upon starting, Shrike will parse its command-line arguments, open its log file,
+parse its configuration file, load its database, connect to the uplink,
+and (assuming -n is not specified) detach into the background.  If Shrike
+encounters an error while parsing the configuration or database files it will
+terminate immediately. Otherwise, it will run until killed or otherwise stopped.
 
-  * bahamut-1.4.x (DALnet) - This IRCd is not currently supported.
+5. CONTACT AND MAILING LIST
+---------------------------
 
-Shrike has only been tested with these IRCd's.  Shrike should work fine with
-any hybrid-7/ratbox-1.3 or TSora based IRCd.  The IRCd must understand at
-least version 3 of the TS protocol and the QS and EOB CAPAB's.
+Okay, here's the deal. We enjoy coding this program, and we do it for free. You
+didn't pay anything for this, did you? No. Our time and our effort went into
+making this program, and now you want us to help you with it, too. Well, that's
+fine, but do us a favor: READ THE DOCS. Unlike many other programs we've
+included some fairly extensive documentation. The configuration file itself has
+a description of every option as well as examples of: how it's used, what it
+does, and what happens if you turn it on or off. *Please* don't waste our time
+by asking asinine questions which are clearly answered in the documentation.
+You'll just make us regret making this program so easy to use that it requires
+zero intelligence.
 
-Okay, here's the deal.  We enjoy coding this program, and we do it for free.
-You didn't pay anything for this, did you?  No.  Our time and effort went into
-making this program, and now you want us to help you set it up, too.
+That said, if you've skimmed the docs and can't find your answer feel free to
+ask. I've been unable to find the answer I was looking for in many programs
+myself so I don't mind. Just don't ask us to set it up for you. It's too easy.
 
-Well, that's fine, but do us a favor:  READ THE DOCS.  Unlike many other
-programs we've included some fairly extensive documentation.  The config file
-itself has a description of every option, as well as examples of how it's
-used, what it does, and what happens if you turn it on or off (see CONFIG).
-PLEASE don't waste our time by asking asinine quesitons which are clearly
-answered in the documentation.  You'll just annoy us and make us regret
-making this program so easy to use that it requires zero intelligence.
+For announcements and discussions about Shrike, subscribe to the mailing list
+by sending a blank email to shrike-subscribe@lists.malkier.net.
 
-That said, if you've skimmed the docs and can't find your answer, feel free
-to ask.  I've been unable to find the answer I was looking for in many
-programs myself, so I don't mind.  Just don't ask us to set it up for you.
-It's amazingly easy.
+For bug reports, please use these forums:
+http://shrike.malkier.net/modules.php?name=Forums&file=viewforum&f=3.
 
-We welcome (most) comments on this program.  Feel free to suggest changes or
-new features.
+If you're reporting a bug, here's some advice. Be sure to include information
+on how to reproduce the problem. If you can't reproduce it, you're likely out
+of luck. You can go ahead and report the problem but chances are if we can't
+find the cause then we can't fix it. If Shrike crashed (with a core file) be
+sure to include a backtrace for us. You can do this by running something along
+the lines of "gdb bin/shrike shrike.core" and typing "bt" at the "(gdb)"
+prompt. If you do all of these things and still manage to keep your report
+short and concise you will be loved.
 
-You can contact us via any of these methods (preferred order):
+For patches/modifications to the source code that you would like to share or
+otherwise comment on, please use these forums:
+http://shrike.malkier.net/modules.php?name=Forums&file=viewforum&f=2.
 
-  * Mailing list - shrike@lists.malkier.net (shrike-subscribe@lists.malkier.net)
+For general discussion and/or support, please use these forums:
+http://shrike.malkier.net/modules.php?name=Forums&file=viewforum&f=1.
 
-  * Forums - http://shrike.malkier.net/
+If your problem requires extensive debugging in a real-time situation we may
+ask that you find us on IRC:
+  rakaur @ #shrike on irc.malkier.net
+  sycobuny @ #shrike on irc.malkier.net
+  rintaun @ #shrike on irc.malkier.net
 
-  * Email -
-    E. Will        <rakaur@malkier.net>
-    Sephen Belcher <sycobuny@malkier.net>
-
-If you've read this far, congratulations.  You are one of the few elite people
-that actually read documentation.
+If you've read this far, congratulations. You are among the few elite people
+that actually read documentation. Thank you.

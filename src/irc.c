@@ -344,12 +344,13 @@ static void m_privmsg(char *origin, uint8_t parc, char *parv[])
 
       if (u->offenses == 2)
       {
-        /* kill them the third time */
-        skill(u->nick, "flooding services");
+        kline_t *k;
 
-        snoop("FLOOD:KILL: \2%s\2", u->nick);
+        /* kline them the third time */
+        k = kline_add("*", u->host, "ten minute ban: flooding services", 600);
+        k->setby = sstrdup(svs.nick);
 
-        user_delete(u->nick);
+        snoop("FLOOD:KLINE: \2%s\2", u->nick);
 
         return;
       }

@@ -7,67 +7,155 @@
  * $$Id$
  */
 
-Contents:
+Shrike -- a set of services for TSora networks
+==============================================
 
- Q: What are those numbers when it replies to a CTCP CLIENTINFO?
- Q: What the hell is up with the VERSION reply?
- Q: Why isn't there an include/config.h?
- Q: How does Shrike treat `[', `]', and `\'?
- Q: Does Shrike check for buffer overflows?
+This program is free but copyrighted software; see the LICENSE file for
+details.
 
-Questions/answers:
+Information about Shrike may be found at http://shrike.malkier.net/.
 
-Q: What are those numbers when it replies to a CTCP CLIENTINFO?
-A: It's an easter egg; you'll have to figure it out by yourself.  I'll give
-   you a hint though:  ASCII.
+TABLE OF CONTENTS
+-----------------
+  . What is Shrike?
+  . Where can I find Shrike?
+  . Does Shrike run under Windows?
+  . Why TSora? What about other IRCd's?
+  . I just upgraded and Shike crashes while loading the databases!
+  . Why usernames instead of nicknames?
+  . Shrike crashed.
+  . Shrike ignored SET SUCCESSOR and let the channel expire.
+  . When I used RAW and/or INJECT Shrike/my network crashed!
+  . What are those numbers when it replies to a CTCP CLIENTINFO?
+  . What's all that crap in the VERSION reply?
+  . Whenever I run Shrike I get an error from the IRC server!
+  . Shrike won't even start.
 
-Q: What the hell is up with the VERSION reply?
-A: Lots of things.  First, it says "shrike-," followed by the version and
-   build number, then it gives the name of its server, then it gives
-   a bunch of letters:
+. What is Shrike?
 
-     * A - using ASCII casemapping
+Shrike is a set of services for IRC networks. Shrike is designed for TSora
+(hybrid/ratbox/csircd) networks around the idea that nicknames are not owned
+but channels can be.
 
-     * d - debug mode is on
+Where can I find Shrike?
+------------------------
 
-     * e - email auth is on
+The latest version can always be found at the official homepage:
+http://shrike.malkier.net/.
 
-     * F - flood protection is on
+New version annoucements will also be on the mailing list:
+shrike@lists.malkier.net.
 
-     * l - leave_chans is on
+Does Shrike run under Windows?
+------------------------------
 
-     * j - join_chans is on
+No. There are no plans for Shrike to ever be ported to Windows.
 
-     * n - running live (nofork)
+Cygwin might work.
 
-     * R - using rfc1459 casemapping
+If you feel capable of taking ownership of an official Windows port, and to
+keep it current, please let us know.
 
-     * r - raw/inject are enabled
+Why TSora? What about other IRCd's?
+-----------------------------------
 
-Q: Why isn't there an include/config.h?
-A: For one, it'd be inc/config.h.  For two, it's pointless.  It's for
-   compile-time options, and Shrike has none.  Shrike's options are all
-   run-time as of now.  Besides, I hate having to read sixty files to learn
-   how to install a program, and then have to go through a 2000 line config.h
-   before I compile.
+We developed Shrike for TSora-based networks (ratbox/hybrid) because that's
+what we use. Most of the developers hang out on EFnet. Also, Shrike was written
+for use on the Malkier IRC Network, which runs ircd-ratbox.
 
-Q: How does Shrike treat `[', `]', and `\'?
-Q: From the IRC protocol specification:
+Support for other IRCds is planned at some distant point in the future. By
+"other IRCds" we really mean other TSora IRCds like csircd among others run on
+EFnet. We had planned on supporting bahamut, unfortunately the latest release
+(1.4.36) completely breaks TS without specifiying a standard. We've determined
+the small demand for 1.4.35 support isn't worth all the work it would require.
+As Unreal is a very common IRCd, support for 3.2 is planned. Someday.
 
-     Because of IRC's scandanavian origin, the characters {}| are
-     considered to be the lower case equivalents of the characters []\,
-     respectively. This is a critical issue when determining the
-     equivalence of two nicknames.
+I just upgraded and Shike crashes while loading the databases!
+--------------------------------------------------------------
 
-   Shrike respects this because it was designed for an IRCd that also
-   respects this. There is a configuration option to specify which casemapping
-   to use.
+The database format probably changed. Once we go 1.0 if we change the db format
+we will supply you with a converter. Until then you're just going to have to
+live with it. It's a bummer, we know.
 
-Q: Does Shrike check for buffer overflows?
-A: I try.  I didn't start checking buffers until well into writing it, so I'm
-   sure at least a few issues are there.  I try to use strlcat()/strlcpy() to
-   be safe, and when reading incoming data it does check that buffer so I don't
-   see any remote exploits happening... I could be wrong, of course.  It checks
-   it when the raw data is incoming to make sure it doesn't exceed 512 bytes
-   (512 is the number specified in the protocol specification), but I'm not
-   sure whether all of the parsing routines check properly.
+Why usernames instead of nicknames?
+-----------------------------------
+
+As you may know, most TSora networks frown upon nickname registration. We are
+no different. We believe that nicknames are not owned because you cannot own
+your real name either. So, for a middle ground you register a username which is
+completely seperate from your nickname.
+
+Shrike crashed.
+---------------
+
+That sucks.
+
+If you can reproduce it, report it on the forums and we'll fix it if we can
+reproduce it. If we can't, then you're out of luck.
+
+If you got a corefile (core on Linux, shrike.core on others) run this on your
+shell:
+
+$ gdb bin/shrike shrike.core
+(gdb) bt
+
+And give us the results in the forums.
+
+Shrike ignored SET SUCCESSOR and let the channel expire.
+--------------------------------------------------------
+
+This is usually because the SUCCESSOR had too many channels registered.
+
+When I used RAW and/or INJECT Shrike/my network crashed!
+--------------------------------------------------------
+
+RAW and INJECT are not supported for exactly that reason. You're on your own.
+They're disabled by default for a reason.
+
+What are those numbers when it replies to a CTCP CLIENTINFO?
+------------------------------------------------------------
+
+That's an easter egg; you'll have to figure it out for yourself.
+
+A note for smartasses: don't post the answer on the forums.
+
+What's all that crap in the VERSION reply?
+------------------------------------------
+
+ots of things. First, it says "shrike-," followed by the version, then it gives
+the name of its server, then it gives a bunch of letters:
+
+  A - using ASCII casemapping
+  d - debug mode is on
+  e - email auth is on
+  F - flood protection is on
+  l - leave_chans is on
+  j - join_chans is on
+  n - running live (nofork)
+  R - using rfc1459 casemapping
+  r - raw/inject are enabled
+
+Whenever I run Shrike I get an error from the IRC server!
+---------------------------------------------------------
+
+It depends on the error. Typically, it means you don't have your IRCd set up
+to handle Shrike's connection. We will not help you with this. This is an IRCd
+configuration issue, not services. If you can't figure it out you probably
+shouldn't be running either. If you see something like "non-TS server" or
+similiar: as of this writting, Shrike only offically supports version 5 of the
+TS protocol. The latest version of TS is version 6, which changes the
+fundamentals of user and server tracking, and has not been implemented in
+Shrike. TS is short for TSora, which is short for timestamp orabidoo.
+orabidoo is the nickname of the person who devised the first version of TS.
+TS is a system of timestampping nicknames and channels so that disputes between
+them when servers link are easily resolved based on "who came first." TS6
+changes many things in the server-to-server protocol and was heavily
+implemented after Shrike had begun development speaking TS5. Support for TS6
+is not currently planned. This isn't a big deal because any server speaking
+TS6 should still speak TS5 as well.
+
+Shrike won't even start.
+------------------------
+
+Run Shrike with -dn to see what the problem is. If this doesn't output anything
+something is seriously messed up in the configuration file.

@@ -631,14 +631,7 @@ static int c_ci_sras(CONFIGENTRY *ce)
 
 static void copy_me(struct me *src, struct me *dst)
 {
-  dst->name = sstrdup(src->name);
-  dst->desc = sstrdup(src->desc);
-  dst->uplink = sstrdup(src->uplink);
-  dst->actual = sstrdup(src->actual);   /* ? */
-  dst->port = src->port;
   dst->pass = sstrdup(src->pass);
-  if (src->vhost)
-    dst->vhost = sstrdup(src->vhost);
   dst->recontime = src->recontime;
   dst->restarttime = src->restarttime;
   dst->expire = src->expire;
@@ -647,12 +640,6 @@ static void copy_me(struct me *src, struct me *dst)
   dst->adminemail = sstrdup(src->adminemail);
   dst->mta = sstrdup(src->mta);
   dst->loglevel = src->loglevel;
-  dst->maxfd = src->maxfd;
-  dst->start = src->start;
-  dst->me = src->me;
-  dst->uplinkpong = src->uplinkpong;
-  dst->connected = src->connected;
-  dst->bursting = src->bursting;
   dst->maxusers = src->maxusers;
   dst->maxchans = src->maxchans;
   dst->auth = src->auth;
@@ -661,9 +648,6 @@ static void copy_me(struct me *src, struct me *dst)
 static void copy_svs(struct svs *src, struct svs *dst)
 {
   dst->nick = sstrdup(src->nick);
-  dst->user = sstrdup(src->user);
-  dst->host = sstrdup(src->host);
-  dst->real = sstrdup(src->real);
   if (src->chan)
     dst->chan = sstrdup(src->chan);
   dst->join_chans = src->join_chans;
@@ -679,22 +663,13 @@ static void copy_svs(struct svs *src, struct svs *dst)
 
 static void free_cstructs(struct me *mesrc, struct svs *svssrc)
 {
-  free(mesrc->name);
-  free(mesrc->desc);
-  free(mesrc->uplink);
-  free(mesrc->actual);
   free(mesrc->pass);
-  if (mesrc->vhost)
-    free(mesrc->vhost);
   free(mesrc->netname);
   free(mesrc->adminname);
   free(mesrc->adminemail);
   free(mesrc->mta);
 
   free(svssrc->nick);
-  free(svssrc->user);
-  free(svssrc->host);
-  free(svssrc->real);
   if (svssrc->chan)
     free(svssrc->chan);
   free(svssrc->global);
@@ -894,9 +869,10 @@ boolean_t conf_check(void)
     return FALSE;
   }
 
-  if (!me.mta)
+  if (!me.mta && me.auth == AUTH_EMAIL)
   {
-    slog(LG_INFO, "conf_check(): no `mta' set in %s", config_file);
+    slog(LG_INFO, "conf_check(): no `mta' set in %s (but `auth' is email)",
+         config_file);
     return FALSE;
   }
 

@@ -1,4 +1,41 @@
 ------------------------------------------------------------------------
+r53 | rakaur | 2004-04-04 13:28:37 -0500 (Sun, 04 Apr 2004) | 6 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/dist/shrike.conf
+   M /trunk/doc/TODO
+   M /trunk/help/global
+   M /trunk/help/info
+   M /trunk/help/invite
+   A /trunk/help/kline
+   M /trunk/help/restart
+   M /trunk/help/sendpass
+   M /trunk/help/set_founder
+   M /trunk/help/set_hidemail
+   M /trunk/help/set_successor
+   M /trunk/help/shutdown
+   M /trunk/inc/.indent.pro
+   M /trunk/inc/extern.h
+   M /trunk/inc/shrike.h
+   M /trunk/src/.indent.pro
+   M /trunk/src/conf.c
+   M /trunk/src/confp.c
+   M /trunk/src/db.c
+   M /trunk/src/function.c
+   M /trunk/src/help.c
+   M /trunk/src/irc.c
+   M /trunk/src/node.c
+   M /trunk/src/services.c
+   M /trunk/src/shrike.c
+   M /trunk/src/socket.c
+
+Extended STATS some.
+Added bytes in/out counters.
+Added KLINE management via conf option `kline_time'.
+Fixed a problem with CURRTIME not being set in main().
+Added redundancy checking for should_*_host() stuff.
+
+------------------------------------------------------------------------
 r52 | rakaur | 2004-04-03 11:52:46 -0600 (Sat, 03 Apr 2004) | 5 lines
 Changed paths:
    M /trunk/ChangeLog
