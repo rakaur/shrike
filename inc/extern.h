@@ -224,8 +224,8 @@ E struct set_command_ set_commands[];
 E struct set_command_ *set_cmd_find(char *origin, char *command);
 
 /* services.c */
-E void introduce_nick(char *nick, char *user, char *host, char *real,
-                      char *modes);
+E user_t *introduce_nick(char *nick, char *user, char *host, char *real,
+                         char *modes);
 E void join(char *chan, char *nick);
 E void expire_check(void *arg);
 E void services_init(void);

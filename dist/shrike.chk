@@ -1,0 +1,25 @@
+#!/bin/sh
+#
+# crontab script for shrike
+#
+# $Id$
+#
+
+# Change this to the directory where you installed it
+cd ~/shrike/
+
+if [ -f var/shrike.pid ] ; then
+  PID=`cat var/shrike.pid`
+
+  if `kill -CHLD $PID >/dev/null 2>&1`; then
+    exit 0
+  fi
+
+  rm -f var/shrike.pid
+fi
+
+echo "crontab: couldn't find shrike running, restarting..."
+
+./bin/shrike
+
+exit 0

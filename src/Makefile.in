@@ -72,6 +72,9 @@ install: build
 	if [ ! -r $(PREFIX)/etc/shrike.db ]; then \
 		$(INSTALL) -m 640 -c ../dist/shrike.db $(PREFIX)/etc ; \
 	fi
+	if [ ! -r $(PREFIX)/etc/shrikechk ]; then \
+		$(INSTALL) -m 640 -c ../dist/shrikechk $(PREFIX)/etc ; \
+	fi
 	if [ -e $(PREFIX)/doc ]; then \
 		$(RM) -rf $(PREFIX)/doc ; \
 	fi

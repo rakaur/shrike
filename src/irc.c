@@ -553,10 +553,31 @@ static void m_mode(char *origin, uint8_t parc, char *parv[])
 
 static void m_kick(char *origin, uint8_t parc, char *parv[])
 {
+  user_t *u = user_find(parv[1]);
+  channel_t *c = channel_find(parv[0]);
+
   /* -> :rakaur KICK #shrike rintaun :test */
   slog(LG_DEBUG, "m_kick(): user was kicked: %s -> %s", parv[1], parv[0]);
 
-  chanuser_delete(channel_find(parv[0]), user_find(parv[1]));
+  if (!u)
+  {
+    slog(LG_DEBUG, "m_kick(): got kick for nonexistant user %s", parv[1]);
+    return;
+  }
+
+  if (!c)
+  {
+    slog(LG_DEBUG, "m_kick(): got kick in nonexistant channel: %s", parv[0]);
+    return;
+  }
+
+  if (!chanuser_find(c, u))
+  {
+    slog(LG_DEBUG, "m_kick(): got kick for %s not in %s", u->nick, c->name);
+    return;
+  }
+
+  chanuser_delete(c, u);
 
   /* if they kicked us, let's rejoin */
   if (!irccasecmp(svs.nick, parv[1]))

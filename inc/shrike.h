@@ -164,6 +164,8 @@ struct svs
   boolean_t raw;                /* enable raw/inject?         */
 
   char *global;                 /* nick for global noticer    */
+
+  user_t *svs;                  /* our user_t struct          */
 } svs;
 
 /* keep track of how many of what we have */

@@ -107,8 +107,8 @@ static void sighandler(int signum)
 int main(int argc, char *argv[])
 {
   boolean_t have_conf = FALSE;
-  char r;
-  int i;
+  char r, buf[32];
+  int i, pid;
   FILE *restart_file, *pid_file;
   struct rlimit rlim;
 
@@ -208,8 +208,18 @@ int main(int argc, char *argv[])
   /* check for pid file */
   if ((pid_file = fopen("var/shrike.pid", "r")))
   {
-    fprintf(stderr, "shrike: daemon is already running (pid file found)\n");
-    exit(EXIT_FAILURE);
+    if (fgets(buf, 32, pid_file))
+    {
+      pid = atoi(buf);
+
+      if (!kill(pid, 0))
+      {
+        fprintf(stderr, "shrike: daemon is already running\n");
+        exit(EXIT_FAILURE);
+      }
+    }
+
+    fclose(pid_file);
   }
 
 #if HAVE_UMASK

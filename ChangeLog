@@ -1,4 +1,45 @@
 ------------------------------------------------------------------------
+r61 | rakaur | 2004-04-09 20:49:38 -0500 (Fri, 09 Apr 2004) | 4 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/INSTALL
+   M /trunk/Makefile.in
+   M /trunk/README
+   M /trunk/autoconf/configure.in
+   M /trunk/commit
+   M /trunk/dist/shrike.conf
+   M /trunk/doc/COMMANDS
+   M /trunk/doc/FAQ
+   M /trunk/doc/LICENSE
+   M /trunk/doc/RELEASE
+   M /trunk/doc/RFC1459
+   M /trunk/doc/TODO
+   M /trunk/inc/extern.h
+   M /trunk/inc/shrike.h
+   M /trunk/indent
+   M /trunk/setup
+   M /trunk/src/Makefile.in
+   M /trunk/src/cmode.c
+   M /trunk/src/conf.c
+   M /trunk/src/confp.c
+   M /trunk/src/db.c
+   M /trunk/src/event.c
+   M /trunk/src/function.c
+   M /trunk/src/help.c
+   M /trunk/src/irc.c
+   M /trunk/src/match.c
+   M /trunk/src/node.c
+   M /trunk/src/services.c
+   M /trunk/src/set.c
+   M /trunk/src/shrike.c
+   M /trunk/src/socket.c
+   M /trunk/src/version.sh
+
+Fixed a problem overwriting the db on restarts.
+Updated headers.
+Fixed a problem marking reconnection stuff.
+
+------------------------------------------------------------------------
 r60 | rakaur | 2004-04-08 17:02:07 -0500 (Thu, 08 Apr 2004) | 4 lines
 Changed paths:
    M /trunk/ChangeLog

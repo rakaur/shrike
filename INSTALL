@@ -21,6 +21,7 @@ TABLE OF CONTENTS
   2. Upgrading
   3. Setting up IRCd
   4. Starting Shrike
+  5. Setting up crontab entry
 
 You should also read the README and FAQ files.
 
@@ -97,3 +98,23 @@ Shrike will report any errors and/or detach into the background.
 If Shrike doesn't link and/or terminates without warning check the log
 file (var/shrike.log) to see what happened. If this tells you nothing try
 rerunning Shrike via ./bin/shrike -dn for more verbose information.
+
+5. SETTING UP A CRONTAB ENTRY
+-----------------------------
+
+A crontab entry will allow you to check periodically whether Shrike is still
+running, and restart it if not. You'll need to have Shrike binaries and data
+installed in the same directory for this to work without modification.
+
+First rename the dist/shrike.chk script that is in Shrike path (by default, 
+~/shrike/) and edit it. You'll need to modify the "cd" part of the file.
+Then ensure that the file is marked as executable by typing
+"chmod +x shrike.chk," and try to launch the script to see if it works.
+
+When this is done, you'll have to add the crontab entry. Type "crontab -e"
+This will open the default text editor with the crontab file. Enter the
+following (with correct path):
+*/5 * * * * /home/rakaur/shrike/etc/shrike.chk >/dev/null 2>&1
+The */5 at the beginning means "check every 5 minutes." You may replace
+the 5 with other another number if you want (but less than 60). Save and exit,
+and it's installed.

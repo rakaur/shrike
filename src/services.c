@@ -10,8 +10,8 @@
 #include "../inc/shrike.h"
 
 /* introduce a client */
-void introduce_nick(char *nick, char *user, char *host, char *real,
-                    char *modes)
+user_t *introduce_nick(char *nick, char *user, char *host, char *real,
+                       char *modes)
 {
   user_t *u;
 
@@ -21,6 +21,8 @@ void introduce_nick(char *nick, char *user, char *host, char *real,
   u = user_add(nick, user, host, me.me);
   if (strchr(modes, 'o'))
     u->flags |= UF_IRCOP;
+
+  return u;
 }
 
 /* join a channel */
@@ -53,7 +55,11 @@ void join(char *chan, char *nick)
 /* bring on the services client */
 void services_init(void)
 {
-  introduce_nick(svs.nick, svs.user, svs.host, svs.real, "io");
+  user_t *u;
+
+  u = introduce_nick(svs.nick, svs.user, svs.host, svs.real, "io");
+
+  svs.svs = u;
 }
 
 /* PRIVMSG wrapper */
@@ -163,8 +169,8 @@ void part(char *chan, char *nick)
   if (!(cu = chanuser_find(c, u)))
     return;
 
-  if (!irccasecmp(svs.chan, c->name))
-    return;
+  /*if (!irccasecmp(svs.chan, c->name))
+     return; */
 
   sts(":%s PART %s", u->nick, c->name);
 

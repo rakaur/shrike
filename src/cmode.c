@@ -204,7 +204,7 @@ void channel_mode(channel_t *chan, uint8_t parc, char *parv[])
               strlcat(hostbuf, "@", BUFSIZE);
               strlcat(hostbuf, cu->user->host, BUFSIZE);
 
-              if ((!is_founder(mc, mu)) &&
+              if ((!is_founder(mc, mu)) && (cu->user != svs.svs) &&
                   (!is_xop(mc, mu, (CA_AOP | CA_SOP))) &&
                   (!chanacs_find_host(mc, hostbuf, CA_AOP)))
               {
@@ -216,7 +216,21 @@ void channel_mode(channel_t *chan, uint8_t parc, char *parv[])
           }
         }
         else
+        {
+          if (cu->user == svs.svs)
+          {
+            slog(LG_DEBUG, "channel_mode(): deopped on %s, rejoining",
+                 cu->chan->name);
+
+            /* we were deopped, part and join */
+            part(cu->chan->name, svs.nick);
+            join(cu->chan->name, svs.nick);
+
+            continue;
+          }
+
           cu->modes &= ~status_mode_list[i].value;
+        }
 
         parpos++;
         break;
