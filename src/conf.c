@@ -186,6 +186,13 @@ void conf_parse(void)
             else
               me.loglevel |= LG_NOTICE;
           }
+          else if (!strcasecmp("casemapping", lvalue))
+          {
+            if (!strcasecmp("ascii", rvalue))
+              set_match_mapping(MATCH_ASCII);
+            else
+              set_match_mapping(MATCH_RFC1459);
+          }
           else
             continue;
         }
@@ -421,13 +428,13 @@ boolean_t conf_rehash(void)
   }
 
   /* may change */
-  if (strcmp(hold_svs->chan, svs.chan))
+  if (irccmp(hold_svs->chan, svs.chan))
   {
     part(hold_svs->chan, svs.nick);
     join(svs.chan, svs.nick);
   }
 
-  if (strcmp(hold_svs->nick, svs.nick))
+  if (irccmp(hold_svs->nick, svs.nick))
   {
     user_t *u;
 

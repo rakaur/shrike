@@ -511,13 +511,17 @@ user_t *user_find(char *nick)
 {
   user_t *u;
   node_t *n;
+  uint32_t i;
 
-  LIST_FOREACH(n, userlist[UHASH((unsigned char *)nick)].head)
+  for (i = 0; i < HASHSIZE; i++)
   {
-    u = (user_t *)n->data;
+    LIST_FOREACH(n, userlist[i].head)
+    {
+      u = (user_t *)n->data;
 
-    if (!strcasecmp(nick, u->nick))
-      return u;
+      if (!irccasecmp(nick, u->nick))
+        return u;
+    }
   }
 
   return NULL;
@@ -562,7 +566,7 @@ channel_t *channel_add(char *name, uint32_t ts)
 
   cnt.chan++;
 
-  if (!strcasecmp(svs.chan, c->name))
+  if (!irccasecmp(svs.chan, c->name))
     join(svs.chan, svs.nick);
 
   return c;
@@ -602,13 +606,17 @@ channel_t *channel_find(char *name)
 {
   channel_t *c;
   node_t *n;
+  uint32_t i;
 
-  LIST_FOREACH(n, chanlist[CHASH((unsigned char *)name)].head)
+  for (i = 0; i < HASHSIZE; i++)
   {
-    c = (channel_t *)n->data;
+    LIST_FOREACH(n, chanlist[i].head)
+    {
+      c = (channel_t *)n->data;
 
-    if (!strcasecmp(name, c->name))
-      return c;
+      if (!irccasecmp(name, c->name))
+        return c;
+    }
   }
 
   return NULL;
@@ -697,7 +705,7 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
 
   chan->nummembers++;
 
-  if ((chan->nummembers == 1) && (strcasecmp(svs.chan, chan->name)))
+  if ((chan->nummembers == 1) && (irccasecmp(svs.chan, chan->name)))
   {
     if ((mc = mychan_find(chan->name)))
     {
@@ -869,13 +877,17 @@ myuser_t *myuser_find(char *name)
 {
   myuser_t *mu;
   node_t *n;
+  uint32_t i;
 
-  LIST_FOREACH(n, mulist[MUHASH((unsigned char *)name)].head)
+  for (i = 0; i < HASHSIZE; i++)
   {
-    mu = (myuser_t *)n->data;
+    LIST_FOREACH(n, mulist[i].head)
+    {
+      mu = (myuser_t *)n->data;
 
-    if (!strcasecmp(name, mu->name))
-      return mu;
+      if (!irccasecmp(name, mu->name))
+        return mu;
+    }
   }
 
   return NULL;
@@ -954,13 +966,17 @@ mychan_t *mychan_find(char *name)
 {
   mychan_t *mc;
   node_t *n;
+  uint32_t i;
 
-  LIST_FOREACH(n, mclist[MCHASH((unsigned char *)name)].head)
+  for (i = 0; i < HASHSIZE; i++)
   {
-    mc = (mychan_t *)n->data;
+    LIST_FOREACH(n, mclist[i].head)
+    {
+      mc = (mychan_t *)n->data;
 
-    if (!strcasecmp(name, mc->name))
-      return mc;
+      if (!irccasecmp(name, mc->name))
+        return mc;
+    }
   }
 
   return NULL;

@@ -275,7 +275,7 @@ static void m_privmsg(char *origin, uint8_t parc, char *parv[])
     return;
 
   /* is it for our services client? */
-  if (!strcasecmp(parv[0], svs.nick))
+  if (!irccasecmp(parv[0], svs.nick))
   {
     /* for nick@server messages.. */
     snprintf(buf, sizeof(buf), "%s@%s", svs.nick, me.name);
@@ -453,7 +453,7 @@ static void m_kick(char *origin, uint8_t parc, char *parv[])
   chanuser_delete(channel_find(parv[0]), user_find(parv[1]));
 
   /* if they kicked us, let's rejoin */
-  if (!strcasecmp(svs.nick, parv[1]))
+  if (!irccasecmp(svs.nick, parv[1]))
   {
     slog(0, LG_DEBUG, "m_kick(): i got kicked from `%s'; rejoining", parv[0]);
     join(parv[0], parv[1]);
@@ -465,7 +465,7 @@ static void m_kill(char *origin, uint8_t parc, char *parv[])
   slog(0, LG_DEBUG, "m_kill(): killed user: %s", parv[0]);
   user_delete(parv[0]);
 
-  if (!strcasecmp(svs.nick, parv[0]))
+  if (!irccasecmp(svs.nick, parv[0]))
   {
     mychan_t *mc;
     node_t *n;

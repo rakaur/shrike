@@ -27,7 +27,7 @@ static void irc_packet(char *buf)
   char *ptr, buf2[BUFSIZE * 2];
   static char tmp[BUFSIZE * 2 + 1];
 
-  while((ptr = strchr(buf, '\n')))
+  while ((ptr = strchr(buf, '\n')))
   {
     *ptr = '\0';
 

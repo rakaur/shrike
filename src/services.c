@@ -129,7 +129,7 @@ void part(char *chan, char *nick)
   if (!(cu = chanuser_find(c, u)))
     return;
 
-  if (!strcasecmp(svs.chan, c->name))
+  if (!irccasecmp(svs.chan, c->name))
     return;
 
   sts(":%s PART %s", u->nick, c->name);
@@ -455,7 +455,7 @@ static void do_logout(char *origin)
 
   snoop("LOGOUT: \2%s\2 from \2%s\2", u->nick, u->myuser->name);
 
-  if (strcasecmp(origin, u->nick))
+  if (irccasecmp(origin, u->nick))
     notice(origin, "\2%s\2 has been logged out.", u->nick);
   else
     notice(origin, "You have been logged out.");

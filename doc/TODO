@@ -70,6 +70,7 @@ MUST BE IN shrike-1.0b2
 [X]   . we don't need connection list, remove it
 [X]   . we don't need multiple connections, remove it
 [X]   . reading one char sucks, do something about it
+[X]   . rfc1459 casemapping
 
 MAY BE IN shrike-1.0b2
 [X] - settings mirroring before rehash
