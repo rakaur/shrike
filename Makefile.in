@@ -39,7 +39,7 @@ clean:
 	@for i in $(CLEANDIRS); do \
 		echo "clean ==> $$i"; \
 		cd $$i; \
-		${MAKE} clean; cd..; \
+		${MAKE} clean; cd ..; \
 	done
 	-@if [ -f include/sysconf.h ] ; then \
 		echo "To really restart installation, make distclean"; \
@@ -48,7 +48,7 @@ clean:
 distclean:
 	${RM} -f Makefile *~ *.orig core shrike.core
 	${RM} -f config.status config.cache config.log
-	cd inc; ${RM} -f sysconf.h version.h *~ *.orig; cd ..
+	cd inc; ${RM} -f sysconf.h *~ *.orig; cd ..
 	@for i in $(CLEANDIRS); do \
 		echo "distclean ==> $$i"; \
 		cd $$i; \

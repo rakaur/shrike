@@ -34,7 +34,7 @@ uint32_t event_add(const char *name, EVH *func, void *arg, time_t when)
       if ((event_table[i].when < event_time_min) || (event_time_min == -1))
         event_time_min = event_table[i].when;
 
-      slog(0, LG_DEBUG, "event_add(): \"%s\"", name);
+      slog(LG_DEBUG, "event_add(): \"%s\"", name);
 
       cnt.event++;
 
@@ -43,7 +43,7 @@ uint32_t event_add(const char *name, EVH *func, void *arg, time_t when)
   }
 
   /* failed to add it... */
-  slog(0, LG_DEBUG, "event_add(): failed to add \"%s\" to event table", name);
+  slog(LG_DEBUG, "event_add(): failed to add \"%s\" to event table", name);
 
   return -1;
 }
@@ -68,7 +68,7 @@ uint32_t event_add_once(const char *name, EVH *func, void *arg, time_t when)
       if ((event_table[i].when < event_time_min) || (event_time_min == -1))
         event_time_min = event_table[i].when;
 
-      slog(0, LG_DEBUG, "event_add_once(): \"%s\"", name);
+      slog(LG_DEBUG, "event_add_once(): \"%s\"", name);
 
       cnt.event++;
 
@@ -77,7 +77,7 @@ uint32_t event_add_once(const char *name, EVH *func, void *arg, time_t when)
   }
 
   /* failed to add it... */
-  slog(0, LG_DEBUG, "event_add(): failed to add \"%s\" to event table", name);
+  slog(LG_DEBUG, "event_add(): failed to add \"%s\" to event table", name);
 
   return -1;
 }
@@ -90,7 +90,7 @@ void event_delete(EVH *func, void *arg)
   if (i == -1)
     return;
 
-  slog(0, LG_DEBUG, "event_delete(): removing \"%s\"", event_table[i].name);
+  slog(LG_DEBUG, "event_delete(): removing \"%s\"", event_table[i].name);
 
   event_table[i].name = NULL;
   event_table[i].func = NULL;

@@ -62,11 +62,11 @@ int8_t sts(char *fmt, ...)
 
   if (servsock == -1)
   {
-    slog(0, LG_WARN, "sts(): couldn't write: `%s'", buf);
+    slog(LG_ERROR, "sts(): couldn't write: `%s'", buf);
     return 1;
   }
 
-  slog(0, LG_DEBUG, "<- %s", buf);
+  slog(LG_DEBUG, "<- %s", buf);
 
   strlcat(buf, "\r\n", BUFSIZE);
   len = strlen(buf);
@@ -77,7 +77,7 @@ int8_t sts(char *fmt, ...)
   {
     if (errno != EAGAIN)
     {
-      slog(0, LG_WARN, "sts(): write error to server");
+      slog(LG_ERROR, "sts(): write error to server");
       close(servsock);
       servsock = -1;
       me.connected = FALSE;
@@ -86,8 +86,7 @@ int8_t sts(char *fmt, ...)
   }
 
   if (n != len)
-    slog(0, LG_WARN, "sts(): incomplete write: total: %d; written: %d", len,
-         n);
+    slog(LG_ERROR, "sts(): incomplete write: total: %d; written: %d", len, n);
 
   va_end(ap);
 
@@ -124,7 +123,7 @@ static void ping_uplink(void *arg)
 
     if (diff > 600)
     {
-      slog(0, LG_INFO, "pink_uplink(): our uplink appears to be dead.");
+      slog(LG_INFO, "pink_uplink(): uplink appears to be dead");
 
       close(servsock);
       servsock = -1;
@@ -143,7 +142,7 @@ static int8_t irc_estab(void)
   ret = server_login();
   if (ret == 1)
   {
-    slog(0, LG_ERR, "irc_estab(): unable to connect to `%s' on port %d",
+    slog(LG_ERROR, "irc_estab(): unable to connect to `%s' on port %d",
          me.uplink, me.port);
     servsock = -1;
     me.connected = FALSE;
@@ -152,8 +151,8 @@ static int8_t irc_estab(void)
 
   me.connected = TRUE;
 
-  slog(0, LG_INFO, "irc_estab(): connection to uplink established");
-  slog(0, LG_INFO, "irc_estab(): synching with uplink");
+  slog(LG_INFO, "irc_estab(): connection to uplink established");
+  slog(LG_INFO, "irc_estab(): synching with uplink");
 
 #ifdef HAVE_GETTIMEOFDAY
   /* start our burst timer */
@@ -187,7 +186,7 @@ int conn(char *host, uint32_t port)
   /* get the socket */
   if ((s = socket(AF_INET, SOCK_STREAM, 0)) < 0)
   {
-    slog(0, LG_CRIT, "conn(): unable to create socket");
+    slog(LG_ERROR, "conn(): unable to create socket");
     return -1;
   }
 
@@ -203,7 +202,7 @@ int conn(char *host, uint32_t port)
     if ((hp = gethostbyname(me.vhost)) == NULL)
     {
       close(s);
-      slog(0, LG_CRIT, "conn(): unable to resolve `%s' for vhost", me.vhost);
+      slog(LG_ERROR, "conn(): unable to resolve `%s' for vhost", me.vhost);
       return -1;
     }
 
@@ -218,7 +217,7 @@ int conn(char *host, uint32_t port)
     if (bind(s, (struct sockaddr *)&sa, sizeof(sa)) < 0)
     {
       close(s);
-      slog(0, LG_CRIT, "conn(): unable to bind to vhost `%s'", me.vhost);
+      slog(LG_ERROR, "conn(): unable to bind to vhost `%s'", me.vhost);
       return -1;
     }
   }
@@ -227,7 +226,7 @@ int conn(char *host, uint32_t port)
   if ((hp = gethostbyname(host)) == NULL)
   {
     close(s);
-    slog(0, LG_CRIT, "conn(): unable to resolve `%s'", host);
+    slog(LG_ERROR, "conn(): unable to resolve `%s'", host);
     return -1;
   }
 
@@ -261,7 +260,7 @@ void reconn(void *arg)
     shutdown(servsock, SHUT_RDWR);
     close(servsock);
 
-    slog(0, LG_DEBUG,
+    slog(LG_DEBUG,
          "reconn(): ----------------------- clearing -----------------------");
 
     /* we have to kill everything.
@@ -278,10 +277,10 @@ void reconn(void *arg)
       }
     }
 
-    slog(0, LG_DEBUG,
+    slog(LG_DEBUG,
          "reconn(): ------------------------- done -------------------------");
 
-    slog(0, LG_INFO, "reconn(): connecting to `%s' on %d as `%s'",
+    slog(LG_INFO, "reconn(): connecting to `%s' on %d as `%s'",
          me.uplink, me.port, me.name);
 
     servsock = conn(me.uplink, me.port);
@@ -341,7 +340,7 @@ void io_loop(void)
 
       if (!irc_read(servsock, buf))
       {
-        slog(0, LG_INFO, "io_loop(): lost connection to uplink.");
+        slog(LG_INFO, "io_loop(): lost connection to uplink.");
         close(servsock);
         servsock = -1;
         me.connected = FALSE;
@@ -362,7 +361,7 @@ void io_loop(void)
       else if (sr == -1)
       {
         /* something bad happened */
-        slog(0, LG_CRIT, "io_loop(): lost connection: %d: %s", errno,
+        slog(LG_ERROR, "io_loop(): lost connection: %d: %s", errno,
              strerror(errno));
 
         close(servsock);

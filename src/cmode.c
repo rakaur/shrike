@@ -172,7 +172,7 @@ void channel_mode(channel_t *chan, uint8_t parc, char *parv[])
 
         if (cu == NULL)
         {
-          slog(0, LG_ERR, "channel_mode(): MODE %s %c%c %s", chan->name,
+          slog(LG_ERROR, "channel_mode(): MODE %s %c%c %s", chan->name,
                (whatt == MTYPE_ADD) ? '+' : '-', status_mode_list[i].value,
                parv[parpos]);
 
@@ -225,7 +225,7 @@ void channel_mode(channel_t *chan, uint8_t parc, char *parv[])
     if (matched == TRUE)
       continue;
 
-    slog(0, LG_DEBUG, "channel_mode(): mode %c not matched", *pos);
+    slog(LG_DEBUG, "channel_mode(): mode %c not matched", *pos);
   }
 
   check_modes(mychan_find(chan->name));
@@ -238,7 +238,7 @@ void user_mode(user_t *user, char *modes)
 
   if (!user)
   {
-    slog(0, LG_DEBUG, "user_mode(): called for nonexistant user");
+    slog(LG_DEBUG, "user_mode(): called for nonexistant user");
     return;
   }
 
@@ -258,7 +258,7 @@ void user_mode(user_t *user, char *modes)
           if (!is_ircop(user))
           {
             user->flags |= UF_IRCOP;
-            slog(0, LG_DEBUG, "user_mode(): %s is now an IRCop", user->nick);
+            slog(LG_DEBUG, "user_mode(): %s is now an IRCop", user->nick);
             snoop("OPER: %s (%s)", user->nick, user->server->name);
           }
         }
@@ -267,7 +267,7 @@ void user_mode(user_t *user, char *modes)
           if (is_ircop(user))
           {
             user->flags &= ~UF_IRCOP;
-            slog(0, LG_DEBUG, "user_mode(): %s is no longer an IRCop",
+            slog(LG_DEBUG, "user_mode(): %s is no longer an IRCop",
                  user->nick);
             snoop("DEOPER: %s (%s)", user->nick, user->server->name);
           }

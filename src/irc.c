@@ -38,7 +38,7 @@ static int8_t sjtoken(char *message, char **parv)
     if (count == 256)
     {
       /* we've reached our limit */
-      slog(0, LG_DEBUG, "sjtokenize(): reached param limit");
+      slog(LG_DEBUG, "sjtokenize(): reached param limit");
       return count;
     }
 
@@ -119,7 +119,7 @@ static int8_t tokenize(char *message, char **parv)
       /* we've reached one less than our max limit
        * to handle the parameter we alreayd ripped off
        */
-      slog(0, LG_DEBUG, "tokenize(): reached para limit");
+      slog(LG_DEBUG, "tokenize(): reached para limit");
       return count;
     }
     if (*next == ' ')
@@ -181,7 +181,7 @@ void irc_parse(char *line)
     memset((char *)&coreLine, '\0', BUFSIZE);
     strlcpy(coreLine, line, BUFSIZE);
 
-    slog(0, LG_DEBUG, "-> %s", line);
+    slog(LG_DEBUG, "-> %s", line);
 
     /* find the first spcae */
     if ((pos = strchr(line, ' ')))
@@ -237,7 +237,7 @@ void irc_parse(char *line)
      */
     if (!command)
     {
-      slog(0, LG_ERR, "irc_parse(): command not found: %s", coreLine);
+      slog(LG_DEBUG, "irc_parse(): command not found: %s", coreLine);
       return;
     }
 
@@ -278,7 +278,7 @@ static void m_privmsg(char *origin, uint8_t parc, char *parv[])
 
   if (!(u = user_find(origin)))
   {
-    slog(0, LG_DEBUG, "m_privmsg(): got message from nonexistant user `%s'",
+    slog(LG_DEBUG, "m_privmsg(): got message from nonexistant user `%s'",
          origin);
     return;
   }
@@ -398,7 +398,7 @@ static void m_sjoin(char *origin, uint8_t parc, char *parv[])
 
     if (!c)
     {
-      slog(0, LG_DEBUG, "m_sjoin(): new channel: %s", parv[1]);
+      slog(LG_DEBUG, "m_sjoin(): new channel: %s", parv[1]);
       c = channel_add(parv[1], ts);
     }
 
@@ -425,7 +425,7 @@ static void m_sjoin(char *origin, uint8_t parc, char *parv[])
         cu->modes = 0;
       }
 
-      slog(0, LG_DEBUG, "m_sjoin(): TS changed for %s (%ld -> %ld)", c->name,
+      slog(LG_INFO, "m_sjoin(): TS changed for %s (%ld -> %ld)", c->name,
            c->ts, ts);
 
       c->ts = ts;
@@ -442,7 +442,7 @@ static void m_sjoin(char *origin, uint8_t parc, char *parv[])
 
 static void m_part(char *origin, uint8_t parc, char *parv[])
 {
-  slog(0, LG_DEBUG, "m_part(): user left channel: %s -> %s", origin, parv[0]);
+  slog(LG_DEBUG, "m_part(): user left channel: %s -> %s", origin, parv[0]);
 
   chanuser_delete(channel_find(parv[0]), user_find(origin));
 }
@@ -458,12 +458,11 @@ static void m_nick(char *origin, uint8_t parc, char *parv[])
     s = server_find(parv[6]);
     if (!s)
     {
-      slog(0, LG_CRIT, "m_nick(): new user on nonexistant server: %s",
-           parv[6]);
+      slog(LG_DEBUG, "m_nick(): new user on nonexistant server: %s", parv[6]);
       return;
     }
 
-    slog(0, LG_DEBUG, "m_nick(): new user on `%s': %s", s->name, parv[0]);
+    slog(LG_DEBUG, "m_nick(): new user on `%s': %s", s->name, parv[0]);
 
     user_add(parv[0], parv[4], parv[5], s);
 
@@ -478,12 +477,12 @@ static void m_nick(char *origin, uint8_t parc, char *parv[])
     u = user_find(origin);
     if (!u)
     {
-      slog(0, LG_CRIT, "m_nick(): nickname change from nonexistant user: %s",
+      slog(LG_DEBUG, "m_nick(): nickname change from nonexistant user: %s",
            origin);
       return;
     }
 
-    slog(0, LG_DEBUG, "m_nick(): nickname change from `%s': %s", u->nick,
+    slog(LG_DEBUG, "m_nick(): nickname change from `%s': %s", u->nick,
          parv[0]);
 
     /* remove the current one from the list */
@@ -504,7 +503,7 @@ static void m_nick(char *origin, uint8_t parc, char *parv[])
 
 static void m_quit(char *origin, uint8_t parc, char *parv[])
 {
-  slog(0, LG_DEBUG, "m_quit(): user leaving: %s", origin);
+  slog(LG_DEBUG, "m_quit(): user leaving: %s", origin);
 
   /* user_delete() takes care of removing channels and so forth */
   user_delete(origin);
@@ -514,13 +513,13 @@ static void m_mode(char *origin, uint8_t parc, char *parv[])
 {
   if (!origin)
   {
-    slog(0, LG_WARN, "m_mode(): received MODE without origin");
+    slog(LG_DEBUG, "m_mode(): received MODE without origin");
     return;
   }
 
   if (parc < 2)
   {
-    slog(0, LG_WARN, "m_mode(): missing parameters in MODE");
+    slog(LG_DEBUG, "m_mode(): missing parameters in MODE");
     return;
   }
 
@@ -533,14 +532,14 @@ static void m_mode(char *origin, uint8_t parc, char *parv[])
 static void m_kick(char *origin, uint8_t parc, char *parv[])
 {
   /* -> :rakaur KICK #shrike rintaun :test */
-  slog(0, LG_DEBUG, "m_kick(): user was kicked: %s -> %s", parv[1], parv[0]);
+  slog(LG_DEBUG, "m_kick(): user was kicked: %s -> %s", parv[1], parv[0]);
 
   chanuser_delete(channel_find(parv[0]), user_find(parv[1]));
 
   /* if they kicked us, let's rejoin */
   if (!irccasecmp(svs.nick, parv[1]))
   {
-    slog(0, LG_DEBUG, "m_kick(): i got kicked from `%s'; rejoining", parv[0]);
+    slog(LG_DEBUG, "m_kick(): i got kicked from `%s'; rejoining", parv[0]);
     join(parv[0], parv[1]);
   }
 }
@@ -551,7 +550,7 @@ static void m_kill(char *origin, uint8_t parc, char *parv[])
   node_t *n;
   int i;
 
-  slog(0, LG_DEBUG, "m_kill(): killed user: %s", parv[0]);
+  slog(LG_DEBUG, "m_kill(): killed user: %s", parv[0]);
   user_delete(parv[0]);
 
   if (!irccasecmp(svs.nick, parv[0]))
@@ -579,13 +578,13 @@ static void m_kill(char *origin, uint8_t parc, char *parv[])
 
 static void m_squit(char *origin, uint8_t parc, char *parv[])
 {
-  slog(0, LG_DEBUG, "m_squit(): server leaving: %s from %s", parv[0], parv[1]);
+  slog(LG_DEBUG, "m_squit(): server leaving: %s from %s", parv[0], parv[1]);
   server_delete(parv[0]);
 }
 
 static void m_server(char *origin, uint8_t parc, char *parv[])
 {
-  slog(0, LG_DEBUG, "m_server(): new server: %s", parv[0]);
+  slog(LG_DEBUG, "m_server(): new server: %s", parv[0]);
   server_add(parv[0], atoi(parv[1]), parv[2]);
 }
 
@@ -645,7 +644,7 @@ static void m_pass(char *origin, uint8_t parc, char *parv[])
 {
   if (strcmp(me.pass, parv[0]))
   {
-    slog(0, LG_CRIT, "m_pass(): password mismatch from uplink; aborting");
+    slog(LG_INFO, "m_pass(): password mismatch from uplink; aborting");
     runflags |= RF_SHUTDOWN;
   }
 }
@@ -655,7 +654,7 @@ static void m_eob(char *origin, uint8_t parc, char *parv[])
 #ifdef HAVE_GETTIMEOFDAY
   e_time(burstime, &burstime);
 
-  slog(0, LG_INFO, "m_eob(): finished synching with uplink (%d %s)",
+  slog(LG_INFO, "m_eob(): finished synching with uplink (%d %s)",
        (tv2ms(&burstime) >
         1000) ? (tv2ms(&burstime) / 1000) : tv2ms(&burstime),
        (tv2ms(&burstime) > 1000) ? "s" : "ms");
@@ -665,7 +664,7 @@ static void m_eob(char *origin, uint8_t parc, char *parv[])
            1000) ? (tv2ms(&burstime) / 1000) : tv2ms(&burstime),
           (tv2ms(&burstime) > 1000) ? "s" : "ms");
 #else
-  slog(0, LG_INFO, "m_eob(): finished synching with uplink");
+  slog(LG_INFO, "m_eob(): finished synching with uplink");
   wallops("Finished synching to network.");
 #endif
 
@@ -674,7 +673,7 @@ static void m_eob(char *origin, uint8_t parc, char *parv[])
 
 static void m_error(char *origin, uint8_t parc, char *parv[])
 {
-  slog(0, LG_NOTICE, "m_error(): error from server: %s", parv[0]);
+  slog(LG_INFO, "m_error(): error from server: %s", parv[0]);
 }
 
 /* *INDENT-OFF* */

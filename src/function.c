@@ -190,7 +190,7 @@ void log_open(void)
 }
 
 /* logs something to shrike.log */
-void slog(uint8_t sameline, uint32_t level, const char *fmt, ...)
+void slog(uint32_t level, const char *fmt, ...)
 {
   va_list args;
   time_t t;
@@ -202,25 +202,20 @@ void slog(uint8_t sameline, uint32_t level, const char *fmt, ...)
 
   va_start(args, fmt);
 
-  if (sameline == 1)
-  {
-    time(&t);
-    tm = *localtime(&t);
-    strftime(buf, sizeof(buf) - 1, "[%d/%m %H:%M:%S] ", &tm);
-  }
+  time(&t);
+  tm = *localtime(&t);
+  strftime(buf, sizeof(buf) - 1, "[%d/%m %H:%M:%S] ", &tm);
 
   if (!log_file)
     log_open();
 
   if (log_file)
   {
-    if (sameline == 1)
-      fputs(buf, log_file);
+    fputs(buf, log_file);
 
     vfprintf(log_file, fmt, args);
 
-    if (!sameline)
-      fputc('\n', log_file);
+    fputc('\n', log_file);
 
     fflush(log_file);
   }
@@ -229,8 +224,7 @@ void slog(uint8_t sameline, uint32_t level, const char *fmt, ...)
   {
     vfprintf(stderr, fmt, args);
 
-    if (!sameline)
-      fputc('\n', stderr);
+    fputc('\n', stderr);
   }
 }
 
@@ -261,7 +255,7 @@ uint8_t regex_match(regex_t * preg, char *pattern, char *string,
   if (errnum != 0)
   {
     regerror(errnum, preg, errmsg, 256);
-    slog(0, LG_ERR, "regex_match(): %s\n", errmsg);
+    slog(LG_ERROR, "regex_match(): %s\n", errmsg);
     free(preg);
     preg = NULL;
     return 1;

@@ -66,7 +66,7 @@ E char *sstrdup(const char *s);
 E void strip(char *line);
 
 E void log_open(void);
-E void slog(uint8_t sameline, uint32_t level, const char *fmt, ...);
+E void slog(uint32_t level, const char *fmt, ...);
 E uint32_t time_msec(void);
 E uint8_t regex_match(regex_t * preg, char *pattern, char *string,
                       size_t nmatch, regmatch_t pmatch[], int eflags);
@@ -218,10 +218,6 @@ E struct command_ *cmd_find(char *origin, char *command);
 
 /* shrike.c */
 E char *config_file;
-E const char build[];
-E const char version[];
-E const char compile_time[];
-E const char *infotext[];
 
 /* socket.c */
 E int servsock;
@@ -231,5 +227,12 @@ E int8_t sts(char *fmt, ...);
 E int conn(char *host, uint32_t port);
 E void reconn(void *arg);
 E void io_loop(void);
+
+/* version.c */
+E const char *generation;
+E const char *creation;
+E const char *platform;
+E const char *version;
+E const char *infotext[];
 
 #endif /* EXTERN_H */

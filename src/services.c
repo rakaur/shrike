@@ -39,7 +39,7 @@ void join(char *chan, char *nick)
   {
     if ((cu = chanuser_find(c, user_find(svs.nick))))
     {
-      slog(0, LG_DEBUG, "join(): i'm already in `%s'", c->name);
+      slog(LG_DEBUG, "join(): i'm already in `%s'", c->name);
       return;
     }
 
@@ -245,7 +245,7 @@ void services(char *origin, uint8_t parc, char *parv[])
   /* this should never happen */
   if (parv[0][0] == '&')
   {
-    slog(0, LG_NOTICE, "services(): got parv with local channel: %s", parv[0]);
+    slog(LG_ERROR, "services(): got parv with local channel: %s", parv[0]);
     return;
   }
 

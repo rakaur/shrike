@@ -11,6 +11,6 @@ node.o: node.c ../inc/shrike.h ../inc/sysconf.h ../inc/extern.h
 set.o: set.c ../inc/shrike.h ../inc/sysconf.h ../inc/extern.h
 services.o: services.c ../inc/shrike.h ../inc/sysconf.h \
  ../inc/extern.h
-shrike.o: shrike.c ../inc/shrike.h ../inc/sysconf.h ../inc/extern.h \
- ../inc/version.h
+shrike.o: shrike.c ../inc/shrike.h ../inc/sysconf.h ../inc/extern.h
 socket.o: socket.c ../inc/shrike.h ../inc/sysconf.h ../inc/extern.h
+version.o: version.c

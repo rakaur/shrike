@@ -84,9 +84,10 @@ MUST BE IN shrike-1.0b3
 [X] - deal with signals
 [X] - fix help files (nick is static)
 [X] - deal with floods
-[ ] - sort out the horrible mess that is the logging.
-[ ]   . get rid of the sameline crap
+[X] - sort out the horrible mess that is the logging.
+[X]   . get rid of the sameline crap
 [X] - new event system... probably based on ratbox's (squid's)
+[X] - change version.sh crap to do a c instead of h
 
 MUST BE IN shrike-1.0
 [ ] - gline control functionality (a la DALnet AKILL)

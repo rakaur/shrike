@@ -425,11 +425,8 @@ int runflags;
 /* log levels */
 #define LG_NONE         0x00000001      /* don't log                */
 #define LG_INFO         0x00000002      /* log general info         */
-#define LG_NOTICE       0x00000004      /* log semi-important stuff */
-#define LG_WARN         0x00000008      /* log important stuff      */
-#define LG_ERR          0x00000010      /* log real important stuff */
-#define LG_CRIT         0x00000020      /* log critical stuff       */
-#define LG_DEBUG        0x00000040      /* log debugging stuff      */
+#define LG_ERROR        0x00000004      /* log real important stuff */
+#define LG_DEBUG        0x00000008      /* log debugging stuff      */
 
 /* bursting timer */
 #if HAVE_GETTIMEOFDAY

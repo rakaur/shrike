@@ -25,7 +25,7 @@ void conf_parse(void)
 
   pattern = (char *)malloc(2046);
 
-  slog(0, LG_DEBUG, "conf_parse(): loading configuration file");
+  slog(LG_DEBUG, "conf_parse(): loading configuration file");
 
   if (!f)
   {
@@ -50,14 +50,14 @@ void conf_parse(void)
     /* collapse tabs */
     tb2sp(dBuf);
 
-    slog(0, LG_DEBUG, "conf_parse(): checking `%s' on line %d", dBuf, linecnt);
+    slog(LG_DEBUG, "conf_parse(): checking `%s' on line %d", dBuf, linecnt);
 
     /* check for the serverinfo{} block */
     strcpy(pattern, "^[[:space:]]*serverinfo[[:space:]]*\\{");
 
     if (regex_match(preg, pattern, dBuf, 5, pmatch, 0) == 0)
     {
-      slog(0, LG_DEBUG, "conf_parse(): parsing serverinfo{} block on line %d",
+      slog(LG_DEBUG, "conf_parse(): parsing serverinfo{} block on line %d",
            linecnt);
 
       /* this gets ugly, oh well */
@@ -79,13 +79,12 @@ void conf_parse(void)
         /* collapse tabs */
         tb2sp(dBuf);
 
-        slog(0, LG_DEBUG, "conf_parse(): checking severinfo:`%s' on line %d",
+        slog(LG_DEBUG, "conf_parse(): checking severinfo:`%s' on line %d",
              dBuf, linecnt);
 
         if (!strcmp("}", dBuf))
         {
-          slog(0, LG_DEBUG,
-               "conf_parse(): finished parsing serverinfo{} block");
+          slog(LG_DEBUG, "conf_parse(): finished parsing serverinfo{} block");
           break;
         }
 
@@ -100,7 +99,7 @@ void conf_parse(void)
           rvalue = (dBuf + pmatch[2].rm_so);
           *(dBuf + pmatch[2].rm_eo) = '\0';
 
-          slog(0, LG_DEBUG,
+          slog(LG_DEBUG,
                "conf_parse(): parsing lvalue `%s' with rvalue `%s'", lvalue,
                rvalue);
 
@@ -176,20 +175,16 @@ void conf_parse(void)
           }
           else if (!strcasecmp("loglevel", lvalue))
           {
-            if (!strcasecmp("DEBUG", rvalue))
+            if (!strcasecmp("debug", rvalue))
               me.loglevel |= LG_DEBUG;
-            else if (!strcasecmp("CRITICAL", rvalue))
-              me.loglevel |= LG_CRIT;
-            else if (!strcasecmp("ERROR", rvalue))
-              me.loglevel |= LG_ERR;
-            else if (!strcasecmp("WARNING", rvalue))
-              me.loglevel |= LG_WARN;
-            else if (!strcasecmp("INFO", rvalue))
+            else if (!strcasecmp("error", rvalue))
+              me.loglevel |= LG_ERROR;
+            else if (!strcasecmp("info", rvalue))
               me.loglevel |= LG_INFO;
-            else if (!strcasecmp("NONE", rvalue))
+            else if (!strcasecmp("none", rvalue))
               me.loglevel |= LG_NONE;
             else
-              me.loglevel |= LG_NOTICE;
+              me.loglevel |= LG_ERROR;
           }
           else if (!strcasecmp("maxusers", lvalue))
           {
@@ -228,7 +223,7 @@ void conf_parse(void)
 
     if (regex_match(preg, pattern, dBuf, 5, pmatch, 0) == 0)
     {
-      slog(0, LG_DEBUG, "conf_parse(): parsing clientinfo{} block on line %d",
+      slog(LG_DEBUG, "conf_parse(): parsing clientinfo{} block on line %d",
            linecnt);
 
       /* this gets ugly, oh well */
@@ -250,13 +245,12 @@ void conf_parse(void)
         /* collapse tabs */
         tb2sp(dBuf);
 
-        slog(0, LG_DEBUG, "conf_parse(): checking clientinfo:`%s' on line %d",
+        slog(LG_DEBUG, "conf_parse(): checking clientinfo:`%s' on line %d",
              dBuf, linecnt);
 
         if (!strcmp("}", dBuf))
         {
-          slog(0, LG_DEBUG,
-               "conf_parse(): finished parsing clientinfo{} block");
+          slog(LG_DEBUG, "conf_parse(): finished parsing clientinfo{} block");
           break;
         }
 
@@ -271,7 +265,7 @@ void conf_parse(void)
           rvalue = (dBuf + pmatch[2].rm_so);
           *(dBuf + pmatch[2].rm_eo) = '\0';
 
-          slog(0, LG_DEBUG,
+          slog(LG_DEBUG,
                "conf_parse(): parsing lvalue `%s' with rvalue `%s'", lvalue,
                rvalue);
 
@@ -369,7 +363,7 @@ void conf_parse(void)
   /* close the file */
   fclose(f);
 
-  slog(0, LG_DEBUG, "conf_parse(): finished loading configuration file");
+  slog(LG_DEBUG, "conf_parse(): finished loading configuration file");
 }
 
 static void copy_me(struct me *src, struct me *dst)
@@ -443,7 +437,7 @@ boolean_t conf_rehash(void)
   node_t *n;
 
   /* we're rehashing */
-  slog(0, LG_INFO, "conf_rehash(): rehashing");
+  slog(LG_INFO, "conf_rehash(): rehashing");
   runflags |= RF_REHASHING;
 
   copy_me(&me, hold_me);
@@ -458,7 +452,6 @@ boolean_t conf_rehash(void)
   free(me.adminname);
   free(me.adminemail);
   free(me.mta);
-  me.loglevel &= LG_DEBUG;      /* default loglevel */
   me.maxusers = 0;
   me.maxchans = 0;
   me.auth = 0;
@@ -486,8 +479,7 @@ boolean_t conf_rehash(void)
   /* now recheck */
   if (!conf_check())
   {
-    slog(0, LG_INFO,
-         "conf_rehash(): conf file was malformed, aborting rehash");
+    slog(LG_INFO, "conf_rehash(): conf file was malformed, aborting rehash");
 
     /* freeing the new conf strings */
     free_cstructs(&me, &svs);
@@ -582,7 +574,6 @@ boolean_t conf_rehash(void)
 
   /* no longer rehashing */
   runflags &= ~RF_REHASHING;
-  slog(0, LG_DEBUG, "conf_rehash(): finished rehashing");
 
   return TRUE;
 }
@@ -591,7 +582,7 @@ boolean_t conf_check(void)
 {
   if (!me.name)
   {
-    slog(0, LG_INFO, "conf_check(): no `name' set in %s", config_file);
+    slog(LG_INFO, "conf_check(): no `name' set in %s", config_file);
     return FALSE;
   }
 
@@ -600,85 +591,85 @@ boolean_t conf_check(void)
 
   if (!me.uplink)
   {
-    slog(0, LG_INFO, "conf_check(): no `uplink' set in %s", config_file);
+    slog(LG_INFO, "conf_check(): no `uplink' set in %s", config_file);
     return FALSE;
   }
 
   if (!me.port)
   {
-    slog(0, LG_INFO, "conf_check(): no `port' set in %s; defaulting to 6667",
+    slog(LG_INFO, "conf_check(): no `port' set in %s; defaulting to 6667",
          config_file);
     me.port = 6667;
   }
 
   if (!me.pass)
   {
-    slog(0, LG_INFO, "conf_check(): no `pass' set in %s", config_file);
+    slog(LG_INFO, "conf_check(): no `pass' set in %s", config_file);
     return FALSE;
   }
 
   if ((!me.recontime) || (me.recontime < 10))
   {
-    slog(0, LG_INFO, "conf_check(): invalid `recontime' set in %s; "
+    slog(LG_INFO, "conf_check(): invalid `recontime' set in %s; "
          "defaulting to 10", config_file);
     me.recontime = 10;
   }
 
   if ((!me.restarttime) || (me.restarttime < 10))
   {
-    slog(0, LG_INFO, "conf_check(): invalid `restarttime' set in %s; "
+    slog(LG_INFO, "conf_check(): invalid `restarttime' set in %s; "
          "defaulting to 10", config_file);
     me.restarttime = 10;
   }
 
   if (!me.netname)
   {
-    slog(0, LG_INFO, "conf_check(): no `netname' set in %s", config_file);
+    slog(LG_INFO, "conf_check(): no `netname' set in %s", config_file);
     return FALSE;
   }
 
   if (!me.adminname)
   {
-    slog(0, LG_INFO, "conf_check(): no `adminname' set in %s", config_file);
+    slog(LG_INFO, "conf_check(): no `adminname' set in %s", config_file);
     return FALSE;
   }
 
   if (!me.adminemail)
   {
-    slog(0, LG_INFO, "conf_check(): no `adminemail' set in %s", config_file);
+    slog(LG_INFO, "conf_check(): no `adminemail' set in %s", config_file);
     return FALSE;
   }
 
   if (!me.mta)
   {
-    slog(0, LG_INFO, "conf_check(): no `mta' set in %s", config_file);
+    slog(LG_INFO, "conf_check(): no `mta' set in %s", config_file);
     return FALSE;
   }
 
   if (!me.maxusers)
   {
-    slog(0, LG_INFO, "conf_check(): no `maxusers' set in %s; "
+    slog(LG_INFO, "conf_check(): no `maxusers' set in %s; "
          "defaulting to 5", config_file);
     me.maxusers = 5;
   }
 
   if (!me.maxchans)
   {
-    slog(0, LG_INFO, "conf_check(): no `maxchans' set in %s; "
+    slog(LG_INFO, "conf_check(): no `maxchans' set in %s; "
          "defaulting to 5", config_file);
     me.maxchans = 5;
   }
 
   if (me.auth != 0 && me.auth != 1)
   {
-    slog(0, LG_INFO, "conf_check(): no `auth' set in %s; "
+    slog(LG_INFO, "conf_check(): no `auth' set in %s; "
          "defaulting to NONE", config_file);
     me.auth = AUTH_NONE;
   }
 
   if (!svs.nick || !svs.user || !svs.host || !svs.real || !svs.global)
   {
-    slog(0, LG_INFO, "check_conf(): invalid clientinfo{} block in %s",
+    slog(LG_INFO, "check_conf(): invalid clientinfo{} block in %s",
          config_file);
     return FALSE;
   }

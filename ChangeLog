@@ -1,4 +1,13 @@
 ------------------------------------------------------------------------
+r43 | rakaur | 2004-03-27 10:28:31 -0600 (Sat, 27 Mar 2004) | 2 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/inc/shrike.h
+   M /trunk/src/services.c
+
+*Really* fixed the core in GLOBAL this time (thanks W. Campbell).
+
+------------------------------------------------------------------------
 r42 | rakaur | 2004-03-26 16:43:36 -0600 (Fri, 26 Mar 2004) | 2 lines
 Changed paths:
    M /trunk/ChangeLog

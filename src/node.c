@@ -88,7 +88,7 @@ void node_del(node_t *n, list_t *l)
   /* do we even have a node? */
   if (!n)
   {
-    slog(0, LG_DEBUG, "node_del(): called with NULL node");
+    slog(LG_DEBUG, "node_del(): called with NULL node");
     return;
   }
 
@@ -129,7 +129,7 @@ sra_t *sra_add(char *name)
   myuser_t *mu = myuser_find(name);
   node_t *n = node_create();
 
-  slog(0, LG_DEBUG, "sra_add(): %s", (mu) ? mu->name : name);
+  slog(LG_DEBUG, "sra_add(): %s", (mu) ? mu->name : name);
 
   sra = scalloc(sizeof(sra_t), 1);
 
@@ -155,13 +155,13 @@ void sra_delete(myuser_t *myuser)
 
   if (!sra)
   {
-    slog(0, LG_CRIT, "sra_delete(): called for nonexistant sra: %s",
+    slog(LG_DEBUG, "sra_delete(): called for nonexistant sra: %s",
          myuser->name);
 
     return;
   }
 
-  slog(0, LG_DEBUG, "sra_delete(): %s",
+  slog(LG_DEBUG, "sra_delete(): %s",
        (sra->myuser) ? sra->myuser->name : sra->name);
 
   n = node_find(sra, &sralist);
@@ -204,7 +204,7 @@ tld_t *tld_add(char *name)
   tld_t *tld;
   node_t *n = node_create();
 
-  slog(0, LG_DEBUG, "tld_add(): %s", name);
+  slog(LG_DEBUG, "tld_add(): %s", name);
 
   tld = scalloc(sizeof(tld_t), 1);
 
@@ -224,12 +224,12 @@ void tld_delete(char *name)
 
   if (!tld)
   {
-    slog(0, LG_CRIT, "tld_delete(): called for nonexistant tld: %s", name);
+    slog(LG_DEBUG, "tld_delete(): called for nonexistant tld: %s", name);
 
     return;
   }
 
-  slog(0, LG_DEBUG, "tld_delete(): %s", tld->name);
+  slog(LG_DEBUG, "tld_delete(): %s", tld->name);
 
   n = node_find(tld, &tldlist);
   node_del(n, &tldlist);
@@ -267,7 +267,7 @@ server_t *server_add(char *name, uint8_t hops, char *desc)
   node_t *n = node_create();
   char *tld;
 
-  slog(0, LG_DEBUG, "server_add(): %s", name);
+  slog(LG_DEBUG, "server_add(): %s", name);
 
   s = scalloc(sizeof(server_t), 1);
 
@@ -304,13 +304,12 @@ void server_delete(char *name)
 
   if (!s)
   {
-    slog(0, LG_CRIT, "server_delete(): called for nonexistant server: %s",
-         name);
+    slog(LG_DEBUG, "server_delete(): called for nonexistant server: %s", name);
 
     return;
   }
 
-  slog(0, LG_DEBUG, "server_delete(): %s", s->name);
+  slog(LG_DEBUG, "server_delete(): %s", s->name);
 
   /* first go through it's users and kill all of them */
   for (i = 0; i < HASHSIZE; i++)
@@ -361,7 +360,7 @@ user_t *user_add(char *nick, char *user, char *host, server_t *server)
   user_t *u;
   node_t *n = node_create();
 
-  slog(0, LG_DEBUG, "user_add(): %s (%s@%s) -> %s", nick, user, host,
+  slog(LG_DEBUG, "user_add(): %s (%s@%s) -> %s", nick, user, host,
        server->name);
 
   u = scalloc(sizeof(user_t), 1);
@@ -390,11 +389,11 @@ void user_delete(char *nick)
 
   if (!u)
   {
-    slog(0, LG_CRIT, "user_delete(): called for nonexistant user: %s", nick);
+    slog(LG_DEBUG, "user_delete(): called for nonexistant user: %s", nick);
     return;
   }
 
-  slog(0, LG_DEBUG, "user_delete(): removing user: %s -> %s", u->nick,
+  slog(LG_DEBUG, "user_delete(): removing user: %s -> %s", u->nick,
        u->server->name);
 
   u->server->users--;
@@ -447,7 +446,7 @@ user_t *user_find(char *nick)
     }
   }
 
-  slog(0, LG_DEBUG, "user_find(): called for nonexistant user `%s'", nick);
+  slog(LG_DEBUG, "user_find(): called for nonexistant user `%s'", nick);
 
   return NULL;
 }
@@ -463,7 +462,7 @@ channel_t *channel_add(char *name, uint32_t ts)
 
   if (*name != '#')
   {
-    slog(0, LG_ERR, "channel_add(): got non #channel: %s", name);
+    slog(LG_DEBUG, "channel_add(): got non #channel: %s", name);
     return NULL;
   }
 
@@ -471,11 +470,11 @@ channel_t *channel_add(char *name, uint32_t ts)
 
   if (c)
   {
-    slog(0, LG_CRIT, "channel_add(): channel already exists: %s", name);
+    slog(LG_DEBUG, "channel_add(): channel already exists: %s", name);
     return c;
   }
 
-  slog(0, LG_DEBUG, "channel_add(): %s", name);
+  slog(LG_DEBUG, "channel_add(): %s", name);
 
   n = node_create();
   c = scalloc(sizeof(channel_t), 1);
@@ -505,12 +504,12 @@ void channel_delete(char *name)
 
   if (!c)
   {
-    slog(0, LG_CRIT, "channel_delete(): called for nonexistant channel: %s",
+    slog(LG_DEBUG, "channel_delete(): called for nonexistant channel: %s",
          name);
     return;
   }
 
-  slog(0, LG_DEBUG, "channel_delete(): %s", c->name);
+  slog(LG_DEBUG, "channel_delete(): %s", c->name);
 
   /* we assume all lists should be null */
 
@@ -562,7 +561,7 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
 
   if (*chan->name != '#')
   {
-    slog(0, LG_ERR, "chanuser_add(): got non #channel: %s", chan->name);
+    slog(LG_DEBUG, "chanuser_add(): got non #channel: %s", chan->name);
     return NULL;
   }
 
@@ -604,14 +603,14 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
   u = user_find(nick);
   if (u == NULL)
   {
-    slog(0, LG_CRIT, "chanuser_add(): nonexist user: %s", nick);
+    slog(LG_DEBUG, "chanuser_add(): nonexist user: %s", nick);
     return NULL;
   }
 
   tcu = chanuser_find(chan, u);
   if (tcu != NULL)
   {
-    slog(0, LG_WARN, "chanuser_add(): user is already present: %s -> %s",
+    slog(LG_DEBUG, "chanuser_add(): user is already present: %s -> %s",
          chan->name, u->nick);
 
     /* could be an OPME or other desyncher... */
@@ -620,7 +619,7 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
     return NULL;
   }
 
-  slog(0, LG_DEBUG, "chanuser_add(): %s -> %s", chan->name, u->nick);
+  slog(LG_DEBUG, "chanuser_add(): %s -> %s", chan->name, u->nick);
 
   n1 = node_create();
   n2 = node_create();
@@ -699,7 +698,7 @@ void chanuser_delete(channel_t *chan, user_t *user)
 
     if (cu->user == user)
     {
-      slog(0, LG_DEBUG, "chanuser_delete(): %s -> %s (%d)", cu->chan->name,
+      slog(LG_DEBUG, "chanuser_delete(): %s -> %s (%d)", cu->chan->name,
            cu->user->nick, cu->chan->nummembers - 1);
       node_del(n, &chan->members);
       node_free(n);
@@ -720,7 +719,7 @@ void chanuser_delete(channel_t *chan, user_t *user)
       else if (chan->nummembers == 0)
       {
         /* empty channels die */
-        slog(0, LG_DEBUG, "chanuser_delete(): `%s' is empty, removing",
+        slog(LG_DEBUG, "chanuser_delete(): `%s' is empty, removing",
              chan->name);
 
         channel_delete(chan->name);
@@ -762,11 +761,11 @@ myuser_t *myuser_add(char *name, char *pass, char *email)
 
   if (mu)
   {
-    slog(0, LG_CRIT, "myuser_add(): myuser already exists: %s", name);
+    slog(LG_DEBUG, "myuser_add(): myuser already exists: %s", name);
     return mu;
   }
 
-  slog(0, LG_DEBUG, "myuser_add(): %s -> %s", name, email);
+  slog(LG_DEBUG, "myuser_add(): %s -> %s", name, email);
 
   n = node_create();
   mu = scalloc(sizeof(myuser_t), 1);
@@ -795,12 +794,11 @@ void myuser_delete(char *name)
 
   if (!mu)
   {
-    slog(0, LG_CRIT, "myuser_delete(): called for nonexistant myuser: %s",
-         name);
+    slog(LG_DEBUG, "myuser_delete(): called for nonexistant myuser: %s", name);
     return;
   }
 
-  slog(0, LG_DEBUG, "myuser_delete(): %s", mu->name);
+  slog(LG_DEBUG, "myuser_delete(): %s", mu->name);
 
   /* remove their chanacs shiz */
   LIST_FOREACH(n, mu->chanacs.head)
@@ -871,11 +869,11 @@ mychan_t *mychan_add(char *name, char *pass)
 
   if (mc)
   {
-    slog(0, LG_CRIT, "mychan_add(): mychan already exists: %s", name);
+    slog(LG_DEBUG, "mychan_add(): mychan already exists: %s", name);
     return mc;
   }
 
-  slog(0, LG_DEBUG, "mychan_add(): %s", name);
+  slog(LG_DEBUG, "mychan_add(): %s", name);
 
   n = node_create();
   mc = scalloc(sizeof(mychan_t), 1);
@@ -903,12 +901,11 @@ void mychan_delete(char *name)
 
   if (!mc)
   {
-    slog(0, LG_CRIT, "mychan_delete(): called for nonexistant mychan: %s",
-         name);
+    slog(LG_DEBUG, "mychan_delete(): called for nonexistant mychan: %s", name);
     return;
   }
 
-  slog(0, LG_DEBUG, "mychan_delete(): %s", mc->name);
+  slog(LG_DEBUG, "mychan_delete(): %s", mc->name);
 
   /* remove the chanacs shiz */
   LIST_FOREACH(n, mc->chanacs.head)
@@ -961,11 +958,11 @@ chanacs_t *chanacs_add(mychan_t *mychan, myuser_t *myuser, uint8_t level)
 
   if (*mychan->name != '#')
   {
-    slog(0, LG_ERR, "chanacs_add(): got non #channel: %s", mychan->name);
+    slog(LG_DEBUG, "chanacs_add(): got non #channel: %s", mychan->name);
     return NULL;
   }
 
-  slog(0, LG_DEBUG, "chanacs_add(): %s -> %s", mychan->name, myuser->name);
+  slog(LG_DEBUG, "chanacs_add(): %s -> %s", mychan->name, myuser->name);
 
   n1 = node_create();
   n2 = node_create();
@@ -991,11 +988,11 @@ chanacs_t *chanacs_add_host(mychan_t *mychan, char *host, uint8_t level)
 
   if (*mychan->name != '#')
   {
-    slog(0, LG_ERR, "chanacs_add_host(): got non #channel: %s", mychan->name);
+    slog(LG_DEBUG, "chanacs_add_host(): got non #channel: %s", mychan->name);
     return NULL;
   }
 
-  slog(0, LG_DEBUG, "chanacs_add_host(): %s -> %s", mychan->name, host);
+  slog(LG_DEBUG, "chanacs_add_host(): %s -> %s", mychan->name, host);
 
   n = node_create();
 
@@ -1024,7 +1021,7 @@ void chanacs_delete(mychan_t *mychan, myuser_t *myuser, uint8_t level)
 
     if ((ca->myuser == myuser) && (ca->level == level))
     {
-      slog(0, LG_DEBUG, "chanacs_delete(): %s -> %s", ca->mychan->name,
+      slog(LG_DEBUG, "chanacs_delete(): %s -> %s", ca->mychan->name,
            ca->myuser->name);
       node_del(n, &mychan->chanacs);
       node_free(n);
@@ -1051,7 +1048,7 @@ void chanacs_delete_host(mychan_t *mychan, char *host, uint8_t level)
 
     if ((ca->host) && (!irccasecmp(host, ca->host)) && (ca->level == level))
     {
-      slog(0, LG_DEBUG, "chanacs_delete_host(): %s -> %s", ca->mychan->name,
+      slog(LG_DEBUG, "chanacs_delete_host(): %s -> %s", ca->mychan->name,
            ca->host);
 
       free(ca->host);

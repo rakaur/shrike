@@ -8,6 +8,7 @@
 
 CC		= @CC@
 RM		= @RM@
+MV		= @MV@
 CP		= @CP@
 INSTALL		= @INSTALL@
 PREFIX		= @prefix@
@@ -43,7 +44,8 @@ BASE_SRCS =			\
   set.c				\
   services.c			\
   shrike.c			\
-  socket.c
+  socket.c			\
+  version.c
 
 SRCS = ${BASE_SRCS}
 
@@ -55,6 +57,7 @@ build: all
 
 shrike: $(OBJS)
 	${CC} ${CFLAGS} ${LDFLAGS} -o $@ ${OBJS} ${LIBS}
+	$(MV) version.c version.c.last
 
 install: build
 	$(INSTALL) -m 755 -d $(PREFIX)
@@ -87,7 +90,7 @@ deinstall:
 	fi
 
 version:
-	sh version.sh $(VERSION);
+	/bin/sh ./version.sh $(VERSION)
 
 .c.o:
 	${CC} ${CPPFLAGS} ${CFLAGS} -c $<
@@ -97,9 +100,9 @@ depend:
 	${MKDEP} ${CPPFLAGS} ${BASE_SRCS} > .depend
 
 clean:
-	${RM} -f *.o *.exe *~ shrike.core core shrike
+	${RM} -f *.o *.exe *~ version.c shrike.core core shrike
 
 distclean: clean
-	${RM} -f Makefile
+	${RM} -f Makefile version.c.last
 
 include .depend

@@ -22,20 +22,20 @@ void db_save(void *arg)
   /* back them up first */
   if ((rename("etc/shrike.db", "etc/shrike.db.save")) < 0)
   {
-    slog(0, LG_WARN, "db_save(): cannot backup shrike.db");
+    slog(LG_ERROR, "db_save(): cannot backup shrike.db");
     return;
   }
 
   if (!(f = fopen("etc/shrike.db", "w")))
   {
-    slog(0, LG_WARN, "db_save(): cannot write to shrike.db");
+    slog(LG_ERROR, "db_save(): cannot write to shrike.db");
     return;
   }
 
   /* write the database version */
   fprintf(f, "DBV 1\n");
 
-  slog(0, LG_DEBUG, "db_save(): saving myusers");
+  slog(LG_DEBUG, "db_save(): saving myusers");
 
   for (i = 0; i < HASHSIZE; i++)
   {
@@ -76,7 +76,7 @@ void db_save(void *arg)
     }
   }
 
-  slog(0, LG_DEBUG, "db_save(): saving mychans");
+  slog(LG_DEBUG, "db_save(): saving mychans");
 
   for (i = 0; i < HASHSIZE; i++)
   {
@@ -119,7 +119,7 @@ void db_save(void *arg)
     }
   }
 
-  slog(0, LG_DEBUG, "db_save(): saving chanacs");
+  slog(LG_DEBUG, "db_save(): saving chanacs");
 
   for (i = 0; i < HASHSIZE; i++)
   {
@@ -161,14 +161,14 @@ void db_load(void)
 
   if (!f)
   {
-    slog(0, LG_WARN, "db_load(): can't open shrike.db for reading");
+    slog(LG_ERROR, "db_load(): can't open shrike.db for reading");
 
     /* restore the backup */
     if ((rename("etc/shrike.db.save", "etc/shrike.db")) < 0)
-      slog(0, LG_WARN, "db_load(): unable to restore backup");
+      slog(LG_ERROR, "db_load(): unable to restore backup");
     else
     {
-      slog(0, LG_NOTICE, "db_load(): restored from backup");
+      slog(LG_ERROR, "db_load(): restored from backup");
       db_load();
     }
 
@@ -194,7 +194,7 @@ void db_load(void)
       i = atoi(strtok(NULL, " "));
       if (i > 1)
       {
-        slog(0, LG_INFO,
+        slog(LG_INFO,
              "db_load(): database version is %d; i only understand "
              "1 or below", i);
         exit(EXIT_FAILURE);
@@ -231,7 +231,7 @@ void db_load(void)
         if ((s = strtok(NULL, " ")))
           mu->key = atoi(s);
 
-        slog(0, LG_DEBUG, "db_load(): myuser: %s -> %s", mu->name, mu->email);
+        slog(LG_DEBUG, "db_load(): myuser: %s -> %s", mu->name, mu->email);
       }
     }
 
@@ -264,7 +264,7 @@ void db_load(void)
         if ((s = strtok(NULL, " ")))
           mc->mlock_key = sstrdup(s);
 
-        slog(0, LG_DEBUG, "db_load(): mychan: %s -> %s", mc->name,
+        slog(LG_DEBUG, "db_load(): mychan: %s -> %s", mc->name,
              mc->founder->name);
       }
     }
@@ -293,7 +293,7 @@ void db_load(void)
         if (ca->level & CA_SUCCESSOR)
           ca->mychan->successor = ca->myuser;
 
-        slog(0, LG_DEBUG, "db_load(): chanacs: %s -> %s", mc->name,
+        slog(LG_DEBUG, "db_load(): chanacs: %s -> %s", mc->name,
              (mu) ? mu->name : causer);
       }
     }
@@ -303,15 +303,15 @@ void db_load(void)
     {
       i = atoi(strtok(NULL, " "));
       if (i != muin)
-        slog(0, LG_WARN, "db_load(): got %d myusers; expected %d", muin, i);
+        slog(LG_ERROR, "db_load(): got %d myusers; expected %d", muin, i);
 
       i = atoi(strtok(NULL, " "));
       if (i != mcin)
-        slog(0, LG_WARN, "db_load(): got %d mychans; expected %d", mcin, i);
+        slog(LG_ERROR, "db_load(): got %d mychans; expected %d", mcin, i);
 
       i = atoi(strtok(NULL, " "));
       if (i != cain)
-        slog(0, LG_WARN, "db_load(): got %d chanacs; expected %d", cain, i);
+        slog(LG_ERROR, "db_load(): got %d chanacs; expected %d", cain, i);
     }
   }
 
@@ -326,7 +326,7 @@ void db_load(void)
 
       if (sra->myuser)
       {
-        slog(0, LG_DEBUG, "db_load(): updating %s to SRA", sra->name);
+        slog(LG_DEBUG, "db_load(): updating %s to SRA", sra->name);
         sra->myuser->sra = sra;
       }
     }

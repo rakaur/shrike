@@ -8,7 +8,6 @@
  */
 
 #include "../inc/shrike.h"
-#include "../inc/version.h"
 
 extern char **environ;
 char *config_file;
@@ -32,7 +31,7 @@ printf(
 "Shrike IRC Services (shrike-%s.%s)\n\n"
 
 "Copyright (c) 2003-2004 E. Will et al.\n"
-"Rights to this code are documented in doc/LICENSE.\n", version, build
+"Rights to this code are documented in doc/LICENSE.\n", version, generation
 );
 }
 /* *INDENT-ON* */
@@ -43,7 +42,7 @@ static void sighandler(int signum)
   /* rehash */
   if (signum == SIGHUP)
   {
-    slog(0, LG_NOTICE, "sighandler(): got SIGHUP, rehashing %s", config_file);
+    slog(LG_INFO, "sighandler(): got SIGHUP, rehashing %s", config_file);
 
     wallops("Got SIGHUP; reloading \2%s\2.", config_file);
 
@@ -68,14 +67,14 @@ static void sighandler(int signum)
   {
     wallops("Exiting on signal %d.", signum);
     sts(":%s QUIT :caught interrupt", svs.nick);
-    slog(0, LG_INFO, "sighandler(): caught interrupt; exiting...");
+    slog(LG_INFO, "sighandler(): caught interrupt; exiting...");
     runflags |= RF_SHUTDOWN;
   }
 
   else if (signum == SIGTERM)
   {
     wallops("Exiting on signal %d.", signum);
-    slog(0, LG_INFO, "sighandler(): got SIGTERM; exiting...");
+    slog(LG_INFO, "sighandler(): got SIGTERM; exiting...");
     runflags |= RF_SHUTDOWN;
   }
 
@@ -83,7 +82,7 @@ static void sighandler(int signum)
   {
     wallops("Panic! Out of memory.");
     sts(":%s QUIT :out of memory!", svs.nick);
-    slog(0, LG_INFO, "sighandler(): out of memory; exiting");
+    slog(LG_INFO, "sighandler(): out of memory; exiting");
     runflags |= RF_SHUTDOWN;
   }
 
@@ -100,7 +99,7 @@ static void sighandler(int signum)
     wallops("Restarting in \2%d\2 seconds by request of \2%s\2.",
             me.restarttime, "system console");
 
-    slog(0, LG_INFO, "sighandler(): restarting...");
+    slog(LG_INFO, "sighandler(): restarting...");
     runflags |= RF_RESTART;
   }
 }
@@ -198,12 +197,12 @@ int main(int argc, char *argv[])
   /* since me.loglevel isn't there until after the
    * config routines run, we set the default here
    */
-  me.loglevel |= LG_NOTICE;
+  me.loglevel |= LG_ERROR;
 
   printf("shrike: version shrike-%s\n", version);
 
   if (!(runflags & RF_STARTING))
-    slog(0, LG_INFO, "main(): restarted; not sending anything to stdout");
+    slog(LG_INFO, "main(): restarted; not sending anything to stdout");
 
   /* check for pid file */
   if ((pid_file = fopen("var/shrike.pid", "r")))
@@ -285,7 +284,7 @@ int main(int argc, char *argv[])
   event_add("expire_check", expire_check, NULL, 3600);
 
   /* connect to our uplink */
-  slog(0, LG_INFO, "main(): connecting to `%s' on %d as `%s'",
+  slog(LG_INFO, "main(): connecting to `%s' on %d as `%s'",
        me.uplink, me.port, me.name);
 
   servsock = conn(me.uplink, me.port);
@@ -303,7 +302,7 @@ int main(int argc, char *argv[])
     sts(":%s QUIT :restarting", svs.nick);
     close(servsock);
 
-    slog(0, LG_INFO, "main(): restarting in %d seconds", me.restarttime);
+    slog(LG_INFO, "main(): restarting in %d seconds", me.restarttime);
     restart_file = fopen("var/shrike.db", "w");
     fclose(restart_file);
     remove("var/shrike.pid");
@@ -318,7 +317,7 @@ int main(int argc, char *argv[])
   sts(":%s QUIT :shutting down", svs.nick);
   close(servsock);
 
-  slog(0, LG_INFO, "main(): shutting down: io_loop() exited");
+  slog(LG_INFO, "main(): shutting down: io_loop() exited");
 
   fclose(log_file);
   remove("var/shrike.pid");
