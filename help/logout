@@ -5,7 +5,12 @@ can log into another username or whatever else
 melts your butter. Note that you are automatically
 logged out when you sign off.
 
-Syntax: LOGOUT
+If the last two parameters are present it will
+logout whomever is currently logged in as the
+supplied username.
 
-Example:
+Syntax: LOGOUT [username] [password]
+
+Examples:
     /msg S LOGOUT
+    /msg S LOGOUT foo bar

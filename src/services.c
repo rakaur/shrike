@@ -390,7 +390,7 @@ static void do_login(char *origin)
   snoop("LOGIN:AF: \2%s\2 to \2%s\2", u->nick, mu->name);
 
   notice(origin,
-         "Authentication failed: invalid password for \2%s\2.", mu->name);
+         "Authentication failed. Invalid password for \2%s\2.", mu->name);
 
   /* record the failed attempts */
   if (mu->lastfail)
@@ -415,14 +415,40 @@ static void do_login(char *origin)
   }
 }
 
-/* LOGOUT */
+/* LOGOUT [username] [password] */
 static void do_logout(char *origin)
 {
   user_t *u = user_find(origin);
-  if (!u->myuser || !u->myuser->identified)
+  char *user = strtok(NULL, " ");
+  char *pass = strtok(NULL, " ");
+
+  if ((!u->myuser) && (!user || !pass))
   {
     notice(origin, "You are not logged in.");
     return;
+  }
+
+  if (user && pass)
+  {
+    myuser_t *mu = myuser_find(user);
+
+    if (!mu)
+    {
+      notice(origin, "No such username: \2%s\2.", user);
+      return;
+    }
+
+    if ((!strcmp(mu->pass, pass)) && (mu->user))
+    {
+      u = mu->user;
+      notice(u->nick, "You were logged out by \2%s\2.", origin);
+    }
+    else
+    {
+      notice(origin, "Authentication failed. Invalid password for \2%s\2.",
+             mu->name);
+      return;
+    }
   }
 
   if (is_sra(u->myuser))
@@ -430,11 +456,14 @@ static void do_logout(char *origin)
 
   snoop("LOGOUT: \2%s\2 from \2%s\2", u->nick, u->myuser->name);
 
+  if (strcasecmp(origin, u->nick))
+    notice(origin, "\2%s\2 has been logged out.", u->nick);
+  else
+    notice(origin, "You have been logged out.");
+
   u->myuser->user = NULL;
   u->myuser->identified = FALSE;
   u->myuser = NULL;
-
-  notice(origin, "You have been logged out.");
 }
 
 /* SOP|AOP|VOP <#channel> ADD|DEL|LIST <username> */
@@ -1244,7 +1273,7 @@ static void do_drop(char *origin)
     if (strcmp(pass, mc->pass))
     {
       notice(origin,
-             "Autorization failed. Invalid password for \2%s\2.", mc->name);
+             "Authentication failed. Invalid password for \2%s\2.", mc->name);
       return;
     }
 

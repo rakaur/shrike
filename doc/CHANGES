@@ -27,6 +27,7 @@ shrike-1.0 - Matt Lanigan <rintaun@projectxero.net>
   + Added doc/COMMANDS.
 
 shrike-1.0 - E. Will <rakaur@malkier.net>
+  + You can now use LOGOUT on specific usernames.
   - Removed admin tracking, as it is useless.
   ~ Fixed verbose() to actually check for the VERBOSE flag...
   * Released 1.0b1.
