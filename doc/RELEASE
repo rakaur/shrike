@@ -1,8 +1,13 @@
 $$Id$
 
-shrike-1.0b1 release notes
+shrike-1.0b3 release notes
 
-- db format has changed (and probably will again); old dbs will not work
-- channel registration and management has been completed in this release
-- username registration and mangement has been completed in this release
-- most core functions have been completed in this release
+- handles JOIN 0 properly now.
+- several cores (mostly on GLOBAL) have been addressed.
+- SET:FOUNDER, channel successors, and hostmasks in access lists have been added.
+- fixed the wacky strtime() formatting problem in INFO.
+- added featureful global noticer.
+- added flood protection.
+- replaced event system with a good one!
+- new Makefile system.
+- should run fine on MacOS X.
