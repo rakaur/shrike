@@ -161,6 +161,8 @@ E list_t chanlist[HASHSIZE];
 E list_t mulist[HASHSIZE];
 E list_t mclist[HASHSIZE];
 
+E list_t sendq;
+
 E node_t *node_create(void);
 E void node_free(node_t *n);
 E void node_add(void *data, node_t *n, list_t *l);
@@ -211,6 +213,9 @@ E void chanacs_delete(mychan_t *mychan, myuser_t *myuser, uint8_t level);
 E void chanacs_delete_host(mychan_t *mychan, char *host, uint8_t level);
 E chanacs_t *chanacs_find(mychan_t *mychan, myuser_t *myuser, uint8_t level);
 E chanacs_t *chanacs_find_host(mychan_t *mychan, char *host, uint8_t level);
+
+E void sendq_add(char *buf, int len, int pos);
+E int sendq_flush(void);
 
 /* set.c */
 E void do_set(char *origin);

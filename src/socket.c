@@ -62,6 +62,7 @@ int8_t sts(char *fmt, ...)
 
   va_start(ap, fmt);
   vsnprintf(buf, BUFSIZE, fmt, ap);
+  va_end(ap);
 
   if (servsock == -1)
   {
@@ -76,23 +77,56 @@ int8_t sts(char *fmt, ...)
 
   cnt.bout += len;
 
-  /* write it */
-  if ((n = write(servsock, buf, len)) == -1)
+  if (sendq.count != 0)
   {
-    if (errno != EAGAIN)
+    /* flush the sendq first */
+    n = sendq_flush();
+
+    if (n == -1)
     {
-      slog(LG_ERROR, "sts(): write error to server");
-      close(servsock);
-      servsock = -1;
-      me.connected = FALSE;
-      return 1;
+      if (errno != EAGAIN)
+      {
+        slog(LG_ERROR, "sts(): write error to server");
+        close(servsock);
+        servsock = -1;
+        me.connected = FALSE;
+        return 1;
+      }
+      else
+      {
+        sendq_add(buf, len, 0);
+        return 0;
+      }
+    }
+    else if (n == 0)
+    {
+      sendq_add(buf, len, 0);
+      return 0;
     }
   }
-
-  if (n != len)
-    slog(LG_ERROR, "sts(): incomplete write: total: %d; written: %d", len, n);
-
-  va_end(ap);
+  else
+  {
+    /* write it */
+    if ((n = write(servsock, buf, len)) == -1)
+    {
+      if (errno != EAGAIN)
+      {
+        slog(LG_ERROR, "sts(): write error to server");
+        close(servsock);
+        servsock = -1;
+        me.connected = FALSE;
+        return 1;
+      }
+      else
+        sendq_add(buf, len, 0);
+    }
+    else if (n != len)
+    {
+      slog(LG_ERROR, "sts(): incomplete write: total: %d; written: %d", len,
+           n);
+      sendq_add(buf, len, n);
+    }
+  }
 
   return 0;
 }
@@ -254,7 +288,7 @@ void reconn(void *arg)
 {
   uint32_t i;
   server_t *s;
-  node_t *n;
+  node_t *n, *tn;
 
   if (me.connected)
     return;
@@ -274,7 +308,7 @@ void reconn(void *arg)
      */
     for (i = 0; i < HASHSIZE; i++)
     {
-      LIST_FOREACH(n, servlist[i].head)
+      LIST_FOREACH_SAFE(n, tn, servlist[i].head)
       {
         s = (server_t *)n->data;
         server_delete(s->name);
@@ -328,7 +362,7 @@ void io_loop(void)
     else
       to.tv_sec = 1;
 
-    if ((!me.connected) && (servsock != -1))
+    if (((!me.connected) && (servsock != -1)) || (sendq.count != 0))
       FD_SET(servsock, &writefds);
     else if (servsock != -1)
       FD_SET(servsock, &readfds);
@@ -344,10 +378,18 @@ void io_loop(void)
     {
       if (FD_ISSET(servsock, &writefds))
       {
-        if (irc_estab() == 0)
-          continue;
+        if (!me.connected)
+        {
+          if (irc_estab() == 0)
+            continue;
 
-        eadded = FALSE;
+          eadded = FALSE;
+        }
+        else
+        {
+          /* we're only here if the sendq needs to be sent */
+          sendq_flush();
+        }
       }
 
       if (!irc_read(servsock, buf))

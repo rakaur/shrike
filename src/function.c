@@ -220,7 +220,7 @@ void slog(uint32_t level, const char *fmt, ...)
     fflush(log_file);
   }
 
-  if ((runflags & RF_LIVE))
+  if ((runflags & (RF_LIVE | RF_STARTING)))
   {
     vfprintf(stderr, fmt, args);
 

@@ -913,6 +913,13 @@ boolean_t conf_check(void)
     return FALSE;
   }
 
+  if ((strchr(svs.user, ' ')) || (strlen(svs.user) > 10))
+  {
+    slog(LG_INFO, "conf_check(): invalid `clientinfo::user' in %s",
+         config_file);
+    return FALSE;
+  }
+
   if (svs.flood_msgs && !svs.flood_time)
     svs.flood_time = 10;
 

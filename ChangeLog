@@ -1,4 +1,15 @@
 ------------------------------------------------------------------------
+r59 | rakaur | 2004-04-08 09:17:24 -0500 (Thu, 08 Apr 2004) | 3 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/inc/extern.h
+   M /trunk/src/function.c
+   M /trunk/src/services.c
+
+Fixed a problem where I swapped hops and ts in introduce_nick() (thanks Sarisa).
+Changed timediff() to print the same format, not what it feels like.
+
+------------------------------------------------------------------------
 r58 | rakaur | 2004-04-06 16:40:40 -0500 (Tue, 06 Apr 2004) | 2 lines
 Changed paths:
    M /trunk/ChangeLog

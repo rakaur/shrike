@@ -19,6 +19,8 @@ list_t chanlist[HASHSIZE];
 list_t mulist[HASHSIZE];
 list_t mclist[HASHSIZE];
 
+list_t sendq;
+
 /*************
  * L I S T S *
  *************/
@@ -1251,4 +1253,57 @@ chanacs_t *chanacs_find_host(mychan_t *mychan, char *host, uint8_t level)
   }
 
   return NULL;
+}
+
+/*********
+ * SENDQ *
+ *********/
+
+void sendq_add(char *buf, int len, int pos)
+{
+  node_t *n = node_create();
+  struct sendq *sq = smalloc(sizeof(struct sendq));
+
+  slog(LG_DEBUG, "sendq_add(): triggered");
+
+  sq->buf = sstrdup(buf);
+  sq->len = len - pos;
+  sq->pos = pos;
+  node_add(sq, n, &sendq);
+}
+
+int sendq_flush(void)
+{
+  node_t *n, *tn;
+  struct sendq *sq;
+  int l;
+
+  LIST_FOREACH_SAFE(n, tn, sendq.head)
+  {
+    sq = (struct sendq *)n->data;
+
+    if ((l = write(servsock, sq->buf + sq->pos, sq->len)) == -1)
+    {
+      if (errno != EAGAIN)
+        return -1;
+
+      return 0;
+    }
+
+    if (l == sq->len)
+    {
+      node_del(n, &sendq);
+      free(sq->buf);
+      free(sq);
+      node_free(n);
+    }
+    else
+    {
+      sq->pos += l;
+      sq->len -= l;
+      return 0;
+    }
+  }
+
+  return 1;
 }

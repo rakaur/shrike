@@ -271,6 +271,13 @@ struct global_ {
   char *text;
 };
 
+/* sendq struct */
+struct sendq {
+  char *buf;
+  int len;
+  int pos;
+};
+
 /* servers struct */
 struct server_
 {
