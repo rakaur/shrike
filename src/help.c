@@ -20,7 +20,7 @@ void do_help(char *origin)
 
   if (!command)
   {
-    notice(origin, "The following core commands are avaliable.");
+    notice(origin, "The following core commands are available.");
     notice(origin, " ");
     notice(origin, "\2HELP\2          Displays help information.");
     notice(origin, "\2REGISTER\2      Registers a username or channel.");
@@ -32,7 +32,7 @@ void do_help(char *origin)
     notice(origin, "\2STATUS\2        Displays your status in services.");
     notice(origin, "\2INFO\2          Displays information on registrations.");
     notice(origin, " ");
-    notice(origin, "The following additional commands are avaliable.");
+    notice(origin, "The following additional commands are available.");
     notice(origin, "\2SOP\2           Manipulates a channel's SOP list.");
     notice(origin, "\2AOP\2           Manipulates a channel's AOP list.");
     notice(origin, "\2VOP\2           Manipulates a channel's VOP list.");
@@ -43,7 +43,7 @@ void do_help(char *origin)
 
     if (is_sra(u->myuser))
     {
-      notice(origin, "The following SRA commands are avaliable.");
+      notice(origin, "The following SRA commands are available.");
       notice(origin, "\2UPDATE\2        Flush the database to disk.");
       notice(origin, "\2REHASH\2        Reload the configuration file.");
       notice(origin, "\2RAW\2           Send data to the uplink.");
@@ -64,7 +64,7 @@ void do_help(char *origin)
     notice(origin, "for usernames and channels that change the");
     notice(origin, "way certain operations are performed on them.");
     notice(origin, " ");
-    notice(origin, "The following commands are avaliable.");
+    notice(origin, "The following commands are available.");
     notice(origin, " ");
     notice(origin, "EMAIL             Changes the email address associated "
            "with a username.");
@@ -83,7 +83,7 @@ void do_help(char *origin)
 
     if (is_sra(u->myuser))
     {
-      notice(origin, "The following SRA commands are avaliable.");
+      notice(origin, "The following SRA commands are available.");
       notice(origin, "HOLD              Prevents services from expiring a "
              "username or channel.");
       notice(origin, " ");
@@ -103,7 +103,7 @@ void do_help(char *origin)
 
       if (!help_file)
       {
-        notice(origin, "No help avaliable for \2%s\2.", command);
+        notice(origin, "No help available for \2%s\2.", command);
         return;
       }
 
@@ -120,7 +120,7 @@ void do_help(char *origin)
       fclose(help_file);
     }
     else
-      notice(origin, "No help avaliable for \2%s\2.", command);
+      notice(origin, "No help available for \2%s\2.", command);
   }
 }
 
@@ -193,6 +193,6 @@ struct help_command_ *help_cmd_find(char *origin, char *command)
   }
 
   /* it's a command we don't understand */
-  notice(origin, "No help avaliable for \2%s\2.", command);
+  notice(origin, "No help available for \2%s\2.", command);
   return NULL;
 }

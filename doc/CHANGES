@@ -29,6 +29,7 @@ shrike-1.0 - Matt Lanigan <rintaun@projectxero.net>
   + Added doc/COMMANDS.
 
 shrike-1.0 - E. Will <rakaur@malkier.net>
+  ~ Fixed multiple typos.
   ~ Rewrote socket code. No longer supports multiple connections. No longer
     reads one char at a time but 512b blocks instead. This lowers CPU usage
     by about five times since it uses one system call for a line instead of 512.
