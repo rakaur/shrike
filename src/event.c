@@ -5,7 +5,7 @@
  * This file contains routines that interface the event system.
  * This code is based on ircd-ratbox's event.c with modifications.
  *
- * $$Id$
+ * $Id$
  */
 
 #include "../inc/shrike.h"

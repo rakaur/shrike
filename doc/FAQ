@@ -4,7 +4,7 @@
  *
  * Frequently asked questions.
  *
- * $$Id$
+ * $Id$
  */
 
 Shrike -- a set of services for TSora networks
@@ -146,7 +146,7 @@ similiar: as of this writting, Shrike only offically supports version 5 of the
 TS protocol. The latest version of TS is version 6, which changes the
 fundamentals of user and server tracking, and has not been implemented in
 Shrike. TS is short for TSora, which is short for timestamp orabidoo.
-orabidoo is the nickname of the person who devised the first version of TS.
+orabidoo is the nickname of the person who first implemented TS on EFnet.
 TS is a system of timestampping nicknames and channels so that disputes between
 them when servers link are easily resolved based on "who came first." TS6
 changes many things in the server-to-server protocol and was heavily

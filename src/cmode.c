@@ -4,7 +4,7 @@
  *
  * This file contains channel mode tracking routines.
  *
- * $$Id$
+ * $Id$
  */
 
 #include "../inc/shrike.h"

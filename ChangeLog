@@ -1,4 +1,19 @@
 ------------------------------------------------------------------------
+r60 | rakaur | 2004-04-08 17:02:07 -0500 (Thu, 08 Apr 2004) | 4 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/inc/extern.h
+   M /trunk/inc/shrike.h
+   M /trunk/src/conf.c
+   M /trunk/src/function.c
+   M /trunk/src/node.c
+   M /trunk/src/socket.c
+
+Fixed a core in reconn() (thanks wassup).
+Added a check for valid clientinfo::user.
+Added a sendq (thanks androsyn).
+
+------------------------------------------------------------------------
 r59 | rakaur | 2004-04-08 09:17:24 -0500 (Thu, 08 Apr 2004) | 3 lines
 Changed paths:
    M /trunk/ChangeLog

@@ -6,7 +6,7 @@
 # This file generates version.c.
 # Stolen from ircd-ratbox.
 #
-# $$Id$
+# $Id$
 #
 
 spitshell=cat

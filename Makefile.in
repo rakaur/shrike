@@ -3,7 +3,7 @@
 #
 # This file contains build instructions.
 #
-# $$Id$
+# $Id$
 #
 
 CC		= @CC@

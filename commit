@@ -5,7 +5,7 @@
 #
 # This file is a script for svn commit.
 #
-# $$Id$
+# $Id$
 #
 
 sh indent

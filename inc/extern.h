@@ -4,7 +4,7 @@
  *
  * This header file contains all of the extern's needed.
  *
- * $$Id$
+ * $Id$
  */
 
 #ifndef EXTERN_H

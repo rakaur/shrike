@@ -4,7 +4,7 @@
  *
  * This file contains the main() routine.
  *
- * $$Id$
+ * $Id$
  */
 
 #include "../inc/shrike.h"
@@ -310,7 +310,7 @@ int main(int argc, char *argv[])
     close(servsock);
 
     slog(LG_INFO, "main(): restarting in %d seconds", me.restarttime);
-    restart_file = fopen("var/shrike.db", "w");
+    restart_file = fopen("var/shrike.restart", "w");
     fclose(restart_file);
     remove("var/shrike.pid");
 

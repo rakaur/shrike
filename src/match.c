@@ -5,7 +5,7 @@
  * This file contains customized casemapping functions.
  * This code was mostly lifted from ircd 2.10.
  *
- * $$Id$
+ * $Id$
  */
 
 #include "../inc/shrike.h"

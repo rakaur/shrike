@@ -4,7 +4,7 @@
  *
  * This file contains database routines.
  *
- * $$Id$
+ * $Id$
  */
 
 #include "../inc/shrike.h"

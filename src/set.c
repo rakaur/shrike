@@ -4,7 +4,7 @@
  *
  * This file contains routines to handle the SET command.
  *
- * $$Id$
+ * $Id$
  */
 
 #include "../inc/shrike.h"

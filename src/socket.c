@@ -5,7 +5,7 @@
  * This file contains socket routines.
  * Based off of W. Campbell's code.
  *
- * $$Id$
+ * $Id$
  */
 
 #include "../inc/shrike.h"
@@ -373,6 +373,9 @@ void io_loop(void)
       eadded = TRUE;
     }
 
+    if ((servsock != -1) && (eadded))
+      eadded = FALSE;
+
     /* select() time */
     if ((sr = select(me.maxfd + 1, &readfds, &writefds, &nullfds, &to)) > 0)
     {
@@ -382,8 +385,6 @@ void io_loop(void)
         {
           if (irc_estab() == 0)
             continue;
-
-          eadded = FALSE;
         }
         else
         {

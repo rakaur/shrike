@@ -4,7 +4,7 @@
  *
  * This is the main header file, usually the only one #include'd
  *
- * $$Id$
+ * $Id$
  */
 
 #ifndef SHRIKE_H

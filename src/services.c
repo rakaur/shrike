@@ -4,7 +4,7 @@
  *
  * This file contains client interaction routines.
  *
- * $$Id$
+ * $Id$
  */
 
 #include "../inc/shrike.h"
@@ -213,7 +213,7 @@ void expire_check(void *arg)
                   }
                 }
 
-                if (tcnt >= me.maxchans)
+                if ((tcnt >= me.maxchans) && (!is_sra(mc->successor)))
                   continue;
 
                 snoop("SUCCESSION: \2%s\2 -> \2%s\2 from \2%s\2",
@@ -1705,7 +1705,7 @@ static void do_register(char *origin)
           tcnt++;
       }
     }
-    if (tcnt >= me.maxchans)
+    if ((tcnt >= me.maxchans) && (!is_sra(u->myuser)))
     {
       notice(origin, "You have too many channels registered.");
       return;

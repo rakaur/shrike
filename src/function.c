@@ -4,7 +4,7 @@
  *
  * This file contains misc routines.
  *
- * $$Id$
+ * $Id$
  */
 
 #include "../inc/shrike.h"

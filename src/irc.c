@@ -4,7 +4,7 @@
  *
  * This file contains IRC interaction routines.
  *
- * $$Id$
+ * $Id$
  */
 
 #include "../inc/shrike.h"

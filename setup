@@ -5,7 +5,7 @@
 #
 # This file is a simple setup script.
 #
-# $$Id$
+# $Id$
 
 PREFIX="$HOME/shrike"
 

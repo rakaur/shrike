@@ -4,7 +4,7 @@
  *
  * This file contains the routines that deal with the configuration.
  *
- * $$Id$
+ * $Id$
  */
 
 #include "../inc/shrike.h"
