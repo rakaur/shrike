@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright (c) 2003-2004 E. Will et al.
  * Rights to this code are documented in doc/LICENSE.
  *
@@ -2034,7 +2034,7 @@ static void do_global(char *origin)
 {
   struct global_ *global;
   static list_t globlist;
-  node_t *n, *n2;
+  node_t *n, *n2, *tn;
   tld_t *tld;
   char *params = strtok(NULL, "");
 
@@ -2047,13 +2047,18 @@ static void do_global(char *origin)
 
   if (!strcasecmp("CLEAR", params))
   {
+    if (!globlist.count)
+    {
+      notice(origin, "No message to clear.");
+      return;
+    }
+
     /* destroy the list we made */
-    LIST_FOREACH(n, globlist.head)
+    LIST_FOREACH_SAFE(n, tn, globlist.head)
     {
       global = (struct global_ *)n->data;
-      n2 = node_find(global, &globlist);
-      node_del(n2, &globlist);
-      node_free(n2);
+      node_del(n, &globlist);
+      node_free(n);
       free(global->text);
       free(global);
     }
@@ -2088,12 +2093,11 @@ static void do_global(char *origin)
     }
 
     /* destroy the list we made */
-    LIST_FOREACH(n, globlist.head)
+    LIST_FOREACH_SAFE(n, tn, globlist.head)
     {
       global = (struct global_ *)n->data;
-      n2 = node_find(global, &globlist);
-      node_del(n2, &globlist);
-      node_free(n2);
+      node_del(n, &globlist);
+      node_free(n);
       free(global->text);
       free(global);
     }

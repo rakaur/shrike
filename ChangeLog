@@ -1,4 +1,12 @@
 ------------------------------------------------------------------------
+r42 | rakaur | 2004-03-26 16:43:36 -0600 (Fri, 26 Mar 2004) | 2 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/src/node.c
+
+Fixed a core with GLOBAL and potential others (thanks syner).
+
+------------------------------------------------------------------------
 r41 | rakaur | 2004-03-21 13:16:06 -0600 (Sun, 21 Mar 2004) | 3 lines
 Changed paths:
    M /trunk/INSTALL

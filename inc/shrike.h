@@ -99,7 +99,7 @@ typedef void EVH(void *);
 #define LIST_FOREACH(n, head) for (n = (head); n; n = n->next)
 #define LIST_FOREACH_NEXT(n, head) for (n = (head); n->next; n = n->next)
 
-#define LIST_FOREACH_SAFE(tn, n, head) for (tn = (head), n = tn ? tn->next : NULL; tn != NULL; tn = n, n = tn ? tn->next : NULL)
+#define LIST_FOREACH_SAFE(n, tn, head) for (n = (head), tn = n ? n->next : NULL; n != NULL; n = tn, tn = n ? n->next : NULL)
 
 /* S T R U C T U R E S */
 struct me
