@@ -1,6 +1,7 @@
 $Id$
 
-shrike-1.0rc1 release notes
+shrike-1.0 release notes
 
-- fixed some minor problems
-- started rc testing
+- fixed all reported bugs
+- added RECOVER
+- turned over maintenance of 1.0 branch to sycobuny
