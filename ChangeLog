@@ -1,4 +1,14 @@
 ------------------------------------------------------------------------
+r63 | rakaur | 2004-04-11 16:32:16 -0500 (Sun, 11 Apr 2004) | 3 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/src/Makefile.in
+   M /trunk/src/node.c
+
+Audit LIST_FOREACH() for LIST_FOREACH_SAFE() in node.c to hopefully stop these crashes.
+Fix a broken make install because of shrikechk instead of shrike.chk.
+
+------------------------------------------------------------------------
 r62 | rakaur | 2004-04-10 16:27:03 -0500 (Sat, 10 Apr 2004) | 5 lines
 Changed paths:
    M /trunk/ChangeLog

@@ -58,7 +58,6 @@ void services_init(void)
   user_t *u;
 
   u = introduce_nick(svs.nick, svs.user, svs.host, svs.real, "io");
-
   svs.svs = u;
 }
 

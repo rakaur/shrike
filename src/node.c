@@ -765,7 +765,7 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
     /* could be an OPME or other desyncher... */
     tcu->modes |= flags;
 
-    return NULL;
+    return tcu;
   }
 
   slog(LG_DEBUG, "chanuser_add(): %s -> %s", chan->name, u->nick);
@@ -1067,7 +1067,10 @@ void mychan_delete(char *name)
   {
     ca = (chanacs_t *)n->data;
 
-    chanacs_delete(ca->mychan, ca->myuser, ca->level);
+    if (ca->host)
+      chanacs_delete_host(ca->mychan, ca->host, ca->level);
+    else
+      chanacs_delete(ca->mychan, ca->myuser, ca->level);
   }
 
   n = node_find(mc, &mclist[mc->hash]);
