@@ -1,4 +1,19 @@
 ------------------------------------------------------------------------
+r48 | rakaur | 2004-03-28 08:53:39 -0600 (Sun, 28 Mar 2004) | 4 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/dist/shrike.conf
+   M /trunk/doc/RELEASE
+   M /trunk/doc/TODO
+   M /trunk/inc/shrike.h
+   M /trunk/src/conf.c
+   M /trunk/src/services.c
+
+Can now specify default flags via `uflags' and `cflags' in config (suggested by Sarisa).
+Now checks a channel's userlist for updating after an access entry is added.
+Fixed a typo (thanks Sarisa).
+
+------------------------------------------------------------------------
 r44 | rakaur | 2004-03-27 17:16:05 -0600 (Sat, 27 Mar 2004) | 4 lines
 Changed paths:
    M /trunk/ChangeLog

@@ -11,8 +11,8 @@ Welcome to Shrike.  This document is indended to familiarize new users with
 Shrike.  For installation help, see the INSTALL file.
 
 If you have any questions about this program not covered in any of the
-documentation, or need help with the general operation of this program, ask
-in #shrike on irc.malkier.net.
+documentation, or need help with the general operation of this program, check
+http://shrike.malkier.net/forums/.
 
 Shrike is a program designed for use on an IRC network.  It provides the
 network with useful commands and most importantly IRC channel mangement.
@@ -85,11 +85,7 @@ You can contact us via any of these methods (preferred order):
 
   * Mailing list - shrike@lists.malkier.net (shrike-subscribe@lists.malkier.net)
 
-  * Tracker - http://sourceforge.net/tracker/?group_id=95176
-
-  * IRC   - irc://irc.malkier.net/shrike (#shrike on irc.malkier.net)
-    E. Will         - rakaur or emw
-    Stephen Belcher - sycobuny or HarpyDragon
+  * Forums - http://shrike.malkier.net/forums/
 
   * Email -
     E. Will        <rakaur@malkier.net>

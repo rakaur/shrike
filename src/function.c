@@ -682,6 +682,18 @@ boolean_t should_op(mychan_t *mychan, myuser_t *myuser)
 boolean_t should_op_host(mychan_t *mychan, char *host)
 {
   chanacs_t *ca;
+  char hostbuf[BUFSIZE];
+
+  hostbuf[0] = '\0';
+
+  strlcat(hostbuf, svs.nick, BUFSIZE);
+  strlcat(hostbuf, "!", BUFSIZE);
+  strlcat(hostbuf, svs.user, BUFSIZE);
+  strlcat(hostbuf, "@", BUFSIZE);
+  strlcat(hostbuf, svs.host, BUFSIZE);
+
+  if (!match(host, hostbuf))
+    return FALSE;
 
   if ((ca = chanacs_find_host(mychan, host, CA_AOP)))
     return TRUE;
@@ -715,6 +727,18 @@ boolean_t should_voice(mychan_t *mychan, myuser_t *myuser)
 boolean_t should_voice_host(mychan_t *mychan, char *host)
 {
   chanacs_t *ca;
+  char hostbuf[BUFSIZE];
+
+  hostbuf[0] = '\0';
+
+  strlcat(hostbuf, svs.nick, BUFSIZE);
+  strlcat(hostbuf, "!", BUFSIZE);
+  strlcat(hostbuf, svs.user, BUFSIZE);
+  strlcat(hostbuf, "@", BUFSIZE);
+  strlcat(hostbuf, svs.host, BUFSIZE);
+
+  if (!match(host, hostbuf))
+    return FALSE;
 
   if ((ca = chanacs_find_host(mychan, host, CA_VOP)))
     return TRUE;

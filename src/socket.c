@@ -115,7 +115,7 @@ static void ping_uplink(void *arg)
 {
   uint32_t diff;
 
-  sts("PING %s", me.uplink);
+  sts("PING %s", me.actual);
 
   if (me.connected)
   {

@@ -580,12 +580,14 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
       /* see if we need to deop them */
       if ((mc = mychan_find(chan->name)))
       {
-        if ((MC_SECURE & mc->flags) && (!is_founder(mc, u->myuser)) &&
-            (!is_successor(mc, u->myuser)) &&
-            (!is_xop(mc, u->myuser, (CA_AOP | CA_SOP))))
+        if (MC_SECURE & mc->flags)
         {
-          cmode(svs.nick, mc->name, "-o", u->nick);
-          flags &= ~CMODE_OP;
+          if ((!u->myuser) || (!is_founder(mc, u->myuser) &&
+            !is_xop(mc, u->myuser, (CA_AOP | CA_SOP))))
+          {
+            cmode(svs.nick, mc->name, "-o", u->nick);
+            flags &= ~CMODE_OP;
+          }
         }
       }
 

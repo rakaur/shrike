@@ -403,6 +403,7 @@ static void copy_me(struct me *src, struct me *dst)
   dst->name = sstrdup(src->name);
   dst->desc = sstrdup(src->desc);
   dst->uplink = sstrdup(src->uplink);
+  dst->actual = sstrdup(src->actual);
   dst->port = src->port;
   dst->pass = sstrdup(src->pass);
   if (src->vhost)
@@ -447,6 +448,7 @@ static void free_cstructs(struct me *mesrc, struct svs *svssrc)
   free(mesrc->name);
   free(mesrc->desc);
   free(mesrc->uplink);
+  free(mesrc->actual);
   free(mesrc->pass);
   free(mesrc->vhost);
   free(mesrc->netname);

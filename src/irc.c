@@ -586,6 +586,9 @@ static void m_server(char *origin, uint8_t parc, char *parv[])
 {
   slog(LG_DEBUG, "m_server(): new server: %s", parv[0]);
   server_add(parv[0], atoi(parv[1]), parv[2]);
+
+  if (cnt.server == 2)
+    me.actual = sstrdup(parv[0]);
 }
 
 static void m_admin(char *origin, uint8_t parc, char *parv[])

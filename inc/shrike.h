@@ -107,6 +107,7 @@ struct me
   char *name;                   /* server's name on IRC               */
   char *desc;                   /* server's description               */
   char *uplink;                 /* the server we connect to           */
+  char *actual;                 /* the reported name of the uplink    */
   uint16_t port;                /* port we connect to our uplink on   */
   char *pass;                   /* password we use for linking        */
   char *vhost;                  /* IP we bind outgoing stuff to       */
