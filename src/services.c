@@ -86,6 +86,9 @@ void wallops(char *fmt, ...)
   va_list ap;
   char buf[BUFSIZE];
 
+  if (svs.silent)
+    return;
+
   va_start(ap, fmt);
   vsnprintf(buf, BUFSIZE, fmt, ap);
 

@@ -1,9 +1,5 @@
 $$Id$
 
-shrike-1.0-current release notes
+shrike-1.0b5 release notes
 
-- changed the config files. you'll have to completely redo your conf. bummer.
-- large bug with not deopping unauthorized people has been fixed.
-- added kline management
-- the current parser doesn't handle ipv6 hosts... shrike will not work with
-  ipv6 networks. sorry.
+- added `silent' option to config-clientinfo{} to prevent WALLOPS.

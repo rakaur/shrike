@@ -154,6 +154,7 @@ struct svs
   uint16_t flood_time;          /* time determining flood     */
   uint32_t kline_time;          /* default expire for klines  */
 
+  boolean_t silent;             /* stop sending WALLOPS?      */
   boolean_t join_chans;         /* join registered channels?  */
   boolean_t leave_chans;        /* leave channels when empty? */
 

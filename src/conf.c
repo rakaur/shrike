@@ -42,6 +42,7 @@ static int c_ci_user(CONFIGENTRY *);
 static int c_ci_host(CONFIGENTRY *);
 static int c_ci_real(CONFIGENTRY *);
 static int c_ci_chan(CONFIGENTRY *);
+static int c_ci_silent(CONFIGENTRY *);
 static int c_ci_join_chans(CONFIGENTRY *);
 static int c_ci_leave_chans(CONFIGENTRY *);
 static int c_ci_uflags(CONFIGENTRY *);
@@ -114,6 +115,7 @@ static struct ConfTable conf_ci_table[] = {
   { "HOST",        0, c_ci_host        },
   { "REAL",        0, c_ci_real        },
   { "CHAN",        1, c_ci_chan        },
+  { "SILENT",      1, c_ci_silent      },
   { "JOIN_CHANS",  1, c_ci_join_chans  },
   { "LEAVE_CHANS", 1, c_ci_leave_chans },
   { "UFLAGS",      1, c_ci_uflags      },
@@ -196,7 +198,7 @@ void conf_init(void)
   /* we don't reset loglevel because too much stuff uses it */
   svs.defuflags = svs.defcflags = 0x00000000;
 
-  svs.join_chans = svs.leave_chans = svs.raw = FALSE;
+  svs.silent = svs.join_chans = svs.leave_chans = svs.raw = FALSE;
 
   me.auth = AUTH_NONE;
 
@@ -513,6 +515,12 @@ static int c_ci_chan(CONFIGENTRY *ce)
   return 0;
 }
 
+static int c_ci_silent(CONFIGENTRY *ce)
+{
+  svs.silent = TRUE;
+  return 0;
+}
+
 static int c_ci_join_chans(CONFIGENTRY *ce)
 {
   svs.join_chans = TRUE;
@@ -650,6 +658,7 @@ static void copy_svs(struct svs *src, struct svs *dst)
   dst->nick = sstrdup(src->nick);
   if (src->chan)
     dst->chan = sstrdup(src->chan);
+  dst->silent = src->silent;
   dst->join_chans = src->join_chans;
   dst->leave_chans = src->leave_chans;
   dst->defuflags = src->defuflags;
