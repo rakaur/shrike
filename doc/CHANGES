@@ -15,6 +15,8 @@ Key:
   *  Release
 
 shrike-1.0 - Stephen Belcher <sycobuny@malkier.net>
+  ~ Fixed do_op/do_voice bug that did not ever change modes with NEVEROP set
+  ^ Updated TODO (added hostmasks for xOP lists and xOP:LIST)
   + Completed do_op() started by Matt
   ~ Fixed settings mirror for rehashing, logical/compiler errors
   ~ Changed all instances of join_channel() to join()

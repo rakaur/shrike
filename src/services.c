@@ -868,8 +868,9 @@ static void do_op(char *origin)
     notice(origin, "The \2SECURE\2 flag is set for \2%s\2.", mc->name);
     return;
   }
-
-  if ((MC_SECURE & mc->flags) && (!should_op(mc, u->myuser)))
+  else if ((MC_SECURE & mc->flags) && (!is_founder(mc, u->myuser)) &&
+           (!is_xop(mc, u->myuser, CA_SOP)) &&
+           (!is_xop(mc, u->myuser, CA_AOP)))
   {
     notice(origin, "\2%s\2 could not be opped on \2%s\2.", u->nick, mc->name);
     return;
@@ -890,6 +891,7 @@ static void do_op(char *origin)
 
   cmode(svs.nick, chan, "+o", u->nick);
   cu->modes |= CMODE_OP;
+  notice(origin, "\2%s\2 was opped on \2%s\2.", u->nick, mc->name);
 }
 
 static void do_deop(char *origin)
@@ -928,7 +930,7 @@ static void do_deop(char *origin)
     return;
   }
 
-  /* figure out who we're going to op */
+  /* figure out who we're going to devoice */
   if (nick)
   {
     if (!(u = user_find(nick)))
@@ -953,6 +955,7 @@ static void do_deop(char *origin)
 
   cmode(svs.nick, chan, "-o", u->nick);
   cu->modes &= ~CMODE_OP;
+  notice(origin, "\2%s\2 was deopped on \2%s\2.", u->nick, mc->name);
 }
 
 static void do_voice(char *origin)
@@ -991,7 +994,7 @@ static void do_voice(char *origin)
     return;
   }
 
-  /* figure out who we're going to op */
+  /* figure out who we're going to voice */
   if (nick)
   {
     if (!(u = user_find(nick)))
@@ -999,12 +1002,6 @@ static void do_voice(char *origin)
       notice(origin, "No such nickname: \2%s\2.", nick);
       return;
     }
-  }
-
-  if (!should_voice(mc, u->myuser))
-  {
-    notice(origin, "\2%s\2 could not be voiced on \2%s\2.", u->nick, mc->name);
-    return;
   }
 
   cu = chanuser_find(mc->chan, u);
@@ -1022,6 +1019,7 @@ static void do_voice(char *origin)
 
   cmode(svs.nick, chan, "+v", u->nick);
   cu->modes |= CMODE_VOICE;
+  notice(origin, "\2%s\2 was voiced on \2%s\2.", u->nick, mc->name);
 }
 
 static void do_devoice(char *origin)
@@ -1060,7 +1058,7 @@ static void do_devoice(char *origin)
     return;
   }
 
-  /* figure out who we're going to op */
+  /* figure out who we're going to devoice */
   if (nick)
   {
     if (!(u = user_find(nick)))
@@ -1085,6 +1083,7 @@ static void do_devoice(char *origin)
 
   cmode(svs.nick, chan, "-v", u->nick);
   cu->modes &= ~CMODE_VOICE;
+  notice(origin, "\2%s\2 was devoiced on \2%s\2.", u->nick, mc->name);
 }
 
 /* REGISTER <username|#channel> <password> [email] */
