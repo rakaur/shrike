@@ -1,4 +1,31 @@
 ------------------------------------------------------------------------
+r41 | rakaur | 2004-03-21 13:16:06 -0600 (Sun, 21 Mar 2004) | 3 lines
+Changed paths:
+   M /trunk/INSTALL
+   M /trunk/doc/AUTHORS
+   M /trunk/src/irc.c
+
+Fixed not rejoining svs.chan on KILL (thanks Rob_X)
+Compiles and runs fine on MacOS X.
+
+------------------------------------------------------------------------
+r40 | rakaur | 2004-03-16 15:40:26 -0600 (Tue, 16 Mar 2004) | 2 lines
+Changed paths:
+   M /trunk/ChangeLog
+   D /trunk/Makefile
+   A /trunk/Makefile.in
+   D /trunk/Makefile.inc.in
+   M /trunk/autoconf/configure.in
+   M /trunk/configure
+   M /trunk/doc/TODO
+   A /trunk/src/.depend
+   D /trunk/src/Makefile
+   A /trunk/src/Makefile.in
+   M /trunk/src/event.c
+
+Changed Makefiles to be decent... no longer hacked ones from Cygnus.
+
+------------------------------------------------------------------------
 r39 | rakaur | 2004-03-15 18:27:39 -0600 (Mon, 15 Mar 2004) | 3 lines
 Changed paths:
    M /trunk/ChangeLog

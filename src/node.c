@@ -85,6 +85,13 @@ void node_add(void *data, node_t *n, list_t *l)
 /* removes a node from a list */
 void node_del(node_t *n, list_t *l)
 {
+  /* do we even have a node? */
+  if (!n)
+  {
+    slog(0, LG_DEBUG, "node_del(): called with NULL node");
+    return;
+  }
+
   /* are we the head? */
   if (!n->prev)
     l->head = n->next;
