@@ -8,7 +8,10 @@ channel.  Users on the SOP list will be
 automatically set +o on the channel and be allowed
 to add users to the VOP and AOP lists.
 
-Syntax: VOP|AOP|SOP <#channel> ADD|DEL|LIST <username>
+You may also specify a hostmask (nick!user@host)
+for the VOP and AOP lists.
+
+Syntax: VOP|AOP|SOP <#channel> ADD|DEL|LIST <username|hostmask>
 
 Examples:
     /msg S VOP #foo ADD bar

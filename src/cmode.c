@@ -196,8 +196,17 @@ void channel_mode(channel_t *chan, uint8_t parc, char *parv[])
 
             if ((MC_SECURE & mc->flags) && (status_mode_list[i].mode == 'o'))
             {
+              char hostbuf[BUFSIZE];
+
+              strlcat(hostbuf, cu->user->nick, BUFSIZE);
+              strlcat(hostbuf, "!", BUFSIZE);
+              strlcat(hostbuf, cu->user->user, BUFSIZE);
+              strlcat(hostbuf, "@", BUFSIZE);
+              strlcat(hostbuf, cu->user->host, BUFSIZE);
+
               if ((!is_founder(mc, mu)) &&
-                  (!is_xop(mc, mu, CA_AOP)) && (!is_xop(mc, mu, CA_SOP)))
+                  (!is_xop(mc, mu, (CA_AOP | CA_SOP))) &&
+                  (!chanacs_find_host(mc, hostbuf, CA_AOP)))
               {
                 /* they were opped and aren't on the list, deop them */
                 cmode(svs.nick, mc->name, "-o", cu->user->nick);

@@ -73,9 +73,13 @@ MUST BE IN shrike-1.0b2
 [X] - SENDPASS
 [X] - SET:HIDEMAIL for usernames
 
-MAY BE IN shrike-1.0b2
-[X] - settings mirroring before rehash
+MUST BE IN shrike-1.0b3
+[ ] - RESTART
+[ ] - SHUTDOWN
 [ ] - global notice that "learns" the tld's of the network
+
+MAY BE IN shrike-1.0
+[X] - settings mirroring before rehash
 [X] - mode stacking
 [ ] - channel successors
 
