@@ -1,4 +1,4 @@
-/* $Id: .indent.pro,v 1.11 2004/03/07 16:14:44 emw Exp $ */
+/* $$Id$ */
 
 /* copy this file to the source dir then run indent file.c */
 
