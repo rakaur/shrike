@@ -1,4 +1,23 @@
 ------------------------------------------------------------------------
+r72 | rakaur | 2004-04-17 08:38:14 -0500 (Sat, 17 Apr 2004) | 2 lines
+Changed paths:
+   A /branches/release-1.0b6 (from /trunk:71)
+
+Branching off 1.0b6.
+
+------------------------------------------------------------------------
+r71 | rakaur | 2004-04-17 08:37:28 -0500 (Sat, 17 Apr 2004) | 2 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/INSTALL
+   M /trunk/autoconf/configure.in
+   M /trunk/configure
+   M /trunk/inc/sysconf.h.in
+   M /trunk/setup
+
+Added a "--enable-large-net" switch to configure.
+
+------------------------------------------------------------------------
 r70 | rakaur | 2004-04-16 21:42:55 -0500 (Fri, 16 Apr 2004) | 2 lines
 Changed paths:
    M /trunk/ChangeLog

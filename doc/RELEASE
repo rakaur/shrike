@@ -1,8 +1,6 @@
 $Id$
 
-shrike-1.0b5 release notes
+shrike-1.0b6 release notes
 
-- added `silent' option to config-clientinfo{} to prevent WALLOPS.
-- fixed a core with JOIN 0
-- fixed a core with chanuser_add()
-- fixed a core with deleting hostmask access lists
+- added a block allocator
+- tweaked configure some
