@@ -1,4 +1,16 @@
 ------------------------------------------------------------------------
+r76 | rakaur | 2004-04-19 17:56:02 -0500 (Mon, 19 Apr 2004) | 4 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/src/function.c
+   M /trunk/src/node.c
+   M /trunk/src/services.c
+
+GLOBAL now uses the block allocator.
+KLINEs are now sent to * instead of to every server independantly.
+Fixed a problem with minutes in timediff() (thanks rintaun).
+
+------------------------------------------------------------------------
 r75 | rakaur | 2004-04-18 13:10:49 -0500 (Sun, 18 Apr 2004) | 3 lines
 Changed paths:
    M /trunk/ChangeLog

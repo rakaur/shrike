@@ -2032,8 +2032,21 @@ static void do_kline(char *origin)
     {
       char *userbuf = strtok(target, "@");
       char *hostbuf = strtok(NULL, "@");
+      char *tmphost;
+      int i = 0;
 
-      /* XXX - wildcard check */
+      /* make sure there's at least 5 non-wildcards */
+      for (tmphost = hostbuf; *tmphost; tmphost++)
+      {
+        if (*tmphost != '*' || *tmphost != '?')
+          i++;
+      }
+
+      if (i < 5)
+      {
+        notice(origin, "Invalid host: \2%s\2.", hostbuf);
+        return;
+      }
 
       if ((k = kline_find(userbuf, hostbuf)))
       {
