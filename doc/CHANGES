@@ -27,6 +27,7 @@ shrike-1.0 - Matt Lanigan <rintaun@projectxero.net>
   + Added doc/COMMANDS.
 
 shrike-1.0 - E. Will <rakaur@malkier.net>
+  * Released 1.0b1.
   ^ Moved shrike repository from CVS to SVN.
   + Added SECURE to default mychan flags.
   + Finished OP/DEOP/VOICE/DEVOICE.
