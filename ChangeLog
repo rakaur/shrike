@@ -1,4 +1,19 @@
 ------------------------------------------------------------------------
+r87 | rakaur | 2004-06-30 10:51:53 -0500 (Wed, 30 Jun 2004) | 2 lines
+Changed paths:
+   A /branches/release-1.01 (from /trunk:86)
+
+Branching off 1.01 release.
+
+------------------------------------------------------------------------
+r86 | rakaur | 2004-06-12 12:30:45 -0500 (Sat, 12 Jun 2004) | 2 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/src/cmode.c
+
+Fixed a bug where it would deop AOP'd hostmasks.
+
+------------------------------------------------------------------------
 r82 | rakaur | 2004-05-05 07:31:50 -0500 (Wed, 05 May 2004) | 2 lines
 Changed paths:
    M /trunk/ChangeLog
