@@ -102,7 +102,8 @@ void verbose(mychan_t *mychan, char *fmt, ...)
   va_start(ap, fmt);
   vsnprintf(buf, BUFSIZE, fmt, ap);
 
-  sts(":%s NOTICE @%s :[VERBOSE] %s", svs.nick, mychan->name, buf);
+  if (MC_VERBOSE & mychan->flags)
+    sts(":%s NOTICE @%s :[VERBOSE] %s", svs.nick, mychan->name, buf);
 }
 
 void snoop(char *fmt, ...)
