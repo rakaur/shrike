@@ -13,10 +13,14 @@
 void introduce_nick(char *nick, char *user, char *host, char *real,
                     char *modes)
 {
+  user_t *u;
+
   sts("NICK %s %ld 1 +%s %s %s %s :%s",
       nick, CURRTIME, modes, user, host, me.name, real);
 
-  user_add(nick, user, host, me.me);
+  u = user_add(nick, user, host, me.me);
+  if (strchr(modes, 'o'))
+    u->flags |= UF_IRCOP;
 }
 
 /* join a channel */

@@ -85,11 +85,18 @@ MUST BE IN shrike-1.0rc1
 [X] - fix help files (nick is static)
 [X] - deal with floods
 
+MUST BE IN shrike-1.0
+[ ] - gline control functionality (a la DALnet AKILL)
+      . apparently glines are not a good idea for what we want, instead
+        we'll use shared klines. i want this in 1.0.
+
+      sts: :oper KLINE target.server duration user host :reason
+      sts: :oper UNKLINE target.server user host
+
 MAY BE IN shrike-1.0
 [X] - settings mirroring before rehash
 [X] - mode stacking
 
 WON'T BE IN shrike-1.0
-[ ] - gline control functionality (a la DALnet AKILL)
 [ ] - event system that doesn't suck
 [/] - "tagging" users (suspected abusers)

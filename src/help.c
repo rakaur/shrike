@@ -21,11 +21,9 @@ void do_help(char *origin)
   if (!command)
   {
     notice(origin, "The following core commands are available.");
-    notice(origin, " ");
     notice(origin, "\2HELP\2          Displays help information.");
     notice(origin, "\2REGISTER\2      Registers a username or channel.");
-    notice(origin,
-           "\2DROP\2          Drops a registered username or channel.");
+    notice(origin, "\2DROP\2          Drops a registered user or channel.");
     notice(origin, "\2LOGIN\2         Logs you into services.");
     notice(origin, "\2LOGOUT\2        Logs you out of services.");
     notice(origin, "\2SET\2           Sets various control flags.");
@@ -61,8 +59,8 @@ void do_help(char *origin)
     if ((is_sra(u->myuser)) || (is_ircop(u)))
     {
       notice(origin, "The following IRCop commands are available.");
-      notice(origin, "\2SENDPASS\2    Email registration passwords.");
-      notice(origin, "\2GLOBAL\2      Send a global notice.");
+      notice(origin, "\2SENDPASS\2      Email registration passwords.");
+      notice(origin, "\2GLOBAL\2        Send a global notice.");
       notice(origin, " ");
     }
 
@@ -80,7 +78,6 @@ void do_help(char *origin)
     notice(origin, "way certain operations are performed on them.");
     notice(origin, " ");
     notice(origin, "The following commands are available.");
-    notice(origin, " ");
     notice(origin, "\2EMAIL\2         Changes the email address associated "
            "with a username.");
     notice(origin, "\2FOUNDER\2       Sets you founder of a channel.");

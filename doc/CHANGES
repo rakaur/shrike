@@ -29,6 +29,8 @@ shrike-1.0 - Matt Lanigan <rintaun@projectxero.net>
   + Added doc/COMMANDS.
 
 shrike-1.0 - E. Will <rakaur@malkier.net>
+  + Services client now tracks its own oper status.
+  ~ Fixed up some formatting problems in HELP.
   + Added featureful global noticer via conf option `global'.
   + Added TLD tracking.
   ~ Fixed a core in m_kill().
