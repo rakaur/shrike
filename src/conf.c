@@ -166,6 +166,31 @@ void conf_parse(void)
   config_free(cfp);
 }
 
+void conf_init(void)
+{
+  me.pass = me.vhost = me.netname = me.adminname = me.adminemail = me.mta
+          = svs.nick = svs.chan = svs.global = NULL;
+
+  me.recontime = me.restarttime = me.expire = me.maxusers = me.maxchans 
+               = svs.flood_msgs = svs.flood_time = 0;
+
+  me.loglevel = svs.defuflags = svs.defcflags = 0x00000000;
+
+  svs.join_chans = svs.leave_chans = svs.raw = FALSE;
+
+  me.auth = AUTH_EMAIL; /* I guess this is a good default? */
+
+  if (!(runflags & RF_REHASHING))
+  {
+    me.name = me.desc = me.uplink = me.port = me.vhost = svs.user = svs.host
+            = svs.real = NULL;
+
+    me.port = 0;
+
+    set_match_mapping(MATCH_RFC1459); /* default to RFC compliancy */
+  }
+}
+
 static int subblock_handler(CONFIGENTRY * ce, struct ConfTable *table)
 {
   struct ConfTable *ct = NULL;
@@ -566,7 +591,7 @@ static void copy_me(struct me *src, struct me *dst)
   dst->name = sstrdup(src->name);
   dst->desc = sstrdup(src->desc);
   dst->uplink = sstrdup(src->uplink);
-  dst->actual = sstrdup(src->actual);
+  dst->actual = sstrdup(src->actual);  /* ? */
   dst->port = src->port;
   dst->pass = sstrdup(src->pass);
   if (src->vhost)
@@ -584,6 +609,7 @@ static void copy_me(struct me *src, struct me *dst)
   dst->me = src->me;
   dst->uplinkpong = src->uplinkpong;
   dst->connected = src->connected;
+  dst->bursting = src->bursting;
   dst->maxusers = src->maxusers;
   dst->maxchans = src->maxchans;
   dst->auth = src->auth;
@@ -595,7 +621,7 @@ static void copy_svs(struct svs *src, struct svs *dst)
   dst->user = sstrdup(src->user);
   dst->host = sstrdup(src->host);
   dst->real = sstrdup(src->real);
-  dst->chan = sstrdup(src->chan);
+  dst->chan = sstrdup(src->chan); /* ? */
   dst->join_chans = src->join_chans;
   dst->leave_chans = src->leave_chans;
   dst->defuflags = src->defuflags;
@@ -613,7 +639,8 @@ static void free_cstructs(struct me *mesrc, struct svs *svssrc)
   free(mesrc->uplink);
   free(mesrc->actual);
   free(mesrc->pass);
-  free(mesrc->vhost);
+  if (mesrc->vhost)
+    free(mesrc->vhost);
   free(mesrc->netname);
   free(mesrc->adminname);
   free(mesrc->adminemail);
@@ -644,28 +671,15 @@ boolean_t conf_rehash(void)
 
   /* reset everything */
   free(me.pass);
-  me.recontime = 0;
-  me.restarttime = 0;
-  me.expire = 0;
   free(me.netname);
   free(me.adminname);
   free(me.adminemail);
   free(me.mta);
-  me.maxusers = 0;
-  me.maxchans = 0;
-  me.auth = 0;
   free(svs.nick);
   free(svs.chan);
   free(svs.global);
-  svs.join_chans = ERROR;
-  svs.leave_chans = ERROR;
-  svs.defuflags = 0;
-  svs.defcflags = 0;
-  svs.raw = ERROR;
-  svs.flood_msgs = svs.flood_time = 0;
 
-  me.pass = me.netname = me.adminname = me.adminemail = me.mta = NULL;
-  svs.nick = svs.chan = svs.global = NULL;
+  conf_init();
 
   LIST_FOREACH(n, sralist.head)
   {
@@ -833,7 +847,6 @@ boolean_t conf_check(void)
   {
     slog(LG_INFO, "conf_check(): no `adminname' set in %s", config_file);
     return FALSE;
-    return FALSE;
   }
 
   if (!me.adminemail)
@@ -871,7 +884,7 @@ boolean_t conf_check(void)
 
   if (!svs.nick || !svs.user || !svs.host || !svs.real || !svs.global)
   {
-    slog(LG_INFO, "check_conf(): invalid clientinfo{} block in %s",
+    slog(LG_INFO, "conf_check(): invalid clientinfo{} block in %s",
          config_file);
     return FALSE;
   }
