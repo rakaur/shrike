@@ -251,16 +251,39 @@ void irc_parse(char *line)
 static void m_ping(char *origin, uint8_t parc, char *parv[])
 {
   /* reply to PING's */
-  sts("PONG %s", parv[0]++);
+  sts(":%s PONG %s %s", me.name, me.name, parv[0]);
 }
 
 static void m_pong(char *origin, uint8_t parc, char *parv[])
 {
   /* someone replied to our PING */
-  if (!parv[0])
+  if ((!parv[0]) || (strcasecmp(me.actual, parv[0])))
     return;
 
   me.uplinkpong = CURRTIME;
+
+  /* -> :test.projectxero.net PONG test.projectxero.net :shrike.malkier.net */
+  if (me.bursting)
+  {
+#ifdef HAVE_GETTIMEOFDAY
+    e_time(burstime, &burstime);
+
+    slog(LG_INFO, "m_pong(): finished synching with uplink (%d %s)",
+         (tv2ms(&burstime) >
+          1000) ? (tv2ms(&burstime) / 1000) : tv2ms(&burstime),
+         (tv2ms(&burstime) > 1000) ? "s" : "ms");
+
+    wallops("Finished synching to network in %d %s.",
+            (tv2ms(&burstime) >
+             1000) ? (tv2ms(&burstime) / 1000) : tv2ms(&burstime),
+            (tv2ms(&burstime) > 1000) ? "s" : "ms");
+#else
+    slog(LG_INFO, "m_pong(): finished synching with uplink");
+    wallops("Finished synching to network.");
+#endif
+
+    me.bursting = FALSE;
+  }
 }
 
 static void m_privmsg(char *origin, uint8_t parc, char *parv[])
@@ -812,28 +835,6 @@ static void m_pass(char *origin, uint8_t parc, char *parv[])
   }
 }
 
-static void m_eob(char *origin, uint8_t parc, char *parv[])
-{
-#ifdef HAVE_GETTIMEOFDAY
-  e_time(burstime, &burstime);
-
-  slog(LG_INFO, "m_eob(): finished synching with uplink (%d %s)",
-       (tv2ms(&burstime) >
-        1000) ? (tv2ms(&burstime) / 1000) : tv2ms(&burstime),
-       (tv2ms(&burstime) > 1000) ? "s" : "ms");
-
-  wallops("Finished synching to network in %d %s.",
-          (tv2ms(&burstime) >
-           1000) ? (tv2ms(&burstime) / 1000) : tv2ms(&burstime),
-          (tv2ms(&burstime) > 1000) ? "s" : "ms");
-#else
-  slog(LG_INFO, "m_eob(): finished synching with uplink");
-  wallops("Finished synching to network.");
-#endif
-
-  me.bursting = FALSE;
-}
-
 static void m_error(char *origin, uint8_t parc, char *parv[])
 {
   slog(LG_INFO, "m_error(): error from server: %s", parv[0]);
@@ -861,7 +862,6 @@ struct message_ messages[] = {
   { "INFO",    m_info    },
   { "JOIN",    m_join    },
   { "PASS",    m_pass    },
-  { "EOB",     m_eob     },
   { "ERROR",   m_error   },
   { NULL }
 };

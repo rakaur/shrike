@@ -142,7 +142,7 @@ static uint8_t server_login(void)
 
   me.bursting = TRUE;
 
-  sts("CAPAB :QS EOB KLN UNKLN");
+  sts("CAPAB :QS KLN UNKLN");
   sts("SERVER %s 1 :%s", me.name, me.desc);
   sts("SVINFO 5 3 0 :%ld", CURRTIME);
 
@@ -153,7 +153,7 @@ static void ping_uplink(void *arg)
 {
   uint32_t diff;
 
-  sts("PING %s", me.actual);
+  sts("PING :%s", me.name);
 
   if (me.connected)
   {
@@ -204,7 +204,7 @@ static int8_t irc_estab(void)
   services_init();
 
   /* done bursting by this time... */
-  sts(":%s EOB", me.name);
+  sts("PING :%s", me.name);
 
   /* ping our uplink every 5 minutes */
   event_add("ping_uplink", ping_uplink, NULL, 300);

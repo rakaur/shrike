@@ -130,6 +130,10 @@ int match(char *mask, char *name)
   if (!*mask)
     return 1;
 
+  /* if the mask is "*", it matches everything */
+  if ((*m == '*') && (*(m + 1) == '\0'))
+    return 0;
+
   while (1)
   {
 #ifdef  MAX_ITERATIONS

@@ -1,4 +1,14 @@
 ------------------------------------------------------------------------
+r65 | rakaur | 2004-04-11 20:43:26 -0500 (Sun, 11 Apr 2004) | 3 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/doc/RELEASE
+   M /trunk/src/irc.c
+
+Updated release notes.
+Fixed another FOREACH_SAFE-related core for JOIN 0 (thanks Jeremy).
+
+------------------------------------------------------------------------
 r64 | rakaur | 2004-04-11 18:55:13 -0500 (Sun, 11 Apr 2004) | 3 lines
 Changed paths:
    M /trunk/ChangeLog
