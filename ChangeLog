@@ -1,4 +1,25 @@
 ------------------------------------------------------------------------
+r70 | rakaur | 2004-04-16 21:42:55 -0500 (Fri, 16 Apr 2004) | 2 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/README
+   M /trunk/autoconf/configure.in
+   M /trunk/configure
+   M /trunk/doc/TODO
+   M /trunk/inc/.indent.pro
+   M /trunk/inc/extern.h
+   M /trunk/inc/shrike.h
+   M /trunk/inc/sysconf.h.in
+   M /trunk/src/.depend
+   M /trunk/src/.indent.pro
+   M /trunk/src/Makefile.in
+   A /trunk/src/balloc.c
+   M /trunk/src/node.c
+   M /trunk/src/shrike.c
+
+Added a block allocator (ripped from ircd-ratbox).
+
+------------------------------------------------------------------------
 r66 | rakaur | 2004-04-12 15:35:42 -0500 (Mon, 12 Apr 2004) | 4 lines
 Changed paths:
    M /trunk/ChangeLog

@@ -65,3 +65,7 @@
 
 /* Define if you have the socket library (-lsocket).  */
 #undef HAVE_LIBSOCKET
+
+/* Uncomment to enable large network support. */
+#undef LARGE_NETWORK
+

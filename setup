@@ -8,6 +8,7 @@
 # $Id$
 
 PREFIX="$HOME/shrike"
+LARGENET="no"
 
 export ok INPUT
 
@@ -58,15 +59,41 @@ done
 PREFIX=$INPUT
 
 echo ""
+
+ok=0
+echo "Are you running a large network (more than 2000 users)?"
+while [ $ok -eq 0 ] ; do
+  echo -n "[$LARGENET] "
+  if read INPUT ; then : ; else echo "" ; exit 1 ; fi
+  if [ ! "$INPUT" ] ; then
+    INPUT=$LARGENET
+    ok=1
+  else
+    ok=1
+  fi
+done
+LARGENET=$INPUT
+
+echo ""
 echo "Press enter to begin configuration."
 echo -n ""
 if read INPUT ; then : ; else echo "" ; exit 1 ; fi
 
-if [ ! $PREFIX ] ; then
-  sh configure
-else
-  sh configure --prefix=$PREFIX
-fi
+ARGS="--prefix=$PREFIX"
+
+case "$LARGENET" in
+  [Yy])
+    ARGS="--prefix=$PREFIX --enable-large-net"
+    ;;
+  Yes)
+    ARGS="--prefix=$PREFIX --enable-large-net"
+    ;;
+  yes)
+    ARGS="--prefix=$PREFIX --enable-large-net"
+    ;;
+esac
+
+sh configure $ARGS
 
 echo ""
 echo "Press enter to begin compilation."

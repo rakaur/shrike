@@ -52,6 +52,9 @@ The slightly less easy but more traditional way:
 Run the "configure" script:
   $ ./configure --prefix=/path/to/install/
 
+If you're running a large network (more than 2000 users) I suggest passing the
+--enable-large-net switch to configure.
+
 The "configure" script will run several tests, write several files, and exit.
 Once this is done you will want to compile Shrike. To do this, simply type:
   $ make
