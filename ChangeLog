@@ -1,4 +1,24 @@
 ------------------------------------------------------------------------
+r49 | rakaur | 2004-03-30 17:25:13 -0600 (Tue, 30 Mar 2004) | 6 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/INSTALL
+   M /trunk/README
+   M /trunk/help/xop
+   M /trunk/inc/shrike.h
+   M /trunk/src/conf.c
+   M /trunk/src/function.c
+   M /trunk/src/irc.c
+   M /trunk/src/node.c
+   M /trunk/src/socket.c
+
+Tracks the reported name of the uplink for PING and such.
+Fixed a bug where non-myusers weren't deopped in SECURE channels (thanks naki).
+Fixed the service opping/voicing itself based on hostmasked access lists.
+Updated docs for the forums.
+Fixed a formatting problem in HELP xOP (thanks Jeremy).
+
+------------------------------------------------------------------------
 r48 | rakaur | 2004-03-28 08:53:39 -0600 (Sun, 28 Mar 2004) | 4 lines
 Changed paths:
    M /trunk/ChangeLog

@@ -50,6 +50,8 @@
 #define MAXMODES 4
 #define MAXPARAMSLEN (510-32-64-34-(7+MAXMODES))
 #define MAX_EVENTS 25
+#define TOKEN_UNMATCHED -1
+#define TOKEN_ERROR -2
 
 #ifndef uint8_t
 #define uint8_t u_int8_t
@@ -94,6 +96,9 @@ typedef struct myuser_ myuser_t;
 typedef struct mychan_ mychan_t;
 typedef struct chanacs_ chanacs_t;
 typedef void EVH(void *);
+
+typedef struct _configfile CONFIGFILE;
+typedef struct _configentry CONFIGENTRY;
 
 /* macros for linked lists */
 #define LIST_FOREACH(n, head) for (n = (head); n; n = n->next)
@@ -173,6 +178,38 @@ struct cnt
   uint32_t chanacs;
   uint32_t node;
 } cnt;
+
+struct _configfile
+{
+  char *cf_filename;
+  CONFIGENTRY *cf_entries;
+  CONFIGFILE *cf_next;
+};
+
+struct _configentry
+{
+  CONFIGFILE    *ce_fileptr;
+
+  int ce_varlinenum;
+  char *ce_varname;
+  char *ce_vardata;
+  int ce_vardatanum;
+  int ce_fileposstart;
+  int ce_fileposend;
+
+  int ce_sectlinenum;
+  CONFIGENTRY *ce_entries;
+
+  CONFIGENTRY *ce_prevlevel;
+
+  CONFIGENTRY *ce_next;
+};
+
+struct Token
+{
+  const char *text;
+  int value;
+};
 
 /* list node struct */
 struct node_

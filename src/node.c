@@ -583,7 +583,7 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
         if (MC_SECURE & mc->flags)
         {
           if ((!u->myuser) || (!is_founder(mc, u->myuser) &&
-            !is_xop(mc, u->myuser, (CA_AOP | CA_SOP))))
+                               !is_xop(mc, u->myuser, (CA_AOP | CA_SOP))))
           {
             cmode(svs.nick, mc->name, "-o", u->nick);
             flags &= ~CMODE_OP;

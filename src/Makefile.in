@@ -34,6 +34,7 @@ default: all
 BASE_SRCS =			\
   cmode.c			\
   conf.c			\
+  confp.c			\
   db.c				\
   event.c			\
   function.c			\

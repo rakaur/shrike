@@ -9,393 +9,556 @@
 
 #include "../inc/shrike.h"
 
-/*
- * Loads the configuration file.
- * No checking is done in this routine.
- */
+#define PARAM_ERROR(ce) { slog(LG_INFO, "%s:%i: no parameter for " \
+                          "configuration option: %s", \
+                          (ce)->ce_fileptr->cf_filename, \
+                          (ce)->ce_varlinenum, (ce)->ce_varname); \
+  return 1; }
+
+static int c_serverinfo(CONFIGENTRY *);
+static int c_clientinfo(CONFIGENTRY *);
+
+static int c_si_name(CONFIGENTRY *);
+static int c_si_desc(CONFIGENTRY *);
+static int c_si_uplink(CONFIGENTRY *);
+static int c_si_port(CONFIGENTRY *);
+static int c_si_pass(CONFIGENTRY *);
+static int c_si_vhost(CONFIGENTRY *);
+static int c_si_recontime(CONFIGENTRY *);
+static int c_si_restarttime(CONFIGENTRY *);
+static int c_si_expire(CONFIGENTRY *);
+static int c_si_netname(CONFIGENTRY *);
+static int c_si_adminname(CONFIGENTRY *);
+static int c_si_adminemail(CONFIGENTRY *);
+static int c_si_mta(CONFIGENTRY *);
+static int c_si_loglevel(CONFIGENTRY *);
+static int c_si_maxusers(CONFIGENTRY *);
+static int c_si_maxchans(CONFIGENTRY *);
+static int c_si_auth(CONFIGENTRY *);
+static int c_si_casemapping(CONFIGENTRY *);
+
+static int c_ci_nick(CONFIGENTRY *);
+static int c_ci_user(CONFIGENTRY *);
+static int c_ci_host(CONFIGENTRY *);
+static int c_ci_real(CONFIGENTRY *);
+static int c_ci_chan(CONFIGENTRY *);
+static int c_ci_join_chans(CONFIGENTRY *);
+static int c_ci_leave_chans(CONFIGENTRY *);
+static int c_ci_uflags(CONFIGENTRY *);
+static int c_ci_cflags(CONFIGENTRY *);
+static int c_ci_raw(CONFIGENTRY *);
+static int c_ci_flood_msgs(CONFIGENTRY *);
+static int c_ci_flood_time(CONFIGENTRY *);
+static int c_ci_global(CONFIGENTRY *);
+static int c_ci_sra(CONFIGENTRY *);
+
+struct ConfTable
+{
+  char *name;
+  int rehashable;
+  int (*handler) (CONFIGENTRY *);
+};
+
+/* *INDENT-OFF* */
+
+static struct Token uflags[] = {
+  { "HOLD",     MU_HOLD     },
+  { "NEVEROP",  MU_NEVEROP  },
+  { "NOOP",     MU_NOOP     },
+  { "HIDEMAIL", MU_HIDEMAIL },
+  { "NONE",     0           },
+  { NULL, 0 }
+};
+
+static struct Token cflags[] = {
+  { "HOLD",    MC_HOLD    },
+  { "NEVEROP", MC_NEVEROP },
+  { "SECURE",  MC_SECURE  },
+  { "VERBOSE", MC_VERBOSE },
+  { "NONE",    0          },
+  { NULL, 0 }
+};
+
+static struct ConfTable conf_root_table[] = {
+  { "SERVERINFO", 1, c_serverinfo },
+  { "CLIENTINFO", 1, c_clientinfo },
+  { NULL, 0, NULL }
+};
+
+static struct ConfTable conf_si_table[] = {
+  { "NAME",        0, c_si_name        },
+  { "DESC",        0, c_si_desc        },
+  { "UPLINK",      0, c_si_uplink      },
+  { "PORT",        0, c_si_port        },
+  { "PASS",        1, c_si_pass        },
+  { "VHOST",       0, c_si_vhost       },
+  { "RECONTIME",   1, c_si_recontime   },
+  { "RESTARTTIME", 1, c_si_restarttime },
+  { "EXPIRE",      1, c_si_expire      },
+  { "NETNAME",     1, c_si_netname     },
+  { "ADMINNAME",   1, c_si_adminname   },
+  { "ADMINEMAIL",  1, c_si_adminemail  },
+  { "MTA",         1, c_si_mta         },
+  { "LOGLEVEL",    1, c_si_loglevel    },
+  { "MAXUSERS",    1, c_si_maxusers    },
+  { "MAXCHANS",    1, c_si_maxchans    },
+  { "AUTH",        1, c_si_auth        },
+  { "CASEMAPPING", 0, c_si_casemapping },
+  { NULL, 0, NULL }
+};
+
+static struct ConfTable conf_ci_table[] = {
+  { "NICK",        1, c_ci_nick        },
+  { "USER",        0, c_ci_user        },
+  { "HOST",        0, c_ci_host        },
+  { "REAL",        0, c_ci_real        },
+  { "CHAN",        1, c_ci_chan        },
+  { "JOIN_CHANS",  1, c_ci_join_chans  },
+  { "LEAVE_CHANS", 1, c_ci_leave_chans },
+  { "UFLAGS",      1, c_ci_uflags      },
+  { "CFLAGS",      1, c_ci_cflags      },
+  { "RAW",         1, c_ci_raw         },
+  { "FLOOD_MSGS",  1, c_ci_flood_msgs  },
+  { "FLOOD_TIME",  1, c_ci_flood_time  },
+  { "GLOBAL",      1, c_ci_global      },
+  { "SRA",         1, c_ci_sra         },
+  { NULL, 0, NULL }
+};
+
+/* *INDENT-ON* */
+
 void conf_parse(void)
 {
-  uint32_t linecnt = 0;
-  FILE *f = fopen(config_file, "r");
-  char *item, dBuf[BUFSIZE], tBuf[BUFSIZE];
+  CONFIGFILE *cfptr, *cfp;
+  CONFIGENTRY *ce;
+  struct ConfTable *ct = NULL;
 
-  char *pattern, *lvalue, *rvalue;
-  regex_t *preg = NULL;
-  regmatch_t pmatch[5];
+  cfptr = cfp = config_load(config_file);
 
-  pattern = (char *)malloc(2046);
-
-  slog(LG_DEBUG, "conf_parse(): loading configuration file");
-
-  if (!f)
+  if (cfp == NULL)
   {
-    fprintf(stderr, "shrike: config file `%s' was not found\n", config_file);
+    slog(LG_INFO, "conf_parse(): unable to open configuration file: %s",
+         strerror(errno));
+
     exit(EXIT_FAILURE);
   }
 
-  /* start reading the file one line at a time */
-  while (fgets(dBuf, BUFSIZE, f))
+  for (; cfptr; cfptr = cfptr->cf_next)
   {
-    linecnt++;
-
-    /* check for unimportant lines */
-    strcpy(tBuf, dBuf);
-    item = strtok(tBuf, " ");
-    strip(item);
-    strip(dBuf);
-
-    if (*item == '#' || !*item)
-      continue;
-
-    /* collapse tabs */
-    tb2sp(dBuf);
-
-    slog(LG_DEBUG, "conf_parse(): checking `%s' on line %d", dBuf, linecnt);
-
-    /* check for the serverinfo{} block */
-    strcpy(pattern, "^[[:space:]]*serverinfo[[:space:]]*\\{");
-
-    if (regex_match(preg, pattern, dBuf, 5, pmatch, 0) == 0)
+    for (ce = cfptr->cf_entries; ce; ce = ce->ce_next)
     {
-      slog(LG_DEBUG, "conf_parse(): parsing serverinfo{} block on line %d",
-           linecnt);
-
-      /* this gets ugly, oh well */
-      while (1)
+      for (ct = conf_root_table; ct->name; ct++)
       {
-        fgets(dBuf, BUFSIZE, f);
-
-        linecnt++;
-
-        /* check for unimportant lines */
-        strcpy(tBuf, dBuf);
-        item = strtok(tBuf, " ");
-        strip(item);
-        strip(dBuf);
-
-        if (*item == '#' || !*item)
-          continue;
-
-        /* collapse tabs */
-        tb2sp(dBuf);
-
-        slog(LG_DEBUG, "conf_parse(): checking severinfo:`%s' on line %d",
-             dBuf, linecnt);
-
-        if (!strcmp("}", dBuf))
+        if (!strcasecmp(ct->name, ce->ce_varname))
         {
-          slog(LG_DEBUG, "conf_parse(): finished parsing serverinfo{} block");
+          ct->handler(ce);
           break;
         }
-
-        /* check for key = value entries */
-        strcpy(pattern, "([^ ]+)[ \t]*=[ \t]*(.+)[ \t]*;");
-
-        if (regex_match(preg, pattern, dBuf, 5, pmatch, 0) == 0)
-        {
-          lvalue = (dBuf + pmatch[1].rm_so);
-          *(dBuf + pmatch[1].rm_eo) = '\0';
-
-          rvalue = (dBuf + pmatch[2].rm_so);
-          *(dBuf + pmatch[2].rm_eo) = '\0';
-
-          slog(LG_DEBUG,
-               "conf_parse(): parsing lvalue `%s' with rvalue `%s'", lvalue,
-               rvalue);
-
-          if (!strcasecmp("name", lvalue))
-          {
-            if (!(runflags & RF_REHASHING))
-              me.name = sstrdup(rvalue);
-            continue;
-          }
-          else if (!strcasecmp("desc", lvalue))
-          {
-            if (!(runflags & RF_REHASHING))
-              me.desc = sstrdup(rvalue);
-            continue;
-          }
-          else if (!strcasecmp("uplink", lvalue))
-          {
-            if (!(runflags & RF_REHASHING))
-              me.uplink = sstrdup(rvalue);
-            continue;
-          }
-          else if (!strcasecmp("port", lvalue))
-          {
-            if (!(runflags & RF_REHASHING))
-              me.port = atoi(rvalue);
-            continue;
-          }
-          else if (!strcasecmp("pass", lvalue))
-          {
-            me.pass = sstrdup(rvalue);
-            continue;
-          }
-          else if (!strcasecmp("vhost", lvalue))
-          {
-            if (!(runflags & RF_REHASHING))
-              me.vhost = sstrdup(rvalue);
-            continue;
-          }
-          else if (!strcasecmp("recontime", lvalue))
-          {
-            me.recontime = atoi(rvalue);
-            continue;
-          }
-          else if (!strcasecmp("restarttime", lvalue))
-          {
-            me.restarttime = atoi(rvalue);
-            continue;
-          }
-          else if (!strcasecmp("expire", lvalue))
-          {
-            me.expire = (atoi(rvalue) * 60 * 60 * 24);
-            continue;
-          }
-          else if (!strcasecmp("netname", lvalue))
-          {
-            me.netname = sstrdup(rvalue);
-            continue;
-          }
-          else if (!strcasecmp("adminname", lvalue))
-          {
-            me.adminname = sstrdup(rvalue);
-            continue;
-          }
-          else if (!strcasecmp("adminemail", lvalue))
-          {
-            me.adminemail = sstrdup(rvalue);
-            continue;
-          }
-          else if (!strcasecmp("mta", lvalue))
-          {
-            me.mta = sstrdup(rvalue);
-            continue;
-          }
-          else if (!strcasecmp("loglevel", lvalue))
-          {
-            if (!strcasecmp("debug", rvalue))
-              me.loglevel |= LG_DEBUG;
-            else if (!strcasecmp("error", rvalue))
-              me.loglevel |= LG_ERROR;
-            else if (!strcasecmp("info", rvalue))
-              me.loglevel |= LG_INFO;
-            else if (!strcasecmp("none", rvalue))
-              me.loglevel |= LG_NONE;
-            else
-              me.loglevel |= LG_ERROR;
-          }
-          else if (!strcasecmp("maxusers", lvalue))
-          {
-            me.maxusers = atoi(rvalue);
-            continue;
-          }
-          else if (!strcasecmp("maxchans", lvalue))
-          {
-            me.maxchans = atoi(rvalue);
-            continue;
-          }
-          else if (!strcasecmp("auth", lvalue))
-          {
-            if (!strcasecmp("email", rvalue))
-              me.auth = AUTH_EMAIL;
-            else
-              me.auth = AUTH_NONE;
-          }
-          else if (!strcasecmp("casemapping", lvalue))
-          {
-            if (!strcasecmp("ascii", rvalue))
-              set_match_mapping(MATCH_ASCII);
-            else
-              set_match_mapping(MATCH_RFC1459);
-          }
-          else
-            continue;
-        }
-        else
-          continue;
       }
-    }
-
-    /* check for the clientinfo{} block */
-    strcpy(pattern, "^[[:space:]]*clientinfo[[:space:]]*\\{");
-
-    if (regex_match(preg, pattern, dBuf, 5, pmatch, 0) == 0)
-    {
-      slog(LG_DEBUG, "conf_parse(): parsing clientinfo{} block on line %d",
-           linecnt);
-
-      /* this gets ugly, oh well */
-      while (1)
+      if (ct->name == NULL)
       {
-        fgets(dBuf, BUFSIZE, f);
-
-        linecnt++;
-
-        /* check for unimportant lines */
-        strcpy(tBuf, dBuf);
-        item = strtok(tBuf, " ");
-        strip(item);
-        strip(dBuf);
-
-        if (*item == '#' || !*item)
-          continue;
-
-        /* collapse tabs */
-        tb2sp(dBuf);
-
-        slog(LG_DEBUG, "conf_parse(): checking clientinfo:`%s' on line %d",
-             dBuf, linecnt);
-
-        if (!strcmp("}", dBuf))
-        {
-          slog(LG_DEBUG, "conf_parse(): finished parsing clientinfo{} block");
-          break;
-        }
-
-        /* check for key = value entries */
-        strcpy(pattern, "([^ ]+)[ \t]*=[ \t]*(.+)[ \t]*;");
-
-        if (regex_match(preg, pattern, dBuf, 5, pmatch, 0) == 0)
-        {
-          lvalue = (dBuf + pmatch[1].rm_so);
-          *(dBuf + pmatch[1].rm_eo) = '\0';
-
-          rvalue = (dBuf + pmatch[2].rm_so);
-          *(dBuf + pmatch[2].rm_eo) = '\0';
-
-          slog(LG_DEBUG,
-               "conf_parse(): parsing lvalue `%s' with rvalue `%s'", lvalue,
-               rvalue);
-
-          if (!strcasecmp("nick", lvalue))
-          {
-            svs.nick = sstrdup(rvalue);
-            continue;
-          }
-          else if (!strcasecmp("user", lvalue))
-          {
-            if (!(runflags & RF_REHASHING))
-              svs.user = sstrdup(rvalue);
-            continue;
-          }
-          else if (!strcasecmp("host", lvalue))
-          {
-            if (!(runflags & RF_REHASHING))
-              svs.host = sstrdup(rvalue);
-            continue;
-          }
-          else if (!strcasecmp("real", lvalue))
-          {
-            if (!(runflags & RF_REHASHING))
-              svs.real = sstrdup(rvalue);
-            continue;
-          }
-          else if (!strcasecmp("chan", lvalue))
-          {
-            svs.chan = sstrdup(rvalue);
-            continue;
-          }
-          else if (!strcasecmp("join_chans", lvalue))
-          {
-            if (!strcasecmp("yes", rvalue) || !strcasecmp("true", rvalue))
-              svs.join_chans = TRUE;
-            else
-              svs.join_chans = FALSE;
-
-            continue;
-          }
-          else if (!strcasecmp("leave_chans", lvalue))
-          {
-            if (!strcasecmp("yes", rvalue) || !strcasecmp("true", rvalue))
-              svs.leave_chans = TRUE;
-            else
-              svs.leave_chans = FALSE;
-
-            continue;
-          }
-          else if (!strcasecmp("uflags", lvalue))
-          {
-            char *s = strtok(rvalue, ":");
-
-            do
-            {
-              if (!strcasecmp("hold", s))
-                svs.defuflags |= MU_HOLD;
-              else if (!strcasecmp("neverop", s))
-                svs.defuflags |= MU_NEVEROP;
-              else if (!strcasecmp("noop", s))
-                svs.defuflags |= MU_NOOP;
-              else if (!strcasecmp("hidemail", s))
-                svs.defuflags |= MU_HIDEMAIL;
-            } while ((s = strtok(NULL, ":")));
-          }
-          else if (!strcasecmp("cflags", lvalue))
-          {
-            char *s = strtok(rvalue, ":");
-
-            do
-            {
-              if (!strcasecmp("hold", s))
-                svs.defcflags |= MC_HOLD;
-              else if (!strcasecmp("neverop", s))
-                svs.defcflags |= MC_NEVEROP;
-              else if (!strcasecmp("secure", s))
-                svs.defcflags |= MC_SECURE;
-              else if (!strcasecmp("verbose", s))
-                svs.defcflags |= MC_VERBOSE;
-            } while ((s = strtok(NULL, ":")));
-          }
-          else if (!strcasecmp("raw", lvalue))
-          {
-            if (!strcasecmp("yes", rvalue) || !strcasecmp("true", rvalue))
-              svs.raw = TRUE;
-            else
-              svs.raw = FALSE;
-
-            continue;
-          }
-          else if (!strcasecmp("flood_msgs", lvalue))
-          {
-            svs.flood_msgs = atoi(rvalue);
-            continue;
-          }
-          else if (!strcasecmp("flood_time", lvalue))
-          {
-            svs.flood_time = atoi(rvalue);
-            continue;
-          }
-          else if (!strcasecmp("global", lvalue))
-          {
-            svs.global = sstrdup(rvalue);
-            continue;
-          }
-          else if (!strcasecmp("sra", lvalue))
-          {
-            /* we only make a temp list of sra's names.  after db_load() does
-             * its thing and we actually have myuser it will update the list
-             * properly.
-             */
-            sra_add(rvalue);
-            continue;
-          }
-          else
-            continue;
-        }
-        else
-          continue;
+        slog(LG_INFO, "%s:%d: invalid configuration option: %s",
+             ce->ce_fileptr->cf_filename, ce->ce_varlinenum, ce->ce_varname);
       }
     }
   }
 
-  /* free the stuff we made */
-  free(pattern);
+  config_free(cfp);
+}
 
-  /* close the file */
-  fclose(f);
+static int subblock_handler(CONFIGENTRY * ce, struct ConfTable *table)
+{
+  struct ConfTable *ct = NULL;
 
-  slog(LG_DEBUG, "conf_parse(): finished loading configuration file");
+  for (ce = ce->ce_entries; ce; ce = ce->ce_next)
+  {
+    for (ct = table; ct->name; ct++)
+    {
+      if (!strcasecmp(ct->name, ce->ce_varname))
+      {
+        ct->handler(ce);
+        break;
+      }
+    }
+    if (ct->name == NULL)
+    {
+      slog(LG_INFO, "%s:%d: invalid configuration option: %s",
+           ce->ce_fileptr->cf_filename, ce->ce_varlinenum, ce->ce_varname);
+    }
+  }
+  return 0;
+}
+
+static int c_serverinfo(CONFIGENTRY * ce)
+{
+  subblock_handler(ce, conf_si_table);
+  return 0;
+}
+
+static int c_clientinfo(CONFIGENTRY * ce)
+{
+  subblock_handler(ce, conf_ci_table);
+  return 0;
+}
+
+static int c_si_name(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  me.name = sstrdup(ce->ce_vardata);
+
+  return 0;
+}
+
+static int c_si_desc(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  me.desc = sstrdup(ce->ce_vardata);
+
+  return 0;
+}
+
+static int c_si_uplink(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  me.uplink = sstrdup(ce->ce_vardata);
+
+  return 0;
+}
+
+static int c_si_port(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  me.port = ce->ce_vardatanum;
+
+  return 0;
+}
+
+static int c_si_pass(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  me.pass = sstrdup(ce->ce_vardata);
+
+  return 0;
+}
+
+static int c_si_vhost(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  me.vhost = sstrdup(ce->ce_vardata);
+
+  return 0;
+}
+
+static int c_si_recontime(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  me.recontime = ce->ce_vardatanum;
+
+  return 0;
+}
+
+static int c_si_restarttime(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  me.restarttime = ce->ce_vardatanum;
+
+  return 0;
+}
+
+static int c_si_expire(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  me.expire = (ce->ce_vardatanum * 60 * 60 * 24);
+
+  return 0;
+}
+
+static int c_si_netname(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  me.netname = sstrdup(ce->ce_vardata);
+
+  return 0;
+}
+
+static int c_si_adminname(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  me.adminname = sstrdup(ce->ce_vardata);
+
+  return 0;
+}
+
+static int c_si_adminemail(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  me.adminemail = sstrdup(ce->ce_vardata);
+
+  return 0;
+}
+
+static int c_si_mta(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  me.mta = sstrdup(ce->ce_vardata);
+
+  return 0;
+}
+
+static int c_si_loglevel(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  if (!strcasecmp("DEBUG", ce->ce_vardata))
+    me.loglevel |= LG_DEBUG;
+
+  else if (!strcasecmp("ERROR", ce->ce_vardata))
+    me.loglevel |= LG_ERROR;
+
+  else if (!strcasecmp("INFO", ce->ce_vardata))
+    me.loglevel |= LG_INFO;
+
+  else if (!strcasecmp("NONE", ce->ce_vardata))
+    me.loglevel |= LG_NONE;
+
+  else
+    me.loglevel |= LG_ERROR;
+
+  return 0;
+}
+
+static int c_si_maxusers(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  me.maxusers = ce->ce_vardatanum;
+
+  return 0;
+
+}
+
+static int c_si_maxchans(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  me.maxchans = ce->ce_vardatanum;
+
+  return 0;
+}
+
+static int c_si_auth(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  if (!strcasecmp("EMAIL", ce->ce_vardata))
+    me.auth = AUTH_EMAIL;
+
+  else
+    me.auth = AUTH_NONE;
+
+  return 0;
+}
+
+static int c_si_casemapping(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  if (!strcasecmp("ASCII", ce->ce_vardata))
+    set_match_mapping(MATCH_ASCII);
+
+  else
+    set_match_mapping(MATCH_RFC1459);
+
+  return 0;
+}
+
+static int c_ci_nick(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  svs.nick = sstrdup(ce->ce_vardata);
+
+  return 0;
+}
+
+static int c_ci_user(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  svs.user = sstrdup(ce->ce_vardata);
+
+  return 0;
+}
+
+static int c_ci_host(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  svs.host = sstrdup(ce->ce_vardata);
+
+  return 0;
+}
+
+static int c_ci_real(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  svs.real = sstrdup(ce->ce_vardata);
+
+  return 0;
+}
+
+static int c_ci_chan(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  svs.chan = sstrdup(ce->ce_vardata);
+
+  return 0;
+}
+
+static int c_ci_join_chans(CONFIGENTRY * ce)
+{
+  svs.join_chans = TRUE;
+  return 0;
+}
+
+static int c_ci_leave_chans(CONFIGENTRY * ce)
+{
+  svs.leave_chans = TRUE;
+  return 0;
+}
+
+static int c_ci_uflags(CONFIGENTRY * ce)
+{
+  CONFIGENTRY *flce;
+
+  for (flce = ce->ce_entries; flce; flce = flce->ce_next)
+  {
+    int val;
+
+    val = token_to_value(uflags, flce->ce_varname);
+
+    if ((val != TOKEN_UNMATCHED) && (val != TOKEN_ERROR))
+      svs.defuflags |= val;
+
+    else
+    {
+      slog(LG_INFO, "%s:%d: unknown flag: %s",
+           flce->ce_fileptr->cf_filename, flce->ce_varlinenum,
+           flce->ce_varname);
+    }
+  }
+
+  return 0;
+}
+
+static int c_ci_cflags(CONFIGENTRY * ce)
+{
+  CONFIGENTRY *flce;
+
+  for (flce = ce->ce_entries; flce; flce = flce->ce_next)
+  {
+    int val;
+
+    val = token_to_value(cflags, flce->ce_varname);
+
+    if ((val != TOKEN_UNMATCHED) && (val != TOKEN_ERROR))
+      svs.defcflags |= val;
+
+    else
+    {
+      slog(LG_INFO, "%s:%d: unknown flag: %s",
+           flce->ce_fileptr->cf_filename, flce->ce_varlinenum,
+           flce->ce_varname);
+    }
+  }
+
+  return 0;
+}
+
+static int c_ci_raw(CONFIGENTRY * ce)
+{
+  svs.raw = TRUE;
+  return 0;
+}
+
+static int c_ci_flood_msgs(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  svs.flood_msgs = ce->ce_vardatanum;
+
+  return 0;
+}
+
+static int c_ci_flood_time(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  svs.flood_time = ce->ce_vardatanum;
+
+  return 0;
+}
+
+static int c_ci_global(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  svs.global = sstrdup(ce->ce_vardata);
+
+  return 0;
+}
+
+static int c_ci_sra(CONFIGENTRY * ce)
+{
+  if (ce->ce_vardata == NULL)
+  {
+    PARAM_ERROR(ce);
+  }
+
+  sra_add(ce->ce_vardata);
+
+  return 0;
 }
 
 static void copy_me(struct me *src, struct me *dst)
@@ -669,6 +832,7 @@ boolean_t conf_check(void)
   if (!me.adminname)
   {
     slog(LG_INFO, "conf_check(): no `adminname' set in %s", config_file);
+    return FALSE;
     return FALSE;
   }
 

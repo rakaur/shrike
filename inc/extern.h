@@ -25,6 +25,11 @@ E void conf_parse(void);
 E boolean_t conf_rehash(void);
 E boolean_t conf_check(void);
 
+/* confp.c */
+E void config_free(CONFIGFILE * cfptr);
+E CONFIGFILE *config_load(char *filename);
+E CONFIGENTRY *config_find(CONFIGENTRY * ceptr, char *name);
+
 /* db.c */
 void db_save(void *arg);
 void db_load(void);
@@ -92,6 +97,8 @@ E boolean_t should_voice_host(mychan_t *mychan, char *host);
 E boolean_t is_sra(myuser_t *myuser);
 E boolean_t is_ircop(user_t *user);
 E boolean_t is_admin(user_t *user);
+
+E int token_to_value(struct Token token_table[], char *token);
 
 /* help.c */
 E void do_help(char *origin);

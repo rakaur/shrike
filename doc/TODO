@@ -106,7 +106,7 @@ MAY BE IN shrike-1.0
 [ ] - automatic nightly backups of db
 
 I WANT SOMEDAY IN shrike
-[ ] - a real bind style conf with lexing stuff
+[X] - a real bind style conf
 [ ] - a block allocator (mmap)
 [ ] - total clean up of node.c crap
 [ ]   . move all of the *_add() etc to localized files

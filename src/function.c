@@ -772,3 +772,25 @@ boolean_t is_admin(user_t *user)
 
   return FALSE;
 }
+
+/* stolen from Sentinel */
+int token_to_value(struct Token token_table[], char *token)
+{
+  int i;
+
+  if ((token_table != NULL) && (token != NULL))
+  {
+    for (i = 0; token_table[i].text != NULL; i++)
+    {
+      if (strcasecmp(token_table[i].text, token) == 0)
+      {
+        return token_table[i].value;
+      }
+    }
+    /* If no match... */
+    return TOKEN_UNMATCHED;
+  }
+
+  /* Otherwise... */
+  return TOKEN_ERROR;
+}

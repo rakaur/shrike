@@ -2,4 +2,5 @@ $$Id$
 
 shrike-1.0-current release notes
 
-- config file has changed (more options added, please look over)
+- changed the config files. you'll have to completely redo your conf.
+- large bug with not deopping unauthorized people has been fixed.
