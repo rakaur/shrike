@@ -11,7 +11,7 @@ include ../Makefile.inc
 
 VERSION=devel
 
-OBJS=cmode.o conf.o db.o function.o help.o irc.o match.o node.o set.o services.o shrike.o socket.o
+OBJS=cmode.o conf.o db.o event.o function.o help.o irc.o match.o node.o set.o services.o shrike.o socket.o
 
 all: version shrike
 

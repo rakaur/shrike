@@ -1,4 +1,19 @@
 ------------------------------------------------------------------------
+r38 | rakaur | 2004-03-14 22:41:46 -0600 (Sun, 14 Mar 2004) | 4 lines
+Changed paths:
+   A /trunk/ChangeLog
+   A /trunk/commit
+   D /trunk/doc/CHANGES
+   M /trunk/doc/TODO
+   M /trunk/inc/.indent.pro
+   M /trunk/src/.indent.pro
+   M /trunk/src/node.c
+
+Removed doc/CHANGES in favor of svn log ChangeLog.
+Added a commit script.
+Updated TODO.
+
+------------------------------------------------------------------------
 r37 | rakaur | 2004-03-14 20:01:50 -0600 (Sun, 14 Mar 2004) | 3 lines
 Changed paths:
    M /trunk/doc/CHANGES

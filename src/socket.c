@@ -112,9 +112,27 @@ static uint8_t server_login(void)
   return 0;
 }
 
-static void ping_uplink(event_t *e)
+static void ping_uplink(void *arg)
 {
+  uint32_t diff;
+
   sts("PING %s", me.uplink);
+
+  if (me.connected)
+  {
+    diff = CURRTIME - me.uplinkpong;
+
+    if (diff > 600)
+    {
+      slog(0, LG_INFO, "pink_uplink(): our uplink appears to be dead.");
+
+      close(servsock);
+      servsock = -1;
+      me.connected = FALSE;
+
+      event_delete(ping_uplink, NULL);
+    }
+  }
 }
 
 /* called to finalize the uplink connection */
@@ -152,7 +170,8 @@ static int8_t irc_estab(void)
   sts(":%s EOB", me.name);
 
   /* ping our uplink every 5 minutes */
-  event_add("Uplink ping", 300, (void *)ping_uplink, TRUE);
+  event_add("ping_uplink", ping_uplink, NULL, 300);
+  me.uplinkpong = time(NULL);
 
   return 1;
 }
@@ -228,7 +247,7 @@ int conn(char *host, uint32_t port)
   return s;
 }
 
-void reconn(event_t *e)
+void reconn(void *arg)
 {
   uint32_t i;
   server_t *s;
@@ -279,6 +298,7 @@ void io_loop(void)
   struct timeval to;
   static char buf[BUFSIZE + 1];
   boolean_t eadded = FALSE;
+  time_t delay;
 
   while (!(runflags & (RF_SHUTDOWN | RF_RESTART)))
   {
@@ -286,7 +306,10 @@ void io_loop(void)
     CURRTIME = time(NULL);
 
     /* check for events */
-    event_check();
+    delay = event_next_time();
+
+    if (delay <= CURRTIME)
+      event_run();
 
     memset(buf, '\0', BUFSIZE + 1);
     FD_ZERO(&readfds);
@@ -301,7 +324,7 @@ void io_loop(void)
 
     if ((servsock == -1) && (!eadded))
     {
-      event_add("Uplink connect", me.recontime, (void *)reconn, FALSE);
+      event_add_once("reconn", reconn, NULL, me.recontime);
       eadded = TRUE;
     }
 
@@ -345,7 +368,7 @@ void io_loop(void)
         close(servsock);
         servsock = -1;
         me.connected = FALSE;
-        event_add("Uplink connect", me.recontime, (void *)reconn, FALSE);
+        event_add_once("reconn", reconn, NULL, me.recontime);
         return;
       }
     }

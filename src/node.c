@@ -10,7 +10,6 @@
 
 #include "../inc/shrike.h"
 
-list_t eventlist;
 list_t sralist;
 list_t tldlist;
 list_t servlist[HASHSIZE];
@@ -18,8 +17,6 @@ list_t userlist[HASHSIZE];
 list_t chanlist[HASHSIZE];
 list_t mulist[HASHSIZE];
 list_t mclist[HASHSIZE];
-
-boolean_t check_events = FALSE;
 
 /*************
  * L I S T S *
@@ -113,163 +110,6 @@ node_t *node_find(void *data, list_t *l)
     return n;
 
   return NULL;
-}
-
-/***************
- * E V E N T S *
- ***************/
-
-/* checks all pending events */
-void event_check(void)
-{
-  event_t *e, *te;
-  node_t *n;
-  uint32_t now = time_msec();
-  int32_t diff = 0;
-
-  if (check_events == TRUE)
-    return;
-
-  check_events = TRUE;
-
-  LIST_FOREACH(n, eventlist.head)
-  {
-    e = (event_t *)n->data;
-
-    diff = e->timeout - now;
-
-    if (!e->timeout)
-    {
-      te = e->next;
-
-      node_del(n, &eventlist);
-      node_free(n);
-
-      free(e);
-
-      cnt.event--;
-
-      e = te;
-    }
-
-    if (diff > 0)
-      continue;
-
-    e->func(e);
-
-    if (e->repeat == TRUE)
-    {
-      e->timeout = now + e->delay;
-      continue;
-    }
-
-    te = e->next;
-
-    node_del(n, &eventlist);
-    node_free(n);
-
-    free(e);
-
-    cnt.event--;
-
-    e = te;
-  }
-
-  if (me.connected)
-  {
-    /* check to see if our uplink is dead
-       diff = now - me.uplinkpong;
-
-       if (diff > 300)
-       {
-       slog(0, LG_INFO,
-       "check_events(): no response from server in %d seconds; "
-       "disconnecting", diff);
-
-       close(servsock);
-       servsock = -1;
-       me.connected = FALSE;
-
-       LIST_FOREACH(n, eventlist.head)
-       {
-       e = (event_t *)n->data;
-
-       if (!strcasecmp("Uplink ping", e->name))
-       {
-       event_del(e);
-       return;
-       }
-       }
-       } */
-  }
-
-  check_events = FALSE;
-}
-
-/* add an event to the list to be triggered in `delay' seconds.  if `repeat' is
- * TRUE, do not delete the event after it's triggered.
- */
-event_t *event_add(char *name,
-                   int delay, void (*func) (event_t *), boolean_t repeat)
-{
-  if (delay > 4294967)
-    delay = 4294967;
-
-  return event_add_ms(name, delay * 1000, func, repeat);
-}
-
-event_t
-    *event_add_ms(char *name, int delay, void (*func) (event_t *),
-                  boolean_t repeat)
-{
-  node_t *n;
-  event_t *e;
-
-  n = node_create();
-  e = (event_t *)scalloc(sizeof(event_t), 1);
-
-  e->settime = CURRTIME;
-  e->timeout = time_msec() + delay;
-  e->delay = delay;
-  e->func = func;
-  e->repeat = repeat;
-  strlcpy(e->name, name, 127);
-
-  node_add(e, n, &eventlist);
-
-  slog(0, LG_DEBUG, "event_add_ms(): ``%s''", e->name);
-
-  cnt.event++;
-
-  return e;
-}
-
-/* removes a timer from the list */
-void event_del(event_t *e)
-{
-  node_t *n;
-  event_t *te;
-
-  n = node_find(e, &eventlist);
-  te = (event_t *)n->data;
-
-  if (!te)
-    return;
-
-  if (check_events == TRUE)
-  {
-    e->timeout = 0;
-    return;
-  }
-
-  node_del(n, &eventlist);
-  node_free(n);
-
-  cnt.event--;
-
-  slog(0, LG_DEBUG, "event_del(): ``%s''", e->name);
-
-  free(te);
 }
 
 /***********

@@ -49,6 +49,7 @@
 #define MODESTACK_WAIT 500
 #define MAXMODES 4
 #define MAXPARAMSLEN (510-32-64-34-(7+MAXMODES))
+#define MAX_EVENTS 25
 
 #ifndef uint8_t
 #define uint8_t u_int8_t
@@ -83,7 +84,6 @@ typedef enum { ERROR = -1, FALSE, TRUE } l_boolean_t;
 
 typedef struct node_ node_t;
 typedef struct list_ list_t;
-typedef struct event_ event_t;
 typedef struct sra_ sra_t;
 typedef struct tld_ tld_t;
 typedef struct server_ server_t;
@@ -93,6 +93,7 @@ typedef struct chanuser_ chanuser_t;
 typedef struct myuser_ myuser_t;
 typedef struct mychan_ mychan_t;
 typedef struct chanacs_ chanacs_t;
+typedef void EVH(void *);
 
 /* macros for linked lists */
 #define LIST_FOREACH(n, head) for (n = (head); n; n = n->next)
@@ -183,15 +184,14 @@ struct list_
 };
 
 /* event list struct */
-struct event_ {
-  event_t *next, *prev;
-  char name[128];
-  time_t settime;
-  uint32_t timeout;
-  int delay;
-  boolean_t repeat;
-  void (*func)(event_t *);
-  void *data;
+struct ev_entry
+{
+  EVH *func;
+  void *arg;
+  const char *name;
+  time_t frequency;
+  time_t when;
+  boolean_t active;
 };
 
 /* sra list struct */

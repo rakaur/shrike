@@ -296,8 +296,7 @@ struct modedata_
   char params[BUFSIZE];
   int nparams;
   int paramslen;
-  int dotopic;
-  event_t *event;
+  uint32_t event;
 } modedata[3];
 
 /* flush stacked and waiting cmodes */
@@ -306,9 +305,6 @@ static void flush_cmode(struct modedata_ *md)
   char buf[BUFSIZE];
   int len = 0;
   char lastc = 0;
-
-  if (md->event)
-    event_del(md->event);
 
   if (!md->binmodes_on && !md->binmodes_off && !*md->opmodes)
   {
@@ -347,9 +343,9 @@ static void flush_cmode(struct modedata_ *md)
   md->last_add = -1;
 }
 
-static void flush_cmode_callback(event_t *e)
+void flush_cmode_callback(void *arg)
 {
-  flush_cmode((struct modedata_ *)e->data);
+  flush_cmode((struct modedata_ *)arg);
 }
 
 /* stacks channel modes to be applied to a channel */
@@ -497,11 +493,8 @@ void cmode(char *sender, ...)
   md->used = CURRTIME;
 
   if (!md->event)
-  {
-    md->event = event_add_ms("Mode stack", MODESTACK_WAIT,
-                             flush_cmode_callback, FALSE);
-    md->event->data = md;
-  }
+    md->event = event_add_once("flush_cmode_callback", flush_cmode_callback,
+                               md, 1);
 }
 
 void check_modes(mychan_t *mychan)

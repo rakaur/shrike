@@ -31,7 +31,7 @@
 -T node_t
 -T list_t
 -T tld_t
--T event_t
+-T EVH
 -T sra_t
 -T server_t
 -T user_t

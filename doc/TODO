@@ -73,7 +73,7 @@ MUST BE IN shrike-1.0b2
 [X] - SENDPASS
 [X] - SET:HIDEMAIL for usernames
 
-MUST BE IN shrike-1.0rc1
+MUST BE IN shrike-1.0b3
 [X] - RESTART
 [X] - SHUTDOWN
 [X] - global notice that "learns" the tld's of the network
@@ -84,6 +84,9 @@ MUST BE IN shrike-1.0rc1
 [X] - deal with signals
 [X] - fix help files (nick is static)
 [X] - deal with floods
+[ ] - sort out the horrible mess that is the logging.
+[ ]   . get rid of the sameline crap
+[X] - new event system... probably based on ratbox's (squid's)
 
 MUST BE IN shrike-1.0
 [ ] - gline control functionality (a la DALnet AKILL)
@@ -92,15 +95,12 @@ MUST BE IN shrike-1.0
 
       sts: :oper KLINE target.server duration user host :reason
       sts: :oper UNKLINE target.server user host
-[ ] - sort out the horrible mess that is the logging.
-[ ]   . get rid of the sameline crap
-[ ] - new event system... probably based on ratbox's (squid's)
 
 MAY BE IN shrike-1.0
 [X] - settings mirroring before rehash
       . this takes up a considerable amount of memory
 [X] - mode stacking
-[ ] - maybe STATS stuff
+[ ] - STATS stuff
 
 I WANT SOMEDAY IN shrike
 [ ] - a real bind style conf with lexing stuff

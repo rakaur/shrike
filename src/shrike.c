@@ -50,7 +50,7 @@ static void sighandler(int signum)
     snoop("UPDATE: \2%s\2", "system console");
     wallops("Updating database by request of \2%s\2.", "system console");
     expire_check(NULL);
-    db_save();
+    db_save(NULL);
 
     snoop("REHASH: \2%s\2", "system console");
     wallops("Rehashing \2%s\2 by request of \2%s\2.", config_file,
@@ -94,7 +94,7 @@ static void sighandler(int signum)
     snoop("UPDATE: \2%s\2", "system console");
     wallops("Updating database by request of \2%s\2.", "system console");
     expire_check(NULL);
-    db_save();
+    db_save(NULL);
 
     snoop("RESTART: \2%s\2", "system console");
     wallops("Restarting in \2%d\2 seconds by request of \2%s\2.",
@@ -275,11 +275,14 @@ int main(int argc, char *argv[])
   /* we probably have a few open already... */
   me.maxfd = 3;
 
+  /* initialize event system */
+  event_init();
+
   /* save dbs every 5 minutes */
-  event_add("Save database", 300, (void *)db_save, TRUE);
+  event_add("db_save", db_save, NULL, 300);
 
   /* check expires every hour */
-  event_add("Check expires", 3600, (void *)expire_check, TRUE);
+  event_add("expire_check", expire_check, NULL, 3600);
 
   /* connect to our uplink */
   slog(0, LG_INFO, "main(): connecting to `%s' on %d as `%s'",
@@ -292,7 +295,7 @@ int main(int argc, char *argv[])
   io_loop();
 
   /* we're shutting down */
-  db_save();
+  db_save(NULL);
 
   /* should we restart? */
   if (runflags & RF_RESTART)

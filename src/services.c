@@ -138,7 +138,7 @@ void part(char *chan, char *nick)
   chanuser_delete(c, u);
 }
 
-void expire_check(event_t *e)
+void expire_check(void *arg)
 {
   uint32_t i, j, w, tcnt;
   myuser_t *mu;
@@ -1889,7 +1889,7 @@ static void do_update(char *origin)
   snoop("UPDATE: \2%s\2", origin);
   wallops("Updating database by request of \2%s\2.", origin);
   expire_check(NULL);
-  db_save();
+  db_save(NULL);
 }
 
 /* REHASH */
@@ -1898,7 +1898,7 @@ static void do_rehash(char *origin)
   snoop("UPDATE: \2%s\2", origin);
   wallops("Updating database by request of \2%s\2.", origin);
   expire_check(NULL);
-  db_save();
+  db_save(NULL);
 
   snoop("REHASH: \2%s\2", origin);
   wallops("Rehashing \2%s\2 by request of \2%s\2.", config_file, origin);
@@ -2175,7 +2175,7 @@ static void do_restart(char *origin)
   snoop("UPDATE: \2%s\2", origin);
   wallops("Updating database by request of \2%s\2.", origin);
   expire_check(NULL);
-  db_save();
+  db_save(NULL);
 
   snoop("RESTART: \2%s\2", origin);
   wallops("Restarting in \2%d\2 seconds by request of \2%s\2.", me.restarttime,
@@ -2189,7 +2189,7 @@ static void do_shutdown(char *origin)
   snoop("UPDATE: \2%s\2", origin);
   wallops("Updating database by request of \2%s\2.", origin);
   expire_check(NULL);
-  db_save();
+  db_save(NULL);
 
   snoop("SHUTDOWN: \2%s\2", origin);
   wallops("Shutting donw by request of \2%s\2.", origin);

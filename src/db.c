@@ -10,7 +10,7 @@
 #include "../inc/shrike.h"
 
 /* write shrike.db */
-void db_save(void)
+void db_save(void *arg)
 {
   myuser_t *mu;
   mychan_t *mc;

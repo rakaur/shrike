@@ -16,6 +16,7 @@
 /* cmode.c */
 E void channel_mode(channel_t *chan, uint8_t parc, char *parv[]);
 E void user_mode(user_t *user, char *modes);
+E void flush_cmode_callback(void *arg);
 E void cmode(char *sender, ...);
 E void check_modes(mychan_t *mychan);
 
@@ -25,8 +26,19 @@ E boolean_t conf_rehash(void);
 E boolean_t conf_check(void);
 
 /* db.c */
-void db_save(void);
+void db_save(void *arg);
 void db_load(void);
+
+/* event.c */
+E struct ev_entry event_table[MAX_EVENTS];
+
+E uint32_t event_add(const char *name, EVH *func, void *arg, time_t when);
+E uint32_t event_add_once(const char *name, EVH *func, void *arg, time_t when);
+E void event_run(void);
+E time_t event_next_time(void);
+E void event_init(void);
+E void event_delete(EVH *func, void *arg);
+E uint32_t event_find(EVH *func, void *arg);
 
 /* function.c */
 E FILE *log_file;
@@ -128,7 +140,6 @@ E int match(char *, char *);
 E char *collapse(char *);
 
 /* node.c */
-E list_t eventlist;
 E list_t sralist;
 E list_t tldlist;
 E list_t servlist[HASHSIZE];
@@ -142,13 +153,6 @@ E void node_free(node_t *n);
 E void node_add(void *data, node_t *n, list_t *l);
 E void node_del(node_t *n, list_t *l);
 E node_t *node_find(void *data, list_t *l);
-
-E void event_check(void);
-E event_t *event_add
-    (char *name, int delay, void (*func) (event_t *), boolean_t repeat);
-E event_t *event_add_ms
-    (char *name, int delay, void (*func) (event_t *), boolean_t repeat);
-E void event_del(event_t *e);
 
 E sra_t *sra_add(char *name);
 E void sra_delete(myuser_t *myuser);
@@ -199,7 +203,7 @@ E struct set_command_ *set_cmd_find(char *origin, char *command);
 E void introduce_nick(char *nick, char *user, char *host, char *real,
                       char *modes);
 E void join(char *chan, char *nick);
-E void expire_check(event_t *e);
+E void expire_check(void *arg);
 E void services_init(void);
 E void msg(char *target, char *fmt, ...);
 E void notice(char *target, char *fmt, ...);
@@ -225,7 +229,7 @@ E time_t CURRTIME;
 
 E int8_t sts(char *fmt, ...);
 E int conn(char *host, uint32_t port);
-E void reconn(event_t *e);
+E void reconn(void *arg);
 E void io_loop(void);
 
 #endif /* EXTERN_H */

@@ -260,8 +260,7 @@ static void m_pong(char *origin, uint8_t parc, char *parv[])
   if (!parv[0])
     return;
 
-  if (!strcasecmp(me.uplink, parv[0]))
-    me.uplinkpong = CURRTIME;
+  me.uplinkpong = CURRTIME;
 }
 
 static void m_privmsg(char *origin, uint8_t parc, char *parv[])
