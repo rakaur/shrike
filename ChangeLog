@@ -1,4 +1,12 @@
 ------------------------------------------------------------------------
+r90 | rakaur | 2004-08-19 00:56:52 -0500 (Thu, 19 Aug 2004) | 2 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/src/node.c
+
+Fixed a problem where logged in users were never affected by hostmasks in access lists (thanks rintaun).
+
+------------------------------------------------------------------------
 r86 | rakaur | 2004-06-12 12:30:45 -0500 (Sat, 12 Jun 2004) | 2 lines
 Changed paths:
    M /trunk/ChangeLog

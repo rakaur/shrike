@@ -897,8 +897,11 @@ static void do_set_successor(char *origin, char *name, char *params)
   snoop("SET:SUCCESSOR: \2%s\2 -> \2%s\2", mc->name, mu->name);
 
   notice(origin, "\2%s\2 is now the successor of \2%s\2.", mu->name, mc->name);
-  notice(mu->user->nick, "\2%s\2 has set you as the successor of \2%s\2.",
-         u->myuser->name, mc->name);
+
+  /* if they're online, let them know about it */
+  if (mu->user != NULL)
+    notice(mu->user->nick, "\2%s\2 has set you as the successor of \2%s\2.",
+           u->myuser->name, mc->name);
 }
 
 static void do_set_verbose(char *origin, char *name, char *params)
