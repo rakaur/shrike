@@ -64,7 +64,7 @@ MUST BE IN shrike-1.0b2
 [ ]   . kick
 [ ]   . info
 [ ]   . status on channel
-[ ]   . xOP:LIST
+[X]   . xOP:LIST
 [ ] - hostmasks on xOP lists
 
 MAY BE IN shrike-1.0b2

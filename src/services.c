@@ -477,8 +477,15 @@ static void do_xop(char *origin, uint8_t level)
   char *cmd = strtok(NULL, " ");
   char *uname = strtok(NULL, " ");
 
-  if (!cmd || !chan || !uname)
+  if (!cmd || !chan)
   {
+    notice(origin, "Insufficient parameters specificed for \2xOP\2.");
+    notice(origin, "Syntax: SOP|AOP|VOP <#channel> ADD|DEL|LIST <username>");
+    return;
+  } 
+
+  if ((strcasecmp("LIST", cmd)) && (!uname))
+  {  
     notice(origin, "Insufficient parameters specificed for \2xOP\2.");
     notice(origin, "Syntax: SOP|AOP|VOP <#channel> ADD|DEL|LIST <username>");
     return;
@@ -798,6 +805,96 @@ static void do_xop(char *origin, uint8_t level)
               mu->name);
 
       return;
+    }
+  }
+
+  else if (!strcasecmp("LIST", cmd))
+  {
+    node_t *n;
+
+    if ((!is_founder(mc, u->myuser)) && (!is_xop(mc, u->myuser, CA_VOP)) &&
+        (!is_xop(mc, u->myuser, CA_AOP)) && (!is_xop(mc, u->myuser, CA_SOP)))
+    {
+      notice(origin, "You are not authorized to perform this operation.");
+      return;
+    }
+
+    /* VOP */
+    if (CA_VOP & level)
+    {
+      uint8_t i = 0;
+
+      notice(origin, "VOP list for \2%s\2:", mc->name);
+
+      LIST_FOREACH(n, mc->chanacs.head)
+      {
+        ca = (chanacs_t *)n->data;
+
+        if (CA_VOP & ca->level)
+        {
+          if (ca->myuser->user)
+            notice(origin, "%d: \2%s\2 (logged in from \2%s\2)", ++i,
+                   ca->myuser->name, ca->myuser->user->nick);
+          else
+            notice(origin, "%d: \2%s\2 (not logged in)", ++i,
+                   ca->myuser->name);
+        }
+      }
+
+      notice(origin, "Total of \2%d\2 %s in \2%s\2's VOP list.",
+             i, (i == 1) ? "entry" : "entries", mc->name);
+    }
+
+    /* AOP */
+    if (CA_AOP & level)
+    {
+      uint8_t i = 0;
+
+      notice(origin, "AOP list for \2%s\2:", mc->name);
+
+      LIST_FOREACH(n, mc->chanacs.head)
+      {
+        ca = (chanacs_t *)n->data;
+        
+        if (CA_AOP & ca->level)
+        {
+          if (ca->myuser->user)
+            notice(origin, "%d: \2%s\2 (logged in from \2%s\2)", ++i,
+                   ca->myuser->name, ca->myuser->user->nick);
+          else
+            notice(origin, "%d: \2%s\2 (not logged in)", ++i,
+                   ca->myuser->name);
+        }
+      }
+       
+      notice(origin, "Total of \2%d\2 %s in \2%s\2's AOP list.",
+             i, (i == 1) ? "entry" : "entries", mc->name);
+    }
+
+    /* SOP */
+    if (CA_SOP & level)
+    {
+      uint8_t i = 0;
+
+      notice(origin, "SOP list for \2%s\2:", mc->name);
+
+      LIST_FOREACH(n, mc->chanacs.head)
+      {
+        ca = (chanacs_t *)n->data;
+        
+        if (CA_SOP & ca->level)
+        {
+          if (ca->myuser->user)
+            notice(origin, "%d: \2%s\2 (logged in from \2%s\2)", ++i,
+                   ca->myuser->name, ca->myuser->user->nick);
+          else
+            notice(origin, "%d: \2%s\2 (not logged in)", ++i,
+                   ca->myuser->name);
+        }
+      }
+       
+      notice(origin, "Total of \2%d\2 %s in \2%s\2's SOP list.",
+             i, (i == 1) ? "entry" : "entries", mc->name);
     }
   }
 }

@@ -29,6 +29,7 @@ shrike-1.0 - Matt Lanigan <rintaun@projectxero.net>
   + Added doc/COMMANDS.
 
 shrike-1.0 - E. Will <rakaur@malkier.net>
+  + Added xOP:LIST.
   ~ Changed the verbosity of snoop() a bit.
   + You can now use LOGOUT on specific usernames.
   - Removed admin tracking, as it is useless.
