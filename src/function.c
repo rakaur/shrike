@@ -501,24 +501,13 @@ int validemail(char *email)
   return valid;
 }
 
-int validhostmask(char *host)
+boolean_t validhostmask(char *host)
 {
-  int i, valid = 1, chars = 0;
+  /* make sure it has ! and @ */
+  if (!strchr(host, '!') || !strchr(host, '@'))
+    return FALSE;
 
-  /* make sure it has !, @, and . */
-  if (!strchr(host, '!') || !strchr(host, '@') || !strchr(host, '.'))
-    valid = 0;
-
-  /* make sure there are at least 5 characters besides the above
-   * mentioned !, @, and . */
-  for (i = strlen(host) - 1; i > 0; i--)
-    if (!(host[i] == '!' || host[i] == '@' || host[i] == '.'))
-      chars++;
-
-  if (chars < 4)
-    valid = 0;
-
-  return valid;
+  return TRUE;
 }
 
 /* send the specified type of email.

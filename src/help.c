@@ -46,8 +46,13 @@ void do_help(char *origin)
       notice(origin, "The following SRA commands are available.");
       notice(origin, "\2UPDATE\2      Flush the database to disk.");
       notice(origin, "\2REHASH\2      Reload the configuration file.");
-      notice(origin, "\2RAW\2         Send data to the uplink.");
-      notice(origin, "\2INJECT\2      Fake incoming data from the uplink.");
+
+      if (svs.raw)
+      {
+        notice(origin, "\2RAW\2         Send data to the uplink.");
+        notice(origin, "\2INJECT\2      Fake incoming data from the uplink.");
+      }
+
       notice(origin, "\2RESTART\2     Restart services.");
       notice(origin, "\2SHUTDOWN\2    Shuts down services.");
       notice(origin, " ");

@@ -30,9 +30,17 @@ A: Lots of things.  First, it says "shrike-," followed by the version and
 
      * d - debug mode is on
 
+     * e - email auth is on
+
+     * l - leave_chans is on
+
+     * j - join_chans is on
+
      * n - running live (nofork)
 
      * R - using rfc1459 casemapping
+
+     * r - raw/inject are enabled
 
 Q: Why isn't there an include/config.h?
 A: For one, it'd be inc/config.h.  For two, it's pointless.  It's for

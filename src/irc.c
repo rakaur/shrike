@@ -512,11 +512,16 @@ static void m_admin(char *origin, uint8_t parc, char *parv[])
 
 static void m_version(char *origin, uint8_t parc, char *parv[])
 {
-  sts(":%s 351 %s :shrike-%s. %s %s%s%s%s TS5ow",
+  sts(":%s 351 %s :shrike-%s. %s %s%s%s%s%s%s%s%s TS5ow",
       me.name, origin, version, me.name,
       (match_mapping) ? "A" : "",
+      (me.loglevel & LG_DEBUG) ? "d" : "",
+      (me.auth) ? "e" : "",
+      (svs.leave_chans) ? "l" : "",
+      (svs.join_chans) ? "j" : "",
       (!match_mapping) ? "R" : "",
-      (me.loglevel & LG_DEBUG) ? "d" : "", (runflags & RF_LIVE) ? "n" : "");
+      (svs.raw) ? "r" : "",
+      (runflags & RF_LIVE) ? "n" : "");
 }
 
 static void m_info(char *origin, uint8_t parc, char *parv[])

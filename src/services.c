@@ -271,11 +271,15 @@ void services(char *origin, uint8_t parc, char *parv[])
   else if (!strcmp(cmd, "\001VERSION\001"))
   {
     notice(origin,
-           "\001VERSION shrike-%s. %s %s%s%s%s TS5ow\001",
+           "\001VERSION shrike-%s. %s %s%s%s%s%s%s%s%s TS5ow\001",
            version, me.name,
            (match_mapping) ? "A" : "",
-           (!match_mapping) ? "R" : "",
            (me.loglevel & LG_DEBUG) ? "d" : "",
+           (me.auth) ? "e" : "",
+           (svs.leave_chans) ? "l" : "",
+           (svs.join_chans) ? "j" : "",
+           (!match_mapping) ? "R" : "",
+           (svs.raw) ? "r" : "",
            (runflags & RF_LIVE) ? "n" : "");
 
     return;
@@ -2030,6 +2034,9 @@ static void do_raw(char *origin)
 {
   char *s = strtok(NULL, "");
 
+  if (!svs.raw)
+    return;
+
   if (!s)
   {
     notice(origin, "Insufficient parameters for \2RAW\2.");
@@ -2047,6 +2054,9 @@ static void do_inject(char *origin)
   char *inject;
   static boolean_t injecting = FALSE;
   inject = strtok(NULL, "");
+
+  if (!svs.raw)
+    return;
 
   if (!inject)
   {

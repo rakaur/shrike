@@ -330,6 +330,15 @@ void conf_parse(void)
             sra_add(rvalue);
             continue;
           }
+          else if (!strcasecmp("raw", lvalue))
+          {
+            if (!strcasecmp("yes", rvalue) || !strcasecmp("true", rvalue))
+              svs.raw = TRUE;
+            else
+              svs.raw = FALSE;
+
+            continue;
+          }
           else
             continue;
         }

@@ -24,6 +24,9 @@ shrike-1.0 - Stephen Belcher <sycobuny@malkier.net>
   + Added REHASH.
 
 shrike-1.0 - Matt Lanigan <rintaun@projectxero.net>
+  ~ Updated version flags and such.
+  + Can now disable raw/inject via conf option `raw'.
+  ~ Changed validhostmask() to not be picky at all.
   + Added commands that were not in COMMANDS file
   + Added m_info() and m_admin().
   + Added doc/COMMANDS.
@@ -44,7 +47,7 @@ shrike-1.0 - E. Will <rakaur@malkier.net>
   ~ Updated TODO for beta3.
   * Released 1.0b2.
   ~ MODEs should play nice with hybrid6 now.
-  + Joining of registered channels is now a conf option via `join_chans' in.
+  + Joining of registered channels is now a conf option via `join_chans'.
   + Added SET:HIDEMAIL for usernames.
   ~ SRAs now have access to IRCop commands.
   + Added hostmasks to VOP and AOP lists.

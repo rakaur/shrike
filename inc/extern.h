@@ -66,7 +66,7 @@ E int32_t mode_to_flag(char c);
 E char *time_ago(time_t event);
 E unsigned long makekey(void);
 E int validemail(char *email);
-E int validhostmask(char *host);
+E boolean_t validhostmask(char *host);
 E void sendemail(char *what, const char *param, int type);
 
 E boolean_t is_founder(mychan_t *mychan, myuser_t *myuser);

@@ -143,6 +143,7 @@ struct svs
 
   boolean_t join_chans;         /* join registered channels?  */
   boolean_t leave_chans;        /* leave channels when empty? */
+  boolean_t raw;                /* enable raw/inject?         */
 } svs;
 
 /* keep track of how many of what we have */
