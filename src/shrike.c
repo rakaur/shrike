@@ -29,10 +29,10 @@ printf(
 static void print_version(void)
 {
 printf(
-"Shrike IRC Services (shrike-%s.%s)\n\n"
+"Shrike IRC Services (shrike-%s)\n\n"
 
 "Copyright (c) 2003-2004 E. Will et al.\n"
-"Rights to this code are documented in doc/LICENSE.\n", version, build
+"Rights to this code are documented in doc/LICENSE.\n", version
 );
 }
 /* *INDENT-ON* */

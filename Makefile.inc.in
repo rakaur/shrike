@@ -21,4 +21,4 @@ LDFLAGS=@LDFLAGS@
 
 # Debuggers need special flags - Note that a debugger will know
 # how to modify these to get what he/she needs
-CFLAGS += -ggdb -pedantic -Wno-long-long -Wshadow -Wmissing-declarations -Wmissing-prototypes
+#CFLAGS += -ggdb -pedantic -Wno-long-long -Wshadow -Wmissing-declarations -Wmissing-prototypes
