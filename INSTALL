@@ -22,6 +22,8 @@ platforms that Shrike has been tested on includes:
 
   * Solaris 8(*)           - Compiles and runs with no issues 
 
+  * MacOS 10.3.3           - Compiles and runs with no issues
+
   * Other BSD-based systems will probably work.  Other SysV based systems
     MAY work, provided they support BSD sockets and POSIX function calls.  If
     there are any problems, patches, bug reports, or sucess stories, please

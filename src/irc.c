@@ -558,6 +558,8 @@ static void m_kill(char *origin, uint8_t parc, char *parv[])
   {
     services_init();
 
+    join(svs.chan, svs.nick);
+
     for (i = 0; i < HASHSIZE; i++)
     {
       LIST_FOREACH(n, mclist[i].head)
