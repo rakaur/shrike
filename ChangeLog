@@ -1,4 +1,27 @@
 ------------------------------------------------------------------------
+r52 | rakaur | 2004-04-03 11:52:46 -0600 (Sat, 03 Apr 2004) | 5 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/INSTALL
+   M /trunk/README
+   M /trunk/commit
+   M /trunk/dist/shrike.conf
+   M /trunk/doc/TODO
+   M /trunk/inc/extern.h
+   M /trunk/src/conf.c
+   M /trunk/src/event.c
+   M /trunk/src/function.c
+   M /trunk/src/irc.c
+   M /trunk/src/match.c
+   M /trunk/src/services.c
+   M /trunk/src/shrike.c
+
+Added STATS stuff.
+Made svs.chan optional as it was originally supposed to be.
+Cleaned up rehash stuff.
+Changed `sra' format in config file.
+
+------------------------------------------------------------------------
 r51 | sycobuny | 2004-04-03 01:12:21 -0600 (Sat, 03 Apr 2004) | 4 lines
 Changed paths:
    M /trunk/src/conf.c

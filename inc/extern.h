@@ -27,9 +27,9 @@ E boolean_t conf_rehash(void);
 E boolean_t conf_check(void);
 
 /* confp.c */
-E void config_free(CONFIGFILE * cfptr);
+E void config_free(CONFIGFILE *cfptr);
 E CONFIGFILE *config_load(char *filename);
-E CONFIGENTRY *config_find(CONFIGENTRY * ceptr, char *name);
+E CONFIGENTRY *config_find(CONFIGENTRY *ceptr, char *name);
 
 /* db.c */
 void db_save(void *arg);
@@ -102,6 +102,8 @@ E boolean_t is_ircop(user_t *user);
 E boolean_t is_admin(user_t *user);
 
 E int token_to_value(struct Token token_table[], char *token);
+E char *sbytes(float x);
+E float bytes(float x);
 
 /* help.c */
 E void do_help(char *origin);
@@ -152,6 +154,7 @@ E char *collapse(char *);
 /* node.c */
 E list_t sralist;
 E list_t tldlist;
+E list_t klnlist;
 E list_t servlist[HASHSIZE];
 E list_t userlist[HASHSIZE];
 E list_t chanlist[HASHSIZE];
@@ -171,6 +174,12 @@ E sra_t *sra_find(myuser_t *myuser);
 E tld_t *tld_add(char *name);
 E void tld_delete(char *name);
 E tld_t *tld_find(char *name);
+
+E kline_t *kline_add(char *user, char *host, char *reason, long duration);
+E void kline_delete(char *user, char *host);
+E kline_t *kline_find(char *user, char *host);
+E kline_t *kline_find_num(long number);
+E void kline_expire(void *arg);
 
 E server_t *server_add(char *name, uint8_t hops, char *desc);
 E void server_delete(char *name);
@@ -218,6 +227,10 @@ E void services_init(void);
 E void msg(char *target, char *fmt, ...);
 E void notice(char *target, char *fmt, ...);
 E void wallops(char *fmt, ...);
+E void skill(char *nick, char *reason);
+E void kline_sts(char *server, char *user, char *host, long duration,
+                 char *reason);
+E void unkline_sts(char *server, char *user, char *host);
 E void verbose(mychan_t *mychan, char *fmt, ...);
 E void snoop(char *fmt, ...);
 E void part(char *chan, char *nick);

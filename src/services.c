@@ -92,6 +92,33 @@ void wallops(char *fmt, ...)
   sts(":%s WALLOPS :%s", svs.nick, buf);
 }
 
+/* KILL wrapper */
+void skill(char *nick, char *reason)
+{
+  sts(":%s KILL %s :%s!%s!%s (%s)", svs.nick, nick, svs.host, svs.user,
+      svs.nick, reason);
+}
+
+/* server-to-server KLINE wrapper */
+void kline_sts(char *server, char *user, char *host, long duration,
+               char *reason)
+{
+  if (!me.connected)
+    return;
+
+  sts(":%s KLINE %s %ld %s %s :%s", svs.nick, server, duration, user, host,
+      reason);
+}
+
+/* server-to-server UNKLINE wrapper */
+void unkline_sts(char *server, char *user, char *host)
+{
+  if (!me.connected)
+    return;
+
+  sts(":%s UNKLINE %s %s %s", svs.nick, server, user, host);
+}
+
 void verbose(mychan_t *mychan, char *fmt, ...)
 {
   va_list ap;
@@ -302,25 +329,6 @@ void services(char *origin, uint8_t parc, char *parv[])
   if ((c = cmd_find(origin, cmd)))
     if (c->func)
       c->func(origin);
-}
-
-/* this is merely for debugging */
-static void do_list(char *origin)
-{
-  if (!svs.chan)
-    return;
-
-  msg(svs.chan, "event   : %d", cnt.event);
-  msg(svs.chan, "sra     : %d", cnt.sra);
-  msg(svs.chan, "tld     : %d", cnt.tld);
-  msg(svs.chan, "server  : %d", cnt.server);
-  msg(svs.chan, "user    : %d", cnt.user);
-  msg(svs.chan, "chan    : %d", cnt.chan);
-  msg(svs.chan, "chanuser: %d", cnt.chanuser);
-  msg(svs.chan, "myuser  : %d", cnt.myuser);
-  msg(svs.chan, "mychan  : %d", cnt.mychan);
-  msg(svs.chan, "chanacs : %d", cnt.chanacs);
-  msg(svs.chan, "node    : %d", cnt.node);
 }
 
 /* LOGIN <username> <password> */
@@ -596,6 +604,9 @@ static void do_xop(char *origin, uint8_t level)
         {
           cu = (chanuser_t *)n->data;
 
+          if (cu->modes & CMODE_VOICE)
+            return;
+
           hostbuf[0] = '\0';
 
           strlcat(hostbuf, cu->user->nick, BUFSIZE);
@@ -706,6 +717,9 @@ static void do_xop(char *origin, uint8_t level)
         LIST_FOREACH(n, mc->chan->members.head)
         {
           cu = (chanuser_t *)n->data;
+
+          if (cu->modes & CMODE_OP)
+            return;
 
           hostbuf[0] = '\0';
 
@@ -1932,6 +1946,306 @@ static void do_drop(char *origin)
   }
 }
 
+/* KLINE ADD|DEL|LIST */
+static void do_kline(char *origin)
+{
+  user_t *u;
+  kline_t *k;
+  char *cmd = strtok(NULL, " ");
+  char *s;
+
+  if (!cmd)
+  {
+    notice(origin, "Insufficient parameters for \2KLINE\2.");
+    notice(origin, "Syntax: KLINE ADD|DEL|LIST");
+    return;
+  }
+
+  if (!strcasecmp(cmd, "ADD"))
+  {
+    char *target = strtok(NULL, " ");
+    char *token = strtok(NULL, " ");
+    char *treason, reason[BUFSIZE];
+    long duration;
+
+    if (!target || !token)
+    {
+      notice(origin, "Insuccicient parameters for \2KLINE ADD\2.");
+      notice(origin, "Syntax: KLINE ADD <nick|hostmask> [!P|!T <minutes>] "
+             "<reason>");
+      return;
+    }
+
+    if (!strcasecmp(token, "!P"))
+    {
+      duration = 0;
+      treason = strtok(NULL, "");
+      strlcpy(reason, treason, BUFSIZE);
+    }
+    else if (!strcasecmp(token, "!T"))
+    {
+      s = strtok(NULL, " ");
+      duration = (atol(s) * 60);
+      treason = strtok(NULL, "");
+      strlcpy(reason, treason, BUFSIZE);
+    }
+    else
+    {
+      duration = svs.kline_time;
+      strlcpy(reason, token, BUFSIZE);
+      treason = strtok(NULL, "");
+
+      if (treason)
+      {
+        strlcat(reason, " ", BUFSIZE);
+        strlcat(reason, treason, BUFSIZE);
+      }
+    }
+
+    if (!(strchr(target, '@')))
+    {
+      if (!(u = user_find(target)))
+      {
+        notice(origin, "No such user: \2%s\2.", target);
+        return;
+      }
+
+      if ((k = kline_find(u->user, u->host)))
+      {
+        notice(origin, "KLINE \2%s@%s\2 is already matched in the database.",
+               u->user, u->host);
+        return;
+      }
+
+      k = kline_add(u->user, u->host, reason, duration);
+      k->setby = sstrdup(origin);
+    }
+    else
+    {
+      char *userbuf = strtok(target, "@");
+      char *hostbuf = strtok(NULL, "@");
+
+      /* XXX - wildcard check */
+
+      if ((k = kline_find(userbuf, hostbuf)))
+      {
+        notice(origin, "KLINE \2%s@%s\2 is already matched in the database.",
+               userbuf, hostbuf);
+        return;
+      }
+
+      k = kline_add(userbuf, hostbuf, reason, duration);
+      k->setby = sstrdup(origin);
+    }
+
+    if (duration)
+      notice(origin, "TKLINE on \2%s@%s\2 was successfully added and will "
+             "expire in %s.", k->user, k->host, timediff(duration));
+    else
+      notice(origin, "KLINE on \2%s@%s\2 was successfully added.",
+             k->user, k->host);
+
+    snoop("KLINE:ADD: \2%s@%s\2 by \2%s\2 for \2%s\2", k->user, k->host,
+          origin, k->reason);
+
+    return;
+  }
+
+  if (!strcasecmp(cmd, "DEL"))
+  {
+    char *target = strtok(NULL, " ");
+    char *userbuf, *hostbuf;
+    uint32_t number;
+
+    if (!target)
+    {
+      notice(origin, "Insuccicient parameters for \2KLINE DEL\2.");
+      notice(origin, "Syntax: KLINE DEL <hostmask>");
+      return;
+    }
+
+    if (strchr(target, ','))
+    {
+      int start = 0, end = 0, i;
+      char t[16];
+
+      s = strtok(target, ",");
+
+      do
+      {
+        if (strchr(s, ':'))
+        {
+          for (i = 0; *s != ':'; *s++, i++)
+            t[i] = *s;
+
+          t[++i] = '\0';
+          start = atoi(t);
+
+          *s++;                 /* skip past the : */
+
+          for (i = 0; *s != '\0'; *s++, i++)
+            t[i] = *s;
+
+          t[++i] = '\0';
+          end = atoi(t);
+
+          for (i = start; i <= end; i++)
+          {
+            if (!(k = kline_find_num(i)))
+            {
+              notice(origin, "No such KLINE with number \2%d\2.", i);
+              continue;
+            }
+
+            snoop("KLINE:DEL: \2%s@%s\2 by \2%s\2", k->user, k->host, origin);
+
+            notice(origin, "KLINE on \2%s@%s\2 has been successfully removed.",
+                   k->user, k->host);
+
+            kline_delete(k->user, k->host);
+          }
+
+          continue;
+        }
+
+        number = atoi(s);
+
+        if (!(k = kline_find_num(number)))
+        {
+          notice(origin, "No such KLINE with number \2%d\2.", number);
+          return;
+        }
+
+        snoop("KLINE:DEL: \2%s@%s\2 by \2%s\2", k->user, k->host, origin);
+
+        notice(origin, "KLINE on \2%s@%s\2 has been successfully removed.",
+               k->user, k->host);
+
+        kline_delete(k->user, k->host);
+      } while ((s = strtok(NULL, ",")));
+
+      return;
+    }
+
+    if (!strchr(target, '@'))
+    {
+      int start = 0, end = 0, i;
+      char t[16];
+
+      if (strchr(target, ':'))
+      {
+        for (i = 0; *target != ':'; *target++, i++)
+          t[i] = *target;
+
+        t[++i] = '\0';
+        start = atoi(t);
+
+        *target++;              /* skip past the : */
+
+        for (i = 0; *target != '\0'; *target++, i++)
+          t[i] = *target;
+
+        t[++i] = '\0';
+        end = atoi(t);
+
+        for (i = start; i <= end; i++)
+        {
+          if (!(k = kline_find_num(i)))
+          {
+            notice(origin, "No such KLINE with number \2%d\2.", i);
+            continue;
+          }
+
+          snoop("KLINE:DEL: \2%s@%s\2 by \2%s\2", k->user, k->host, origin);
+
+          notice(origin, "KLINE on \2%s@%s\2 has been successfully removed.",
+                 k->user, k->host);
+
+          kline_delete(k->user, k->host);
+        }
+
+        return;
+      }
+
+      number = atoi(target);
+
+      if (!(k = kline_find_num(number)))
+      {
+        notice(origin, "No such KLINE with number \2%d\2.", number);
+        return;
+      }
+
+      snoop("KLINE:DEL: \2%s@%s\2 by \2%s\2", k->user, k->host, origin);
+
+      notice(origin, "KLINE on \2%s@%s\2 has been successfully removed.",
+             k->user, k->host);
+
+      kline_delete(k->user, k->host);
+
+      return;
+    }
+
+    userbuf = strtok(target, "@");
+    hostbuf = strtok(NULL, "@");
+
+    if (!(k = kline_find(userbuf, hostbuf)))
+    {
+      notice(origin, "No such KLINE: \2%s@%s\2.", userbuf, hostbuf);
+      return;
+    }
+
+    kline_delete(userbuf, hostbuf);
+
+    snoop("KLINE:DEL: \2%s@%s\2 by \2%s\2", userbuf, hostbuf, origin);
+
+    notice(origin, "KLINE on \2%s@%s\2 has been successfully removed.",
+           userbuf, hostbuf);
+
+    return;
+  }
+
+  if (!strcasecmp(cmd, "LIST"))
+  {
+    boolean_t full = FALSE;
+    node_t *n;
+    int i = 0;
+
+    s = strtok(NULL, " ");
+
+    if (s && !strcasecmp(s, "FULL"))
+      full = TRUE;
+
+    if (full)
+      notice(origin, "KLINE list (with reasons):");
+    else
+      notice(origin, "KLINE list:");
+
+    LIST_FOREACH(n, klnlist.head)
+    {
+      k = (kline_t *)n->data;
+
+      i++;
+
+      if (k->duration && full)
+        notice(origin, "%d: %s@%s - by \2%s\2 - expires in \2%s\2 - (%s)",
+               k->number, k->user, k->host, k->setby,
+               timediff(k->expires - CURRTIME), k->reason);
+      else if (k->duration && !full)
+        notice(origin, "%d: %s@%s - by \2%s\2 - expires in \2%s\2", k->number,
+               k->user, k->host, k->setby, timediff(k->expires - CURRTIME));
+      else if (!k->duration && full)
+        notice(origin, "%d: %s@%s - by \2%s\2 - \2permanent\2 - (%s)",
+               k->number, k->user, k->host, k->setby, k->reason);
+      else
+        notice(origin, "%d: %s@%s - by \2%s\2 - \2permanent\2", k->number,
+               k->user, k->host, k->setby);
+    }
+
+    notice(origin, "Total of \2%d\2 %s in KLINE list.", i,
+           (i == 1) ? "entry" : "entries");
+  }
+}
+
 static void do_update(char *origin)
 {
   snoop("UPDATE: \2%s\2", origin);
@@ -2253,7 +2567,6 @@ static void do_shutdown(char *origin)
 
 /* commands we understand */
 struct command_ commands[] = {
-  { "LIST",     AC_NONE,  do_list     },
   { "LOGIN",    AC_NONE,  do_login    },
   { "LOGOUT",   AC_NONE,  do_logout   },
   { "HELP",     AC_NONE,  do_help     },
@@ -2269,6 +2582,7 @@ struct command_ commands[] = {
   { "INFO",     AC_NONE,  do_info     },
   { "REGISTER", AC_NONE,  do_register },
   { "DROP",     AC_NONE,  do_drop     },
+  { "KLINE",    AC_IRCOP, do_kline    },
   { "UPDATE",   AC_SRA,   do_update   },
   { "REHASH",   AC_SRA,   do_rehash   },
   { "STATUS",   AC_NONE,  do_status   },

@@ -12,7 +12,7 @@
 
 static void config_error(char *format, ...);
 static CONFIGFILE *config_parse(char *filename, char *confdata);
-static void config_entry_free(CONFIGENTRY * ceptr);
+static void config_entry_free(CONFIGENTRY *ceptr);
 
 static void config_error(char *format, ...)
 {
@@ -40,7 +40,7 @@ static CONFIGFILE *config_parse(char *filename, char *confdata)
   CONFIGFILE *curcf;
   CONFIGFILE *lastcf;
 
-  lastcf = curcf = (CONFIGFILE *) smalloc(sizeof(CONFIGFILE));
+  lastcf = curcf = (CONFIGFILE *)smalloc(sizeof(CONFIGFILE));
   memset(curcf, 0, sizeof(CONFIGFILE));
   curcf->cf_filename = sstrdup(filename);
   lastce = &(curcf->cf_entries);
@@ -219,7 +219,7 @@ static CONFIGFILE *config_parse(char *filename, char *confdata)
         }
         else
         {
-          curce = (CONFIGENTRY *) smalloc(sizeof(CONFIGENTRY));
+          curce = (CONFIGENTRY *)smalloc(sizeof(CONFIGENTRY));
           memset(curce, 0, sizeof(CONFIGENTRY));
           curce->ce_varname = (char *)smalloc(ptr - start + 1);
           strncpy(curce->ce_varname, start, ptr - start);
@@ -289,7 +289,7 @@ static CONFIGFILE *config_parse(char *filename, char *confdata)
         }
         else
         {
-          curce = (CONFIGENTRY *) smalloc(sizeof(CONFIGENTRY));
+          curce = (CONFIGENTRY *)smalloc(sizeof(CONFIGENTRY));
           memset(curce, 0, sizeof(CONFIGENTRY));
           curce->ce_varname = (char *)smalloc(ptr - start + 1);
           strncpy(curce->ce_varname, start, ptr - start);
@@ -322,7 +322,7 @@ static CONFIGFILE *config_parse(char *filename, char *confdata)
   return curcf;
 }
 
-static void config_entry_free(CONFIGENTRY * ceptr)
+static void config_entry_free(CONFIGENTRY *ceptr)
 {
   CONFIGENTRY *nptr;
 
@@ -339,7 +339,7 @@ static void config_entry_free(CONFIGENTRY * ceptr)
   }
 }
 
-void config_free(CONFIGFILE * cfptr)
+void config_free(CONFIGFILE *cfptr)
 {
   CONFIGFILE *nptr;
 
@@ -402,7 +402,7 @@ CONFIGFILE *config_load(char *filename)
   return cfptr;
 }
 
-CONFIGENTRY *config_find(CONFIGENTRY * ceptr, char *name)
+CONFIGENTRY *config_find(CONFIGENTRY *ceptr, char *name)
 {
   for (; ceptr; ceptr = ceptr->ce_next)
     if (!strcmp(ceptr->ce_varname, name))

@@ -20,6 +20,9 @@ static int irc_read(int fd, char *buf)
 {
   int n = read(fd, buf, BUFSIZE);
   buf[n] = '\0';
+
+  cnt.bin += n;
+
   return n;
 }
 
@@ -70,7 +73,8 @@ int8_t sts(char *fmt, ...)
 
   strlcat(buf, "\r\n", BUFSIZE);
   len = strlen(buf);
-  /* counting out stuff? */
+
+  cnt.bout += len;
 
   /* write it */
   if ((n = write(servsock, buf, len)) == -1)
@@ -104,7 +108,7 @@ static uint8_t server_login(void)
 
   me.bursting = TRUE;
 
-  sts("CAPAB :QS EOB");
+  sts("CAPAB :QS EOB KLN UNKLN");
   sts("SERVER %s 1 :%s", me.name, me.desc);
   sts("SVINFO 5 3 0 :%ld", CURRTIME);
 
@@ -313,8 +317,16 @@ void io_loop(void)
     memset(buf, '\0', BUFSIZE + 1);
     FD_ZERO(&readfds);
     FD_ZERO(&writefds);
-    to.tv_sec = 1;
-    to.tv_usec = 0L;
+    to.tv_usec = 0;
+
+    /* we only need to time out for events.
+     * save some cpu by setting the timeout for when event_run()
+     * needs to be called.
+     */
+    if (delay > CURRTIME)
+      to.tv_sec = (delay - CURRTIME);
+    else
+      to.tv_sec = 1;
 
     if ((!me.connected) && (servsock != -1))
       FD_SET(servsock, &writefds);

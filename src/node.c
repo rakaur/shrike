@@ -12,6 +12,7 @@
 
 list_t sralist;
 list_t tldlist;
+list_t klnlist;
 list_t servlist[HASHSIZE];
 list_t userlist[HASHSIZE];
 list_t chanlist[HASHSIZE];
@@ -255,6 +256,150 @@ tld_t *tld_find(char *name)
   }
 
   return NULL;
+}
+
+/***************
+ * K L I N E S *
+ ***************/
+
+kline_t *kline_add(char *user, char *host, char *reason, long duration)
+{
+  server_t *s;
+  kline_t *k;
+  node_t *n = node_create();
+  node_t *tn;
+  int i;
+  static uint32_t kcnt = 0;
+
+  slog(LG_DEBUG, "kline_add(): %s@%s -> %s (%ld)", user, host, reason,
+       duration);
+
+  k = scalloc(sizeof(kline_t), 1);
+
+  node_add(k, n, &klnlist);
+
+  k->user = sstrdup(user);
+  k->host = sstrdup(host);
+  k->reason = sstrdup(reason);
+  k->duration = duration;
+  k->settime = CURRTIME;
+  k->expires = CURRTIME + duration;
+  k->number = ++kcnt;
+
+  cnt.kline++;
+
+  for (i = 0; i < HASHSIZE; i++)
+  {
+    LIST_FOREACH(tn, servlist[i].head)
+    {
+      s = (server_t *)tn->data;
+
+      if (s == me.me)
+        continue;
+
+      kline_sts(s->name, user, host, duration, reason);
+    }
+  }
+
+  return k;
+}
+
+void kline_delete(char *user, char *host)
+{
+  server_t *s;
+  kline_t *k = kline_find(user, host);
+  node_t *n, *tn;
+  int i;
+
+  if (!k)
+  {
+    slog(LG_DEBUG, "kline_delete(): called for nonexistant kline: %s@%s",
+         user, host);
+
+    return;
+  }
+
+  slog(LG_DEBUG, "kline_delete(): %s@%s -> %s", k->user, k->host, k->reason);
+
+  n = node_find(k, &klnlist);
+  node_del(n, &klnlist);
+  node_free(n);
+
+  free(k->user);
+  free(k->host);
+  free(k->reason);
+  free(k->setby);
+
+  free(k);
+
+  for (i = 0; i < HASHSIZE; i++)
+  {
+    LIST_FOREACH(tn, servlist[i].head)
+    {
+      s = (server_t *)tn->data;
+
+      if (s == me.me)
+        continue;
+
+      unkline_sts(s->name, user, host);
+    }
+  }
+
+  cnt.kline--;
+}
+
+kline_t *kline_find(char *user, char *host)
+{
+  kline_t *k;
+  node_t *n;
+
+  LIST_FOREACH(n, klnlist.head)
+  {
+    k = (kline_t *)n->data;
+
+    if ((!match(k->user, user)) && (!match(k->host, host)))
+      return k;
+  }
+
+  return NULL;
+}
+
+kline_t *kline_find_num(long number)
+{
+  kline_t *k;
+  node_t *n;
+
+  LIST_FOREACH(n, klnlist.head)
+  {
+    k = (kline_t *)n->data;
+
+    if (k->number == number)
+      return k;
+  }
+
+  return NULL;
+}
+
+void kline_expire(void *arg)
+{
+  kline_t *k;
+  node_t *n;
+
+  LIST_FOREACH(n, klnlist.head)
+  {
+    k = (kline_t *)n->data;
+
+    if (k->duration == 0)
+      continue;
+
+    if (k->expires <= CURRTIME)
+    {
+      snoop("KLINE:EXPIRE: \2%s@%s\2 set \2%s\2 ago by \2%s\2", k->user,
+            k->host, time_ago(k->settime), k->setby);
+
+      kline_delete(k->user, k->host);
+    }
+  }
 }
 
 /*****************
@@ -676,13 +821,19 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
 
     if (should_voice_host(mc, hostbuf))
     {
-      cmode(svs.nick, chan->name, "+v", u->nick);
-      cu->modes |= CMODE_VOICE;
+      if (!(cu->modes & CMODE_VOICE))
+      {
+        cmode(svs.nick, chan->name, "+v", u->nick);
+        cu->modes |= CMODE_VOICE;
+      }
     }
     if (should_op_host(mc, hostbuf))
     {
-      cmode(svs.nick, chan->name, "+o", u->nick);
-      cu->modes |= CMODE_OP;
+      if (!(cu->modes & CMODE_OP))
+      {
+        cmode(svs.nick, chan->name, "+o", u->nick);
+        cu->modes |= CMODE_OP;
+      }
     }
   }
 

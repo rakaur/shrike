@@ -49,6 +49,7 @@ static int c_ci_cflags(CONFIGENTRY *);
 static int c_ci_raw(CONFIGENTRY *);
 static int c_ci_flood_msgs(CONFIGENTRY *);
 static int c_ci_flood_time(CONFIGENTRY *);
+static int c_ci_kline_time(CONFIGENTRY *);
 static int c_ci_global(CONFIGENTRY *);
 static int c_ci_sras(CONFIGENTRY *);
 
@@ -120,6 +121,7 @@ static struct ConfTable conf_ci_table[] = {
   { "RAW",         1, c_ci_raw         },
   { "FLOOD_MSGS",  1, c_ci_flood_msgs  },
   { "FLOOD_TIME",  1, c_ci_flood_time  },
+  { "KLINE_TIME",  1, c_ci_kline_time  },
   { "GLOBAL",      1, c_ci_global      },
   { "SRAS",        1, c_ci_sras        },
   { NULL, 0, NULL }
@@ -189,7 +191,7 @@ void conf_init(void)
       = svs.chan = svs.global = NULL;
 
   me.recontime = me.restarttime = me.expire = me.maxusers = me.maxchans
-      = svs.flood_msgs = svs.flood_time = 0;
+      = svs.flood_msgs = svs.flood_time = svs.kline_time = 0;
 
   /* we don't reset loglevel because too much stuff uses it */
   svs.defuflags = svs.defcflags = 0x00000000;
@@ -224,7 +226,7 @@ void conf_init(void)
   }
 }
 
-static int subblock_handler(CONFIGENTRY * ce, struct ConfTable *table)
+static int subblock_handler(CONFIGENTRY *ce, struct ConfTable *table)
 {
   struct ConfTable *ct = NULL;
 
@@ -247,19 +249,19 @@ static int subblock_handler(CONFIGENTRY * ce, struct ConfTable *table)
   return 0;
 }
 
-static int c_serverinfo(CONFIGENTRY * ce)
+static int c_serverinfo(CONFIGENTRY *ce)
 {
   subblock_handler(ce, conf_si_table);
   return 0;
 }
 
-static int c_clientinfo(CONFIGENTRY * ce)
+static int c_clientinfo(CONFIGENTRY *ce)
 {
   subblock_handler(ce, conf_ci_table);
   return 0;
 }
 
-static int c_si_name(CONFIGENTRY * ce)
+static int c_si_name(CONFIGENTRY *ce)
 {
   if (ce->ce_vardata == NULL)
     PARAM_ERROR(ce);
@@ -269,7 +271,7 @@ static int c_si_name(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_si_desc(CONFIGENTRY * ce)
+static int c_si_desc(CONFIGENTRY *ce)
 {
   if (ce->ce_vardata == NULL)
     PARAM_ERROR(ce);
@@ -279,7 +281,7 @@ static int c_si_desc(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_si_uplink(CONFIGENTRY * ce)
+static int c_si_uplink(CONFIGENTRY *ce)
 {
   if (ce->ce_vardata == NULL)
     PARAM_ERROR(ce);
@@ -289,7 +291,7 @@ static int c_si_uplink(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_si_port(CONFIGENTRY * ce)
+static int c_si_port(CONFIGENTRY *ce)
 {
   if (ce->ce_vardata == NULL)
     PARAM_ERROR(ce);
@@ -299,7 +301,7 @@ static int c_si_port(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_si_pass(CONFIGENTRY * ce)
+static int c_si_pass(CONFIGENTRY *ce)
 {
   if (ce->ce_vardata == NULL)
     PARAM_ERROR(ce);
@@ -309,7 +311,7 @@ static int c_si_pass(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_si_vhost(CONFIGENTRY * ce)
+static int c_si_vhost(CONFIGENTRY *ce)
 {
   if (ce->ce_vardata == NULL)
     PARAM_ERROR(ce);
@@ -319,7 +321,7 @@ static int c_si_vhost(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_si_recontime(CONFIGENTRY * ce)
+static int c_si_recontime(CONFIGENTRY *ce)
 {
   if (ce->ce_vardata == NULL)
     PARAM_ERROR(ce);
@@ -329,7 +331,7 @@ static int c_si_recontime(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_si_restarttime(CONFIGENTRY * ce)
+static int c_si_restarttime(CONFIGENTRY *ce)
 {
   if (ce->ce_vardata == NULL)
     PARAM_ERROR(ce);
@@ -339,7 +341,7 @@ static int c_si_restarttime(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_si_expire(CONFIGENTRY * ce)
+static int c_si_expire(CONFIGENTRY *ce)
 {
   if (ce->ce_vardata == NULL)
     PARAM_ERROR(ce);
@@ -349,7 +351,7 @@ static int c_si_expire(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_si_netname(CONFIGENTRY * ce)
+static int c_si_netname(CONFIGENTRY *ce)
 {
   if (ce->ce_vardata == NULL)
     PARAM_ERROR(ce);
@@ -359,7 +361,7 @@ static int c_si_netname(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_si_adminname(CONFIGENTRY * ce)
+static int c_si_adminname(CONFIGENTRY *ce)
 {
   if (ce->ce_vardata == NULL)
     PARAM_ERROR(ce);
@@ -369,7 +371,7 @@ static int c_si_adminname(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_si_adminemail(CONFIGENTRY * ce)
+static int c_si_adminemail(CONFIGENTRY *ce)
 {
   if (ce->ce_vardata == NULL)
     PARAM_ERROR(ce);
@@ -379,7 +381,7 @@ static int c_si_adminemail(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_si_mta(CONFIGENTRY * ce)
+static int c_si_mta(CONFIGENTRY *ce)
 {
   if (ce->ce_vardata == NULL)
     PARAM_ERROR(ce);
@@ -389,7 +391,7 @@ static int c_si_mta(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_si_loglevel(CONFIGENTRY * ce)
+static int c_si_loglevel(CONFIGENTRY *ce)
 {
   if (ce->ce_vardata == NULL)
     PARAM_ERROR(ce);
@@ -412,7 +414,7 @@ static int c_si_loglevel(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_si_maxusers(CONFIGENTRY * ce)
+static int c_si_maxusers(CONFIGENTRY *ce)
 {
   if (ce->ce_vardata == NULL)
     PARAM_ERROR(ce);
@@ -423,7 +425,7 @@ static int c_si_maxusers(CONFIGENTRY * ce)
 
 }
 
-static int c_si_maxchans(CONFIGENTRY * ce)
+static int c_si_maxchans(CONFIGENTRY *ce)
 {
   if (ce->ce_vardata == NULL)
     PARAM_ERROR(ce);
@@ -433,7 +435,7 @@ static int c_si_maxchans(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_si_auth(CONFIGENTRY * ce)
+static int c_si_auth(CONFIGENTRY *ce)
 {
   if (ce->ce_vardata == NULL)
     PARAM_ERROR(ce);
@@ -447,7 +449,7 @@ static int c_si_auth(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_si_casemapping(CONFIGENTRY * ce)
+static int c_si_casemapping(CONFIGENTRY *ce)
 {
   if (ce->ce_vardata == NULL)
     PARAM_ERROR(ce);
@@ -461,7 +463,7 @@ static int c_si_casemapping(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_ci_nick(CONFIGENTRY * ce)
+static int c_ci_nick(CONFIGENTRY *ce)
 {
   if (ce->ce_vardata == NULL)
     PARAM_ERROR(ce);
@@ -471,7 +473,7 @@ static int c_ci_nick(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_ci_user(CONFIGENTRY * ce)
+static int c_ci_user(CONFIGENTRY *ce)
 {
   if (ce->ce_vardata == NULL)
     PARAM_ERROR(ce);
@@ -481,7 +483,7 @@ static int c_ci_user(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_ci_host(CONFIGENTRY * ce)
+static int c_ci_host(CONFIGENTRY *ce)
 {
   if (ce->ce_vardata == NULL)
     PARAM_ERROR(ce);
@@ -491,7 +493,7 @@ static int c_ci_host(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_ci_real(CONFIGENTRY * ce)
+static int c_ci_real(CONFIGENTRY *ce)
 {
   if (ce->ce_vardata == NULL)
     PARAM_ERROR(ce);
@@ -501,7 +503,7 @@ static int c_ci_real(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_ci_chan(CONFIGENTRY * ce)
+static int c_ci_chan(CONFIGENTRY *ce)
 {
   if (ce->ce_vardata == NULL)
     PARAM_ERROR(ce);
@@ -511,19 +513,19 @@ static int c_ci_chan(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_ci_join_chans(CONFIGENTRY * ce)
+static int c_ci_join_chans(CONFIGENTRY *ce)
 {
   svs.join_chans = TRUE;
   return 0;
 }
 
-static int c_ci_leave_chans(CONFIGENTRY * ce)
+static int c_ci_leave_chans(CONFIGENTRY *ce)
 {
   svs.leave_chans = TRUE;
   return 0;
 }
 
-static int c_ci_uflags(CONFIGENTRY * ce)
+static int c_ci_uflags(CONFIGENTRY *ce)
 {
   CONFIGENTRY *flce;
 
@@ -547,7 +549,7 @@ static int c_ci_uflags(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_ci_cflags(CONFIGENTRY * ce)
+static int c_ci_cflags(CONFIGENTRY *ce)
 {
   CONFIGENTRY *flce;
 
@@ -571,13 +573,13 @@ static int c_ci_cflags(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_ci_raw(CONFIGENTRY * ce)
+static int c_ci_raw(CONFIGENTRY *ce)
 {
   svs.raw = TRUE;
   return 0;
 }
 
-static int c_ci_flood_msgs(CONFIGENTRY * ce)
+static int c_ci_flood_msgs(CONFIGENTRY *ce)
 {
   if (ce->ce_vardata == NULL)
     PARAM_ERROR(ce);
@@ -587,7 +589,7 @@ static int c_ci_flood_msgs(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_ci_flood_time(CONFIGENTRY * ce)
+static int c_ci_flood_time(CONFIGENTRY *ce)
 {
   if (ce->ce_vardata == NULL)
     PARAM_ERROR(ce);
@@ -597,7 +599,17 @@ static int c_ci_flood_time(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_ci_global(CONFIGENTRY * ce)
+static int c_ci_kline_time(CONFIGENTRY *ce)
+{
+  if (ce->ce_vardata == NULL)
+    PARAM_ERROR(ce);
+
+  svs.kline_time = (ce->ce_vardatanum * 60 * 60 * 24);
+
+  return 0;
+}
+
+static int c_ci_global(CONFIGENTRY *ce)
 {
   if (ce->ce_vardata == NULL)
     PARAM_ERROR(ce);
@@ -607,7 +619,7 @@ static int c_ci_global(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_ci_sras(CONFIGENTRY * ce)
+static int c_ci_sras(CONFIGENTRY *ce)
 {
   CONFIGENTRY *flce;
 
@@ -661,6 +673,7 @@ static void copy_svs(struct svs *src, struct svs *dst)
   dst->raw = src->raw;
   dst->flood_msgs = src->flood_msgs;
   dst->flood_time = src->flood_time;
+  dst->kline_time = src->kline_time;
   dst->global = sstrdup(src->global);
 }
 

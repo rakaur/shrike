@@ -31,6 +31,7 @@
 -T node_t
 -T list_t
 -T tld_t
+-T kline_t
 -T EVH
 -T sra_t
 -T server_t
@@ -40,3 +41,5 @@
 -T myuser_t
 -T mychan_t
 -T chanacs_t
+-T CONFIGENTRY
+-T CONFIGFILE

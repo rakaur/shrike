@@ -171,6 +171,7 @@ int main(int argc, char *argv[])
   }
 
   me.start = time(NULL);
+  CURRTIME = me.start;
 
   /* set signal handlers */
   signal(SIGINT, sighandler);
@@ -285,6 +286,9 @@ int main(int argc, char *argv[])
 
   /* check expires every hour */
   event_add("expire_check", expire_check, NULL, 3600);
+
+  /* check kline expires every minute */
+  event_add("kline_expire", kline_expire, NULL, 60);
 
   /* connect to our uplink */
   slog(LG_INFO, "main(): connecting to `%s' on %d as `%s'",

@@ -88,6 +88,7 @@ typedef struct node_ node_t;
 typedef struct list_ list_t;
 typedef struct sra_ sra_t;
 typedef struct tld_ tld_t;
+typedef struct kline_ kline_t;
 typedef struct server_ server_t;
 typedef struct user_ user_t;
 typedef struct channel_ channel_t;
@@ -151,6 +152,7 @@ struct svs
 
   uint16_t flood_msgs;          /* messages determining flood */
   uint16_t flood_time;          /* time determining flood     */
+  uint32_t kline_time;          /* default expire for klines  */
 
   boolean_t join_chans;         /* join registered channels?  */
   boolean_t leave_chans;        /* leave channels when empty? */
@@ -169,6 +171,7 @@ struct cnt
   uint32_t event;
   uint32_t sra;
   uint32_t tld;
+  uint32_t kline;
   uint32_t server;
   uint32_t user;
   uint32_t chan;
@@ -177,6 +180,8 @@ struct cnt
   uint32_t mychan;
   uint32_t chanacs;
   uint32_t node;
+  uint32_t bin;
+  uint32_t bout;
 } cnt;
 
 struct _configfile
@@ -245,6 +250,19 @@ struct sra_ {
 /* tld list struct */
 struct tld_ {
   char *name;
+};
+
+/* kline list struct */
+struct kline_ {
+  char *user;
+  char *host;
+  char *reason;
+  char *setby;
+
+  uint16_t number;
+  long duration;
+  time_t settime;
+  time_t expires;
 };
 
 /* global list struct */

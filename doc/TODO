@@ -90,7 +90,7 @@ MUST BE IN shrike-1.0b3
 [X] - change version.sh crap to do a c instead of h
 
 MUST BE IN shrike-1.0
-[ ] - gline control functionality (a la DALnet AKILL)
+[X] - gline control functionality (a la DALnet AKILL)
       . apparently glines are not a good idea for what we want, instead
         we'll use shared klines. i want this in 1.0.
 

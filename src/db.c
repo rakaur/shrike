@@ -15,9 +15,10 @@ void db_save(void *arg)
   myuser_t *mu;
   mychan_t *mc;
   chanacs_t *ca;
+  kline_t *k;
   node_t *n, *tn;
   FILE *f;
-  uint32_t i, muout = 0, mcout = 0, caout = 0;
+  uint32_t i, muout = 0, mcout = 0, caout = 0, kout = 0;
 
   /* back them up first */
   if ((rename("etc/shrike.db", "etc/shrike.db.save")) < 0)
@@ -140,9 +141,21 @@ void db_save(void *arg)
     }
   }
 
+  slog(LG_DEBUG, "db_save(): saving klines");
 
-  /* DE <muout> <mcout> */
-  fprintf(f, "DE %d %d %d\n", muout, mcout, caout);
+  LIST_FOREACH(n, klnlist.head)
+  {
+    k = (kline_t *)n->data;
+
+    /* KL <user> <host> <duration> <settime> <setby> <reason> */
+    fprintf(f, "KL %s %s %ld %ld %s %s\n", k->user, k->host, k->duration,
+            (long)k->settime, k->setby, k->reason);
+
+    kout++;
+  }
+
+  /* DE <muout> <mcout> <caout> <kout> */
+  fprintf(f, "DE %d %d %d %d\n", muout, mcout, caout, kout);
 
   fclose(f);
   remove("etc/shrike.db.save");
@@ -154,8 +167,9 @@ void db_load(void)
   sra_t *sra;
   myuser_t *mu;
   mychan_t *mc;
+  kline_t *k;
   node_t *n;
-  uint32_t i = 0, linecnt = 0, muin = 0, mcin = 0, cain = 0;
+  uint32_t i = 0, linecnt = 0, muin = 0, mcin = 0, cain = 0, kin = 0;
   FILE *f = fopen("etc/shrike.db", "r");
   char *item, *s, dBuf[BUFSIZE];
 
@@ -174,6 +188,9 @@ void db_load(void)
 
     return;
   }
+
+  slog(LG_DEBUG,
+       "db_load(): ----------------------- loading ------------------------");
 
   /* start reading it, one line at a time */
   while (fgets(dBuf, BUFSIZE, f))
@@ -230,8 +247,6 @@ void db_load(void)
 
         if ((s = strtok(NULL, " ")))
           mu->key = atoi(s);
-
-        slog(LG_DEBUG, "db_load(): myuser: %s -> %s", mu->name, mu->email);
       }
     }
 
@@ -263,9 +278,6 @@ void db_load(void)
 
         if ((s = strtok(NULL, " ")))
           mc->mlock_key = sstrdup(s);
-
-        slog(LG_DEBUG, "db_load(): mychan: %s -> %s", mc->name,
-             mc->founder->name);
       }
     }
 
@@ -292,10 +304,32 @@ void db_load(void)
 
         if (ca->level & CA_SUCCESSOR)
           ca->mychan->successor = ca->myuser;
-
-        slog(LG_DEBUG, "db_load(): chanacs: %s -> %s", mc->name,
-             (mu) ? mu->name : causer);
       }
+    }
+
+    /* klines */
+    if (!strcmp("KL", item))
+    {
+      char *user, *host, *reason, *setby, *tmp;
+      time_t settime;
+      long duration;
+
+      user = strtok(NULL, " ");
+      host = strtok(NULL, " ");
+      tmp = strtok(NULL, " ");
+      duration = atol(tmp);
+      tmp = strtok(NULL, " ");
+      settime = atol(tmp);
+      setby = strtok(NULL, " ");
+      reason = strtok(NULL, "");
+
+      strip(reason);
+
+      k = kline_add(user, host, reason, duration);
+      k->settime = settime;
+      k->setby = sstrdup(setby);
+
+      kin++;
     }
 
     /* end */
@@ -312,6 +346,10 @@ void db_load(void)
       i = atoi(strtok(NULL, " "));
       if (i != cain)
         slog(LG_ERROR, "db_load(): got %d chanacs; expected %d", cain, i);
+
+      if ((s = strtok(NULL, " ")))
+        if ((i = atoi(s)) != kin)
+          slog(LG_ERROR, "db_load(): got %d klines; expected %d", kin, i);
     }
   }
 
@@ -331,4 +369,9 @@ void db_load(void)
       }
     }
   }
+
+  fclose(f);
+
+  slog(LG_DEBUG,
+       "db_load(): ------------------------- done -------------------------");
 }

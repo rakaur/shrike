@@ -830,3 +830,31 @@ int token_to_value(struct Token token_table[], char *token)
   /* Otherwise... */
   return TOKEN_ERROR;
 }
+
+char *sbytes(float x)
+{
+  if (x > 1073741824.0)
+    return "GB";
+
+  else if (x > 1048576.0)
+    return "MB";
+
+  else if (x > 1024.0)
+    return "KB";
+
+  return "B";
+}
+
+float bytes(float x)
+{
+  if (x > 1073741824.0)
+    return (x / 1073741824.0);
+
+  if (x > 1048576.0)
+    return (x / 1048576.0);
+
+  if (x > 1024.0)
+    return (x / 1024.0);
+
+  return x;
+}

@@ -345,10 +345,7 @@ static void m_privmsg(char *origin, uint8_t parc, char *parv[])
       if (u->offenses == 2)
       {
         /* kill them the third time */
-        sts(":%s KILL %s :%s!%s!%s (flooding services)",
-            svs.nick, u->nick, svs.host, svs.user, svs.nick);
-
-        /* -> :rakaur KILL S :stan.othius.com!eric!rakaur (hi (plz)) */
+        skill(u->nick, "flooding services");
 
         snoop("FLOOD:KILL: \2%s\2", u->nick);
 
@@ -451,6 +448,7 @@ static void m_nick(char *origin, uint8_t parc, char *parv[])
 {
   server_t *s;
   user_t *u;
+  kline_t *k;
 
   /* got the right number of args for an introduction? */
   if (parc == 8)
@@ -463,6 +461,21 @@ static void m_nick(char *origin, uint8_t parc, char *parv[])
     }
 
     slog(LG_DEBUG, "m_nick(): new user on `%s': %s", s->name, parv[0]);
+
+    if ((k = kline_find(parv[4], parv[5])))
+    {
+      /* the new user matches a kline.
+       * the server introducing the user probably wasn't around when
+       * we added the kline or isn't accepting klines from us.
+       * either way, we'll KILL the user and send the server
+       * a new KLINE.
+       */
+
+      skill(parv[0], k->reason);
+      kline_sts(parv[6], k->user, k->host, (k->expires - CURRTIME), k->reason);
+
+      return;
+    }
 
     user_add(parv[0], parv[4], parv[5], s);
 
@@ -498,6 +511,14 @@ static void m_nick(char *origin, uint8_t parc, char *parv[])
     n = node_create();
     u->hash = UHASH((unsigned char *)u->nick);
     node_add(u, n, &userlist[u->hash]);
+  }
+  else
+  {
+    int i;
+    slog(LG_DEBUG, "m_nick(): got NICK with wrong number of params");
+
+    for (i = 0; i < parc; i++)
+      slog(LG_DEBUG, "m_nick():   parv[%d] = %s", i, parv[i]);
   }
 }
 
@@ -595,6 +616,8 @@ static void m_server(char *origin, uint8_t parc, char *parv[])
 static void m_stats(char *origin, uint8_t parc, char *parv[])
 {
   user_t *u = user_find(origin);
+  kline_t *k;
+  node_t *n;
   int i;
 
   if (!parv[0][0])
@@ -639,6 +662,59 @@ static void m_stats(char *origin, uint8_t parc, char *parv[])
     case 'I':
     case 'i':
       sts(":%s 215 %s I * * *@%s 0 nonopered", me.name, u->nick, me.name);
+      break;
+
+    case 'K':
+      if (!is_ircop(u))
+        break;
+
+      LIST_FOREACH(n, klnlist.head)
+      {
+        k = (kline_t *)n->data;
+
+        if (!k->duration)
+          sts(":%s 216 %s K %s * %s :%s", me.name, u->nick, k->host,
+              k->user, k->reason);
+      }
+
+      break;
+
+    case 'k':
+      if (!is_ircop(u))
+        break;
+
+      LIST_FOREACH(n, klnlist.head)
+      {
+        k = (kline_t *)n->data;
+
+        if (k->duration)
+          sts(":%s 216 %s k %s * %s :%s", me.name, u->nick, k->host,
+              k->user, k->reason);
+      }
+
+      break;
+
+    case 'T':
+    case 't':
+      if (!is_ircop(u))
+        break;
+
+      sts(":%s 249 %s :event      %7d", me.name, u->nick, cnt.event);
+      sts(":%s 249 %s :sra        %7d", me.name, u->nick, cnt.sra);
+      sts(":%s 249 %s :tld        %7d", me.name, u->nick, cnt.tld);
+      sts(":%s 249 %s :kline      %7d", me.name, u->nick, cnt.kline);
+      sts(":%s 249 %s :server     %7d", me.name, u->nick, cnt.server);
+      sts(":%s 249 %s :user       %7d", me.name, u->nick, cnt.user);
+      sts(":%s 249 %s :chan       %7d", me.name, u->nick, cnt.chan);
+      sts(":%s 249 %s :chanuser   %7d", me.name, u->nick, cnt.myuser);
+      sts(":%s 249 %s :mychan     %7d", me.name, u->nick, cnt.mychan);
+      sts(":%s 249 %s :chanacs    %7d", me.name, u->nick, cnt.chanacs);
+      sts(":%s 249 %s :node       %7d", me.name, u->nick, cnt.node);
+
+      sts(":%s 249 %s :bytes sent %7.2f%s", me.name, u->nick,
+          bytes(cnt.bout), sbytes(cnt.bout));
+      sts(":%s 249 %s :bytes recv %7.2f%s", me.name, u->nick,
+          bytes(cnt.bin), sbytes(cnt.bin));
       break;
 
     case 'u':
