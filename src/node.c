@@ -742,6 +742,7 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
   chanuser_t *cu, *tcu;
   mychan_t *mc;
   uint32_t flags = 0;
+  char hostbuf[BUFSIZE];
 
   if (*chan->name != '#')
   {
@@ -846,10 +847,9 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
       cu->modes |= CMODE_OP;
     }
   }
-  else if ((mc = mychan_find(chan->name)) && (!u->myuser))
-  {
-    char hostbuf[BUFSIZE];
 
+  if (mc)
+  {
     hostbuf[0] = '\0';
 
     strlcat(hostbuf, u->nick, BUFSIZE);
