@@ -456,6 +456,7 @@ char *timediff(time_t seconds)
   hours = (int)(seconds / 3600);
   hours %= 3600;
   minutes = (int)(seconds / 60);
+  minutes %= 60;
   seconds %= 60;
 
   snprintf(buf, sizeof(buf), "%d day%s, %d:%02d:%02lu",

@@ -1,4 +1,14 @@
 ------------------------------------------------------------------------
+r75 | rakaur | 2004-04-18 13:10:49 -0500 (Sun, 18 Apr 2004) | 3 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/src/db.c
+   M /trunk/src/function.c
+
+Fixed a problem with MLOCK +k (thanks CG).
+Fixed a huge security bug in is_founder(), is_successor(), and is_xop().
+
+------------------------------------------------------------------------
 r71 | rakaur | 2004-04-17 08:37:28 -0500 (Sat, 17 Apr 2004) | 2 lines
 Changed paths:
    M /trunk/ChangeLog

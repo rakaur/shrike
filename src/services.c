@@ -2402,11 +2402,13 @@ static void do_sendpass(char *origin)
 /* GLOBAL <parameters>|SEND|CLEAR */
 static void do_global(char *origin)
 {
+  static BlockHeap *glob_heap = NULL;
   struct global_ *global;
   static list_t globlist;
   node_t *n, *n2, *tn;
   tld_t *tld;
   char *params = strtok(NULL, "");
+  static char *sender = NULL;
 
   if (!params)
   {
@@ -2430,8 +2432,13 @@ static void do_global(char *origin)
       node_del(n, &globlist);
       node_free(n);
       free(global->text);
-      free(global);
+      BlockHeapFree(glob_heap, global);
     }
+
+    BlockHeapDestroy(glob_heap);
+    glob_heap = NULL;
+    free(sender);
+    sender = NULL;
 
     notice(origin, "The pending message has been deleted.");
 
@@ -2469,8 +2476,13 @@ static void do_global(char *origin)
       node_del(n, &globlist);
       node_free(n);
       free(global->text);
-      free(global);
+      BlockHeapFree(glob_heap, global);
     }
+
+    BlockHeapDestroy(glob_heap);
+    glob_heap = NULL;
+    free(sender);
+    sender = NULL;
 
     sts(":%s QUIT :finished", svs.global);
     user_delete(svs.global);
@@ -2482,7 +2494,19 @@ static void do_global(char *origin)
     return;
   }
 
-  global = scalloc(sizeof(struct global_), 1);
+  if (!glob_heap)
+    glob_heap = BlockHeapCreate(sizeof(struct global_), 5);
+
+  if (!sender)
+    sender = sstrdup(origin);
+
+  if (irccasecmp(sender, origin))
+  {
+    notice(origin, "There is already a GLOBAL in progress by \2%s\2.", sender);
+    return;
+  }
+
+  global = BlockHeapAlloc(glob_heap);
 
   global->text = sstrdup(params);
 

@@ -329,11 +329,8 @@ tld_t *tld_find(char *name)
 
 kline_t *kline_add(char *user, char *host, char *reason, long duration)
 {
-  server_t *s;
   kline_t *k;
   node_t *n = node_create();
-  node_t *tn;
-  int i;
   static uint32_t kcnt = 0;
 
   slog(LG_DEBUG, "kline_add(): %s@%s -> %s (%ld)", user, host, reason,
@@ -353,28 +350,15 @@ kline_t *kline_add(char *user, char *host, char *reason, long duration)
 
   cnt.kline++;
 
-  for (i = 0; i < HASHSIZE; i++)
-  {
-    LIST_FOREACH(tn, servlist[i].head)
-    {
-      s = (server_t *)tn->data;
-
-      if (s == me.me)
-        continue;
-
-      kline_sts(s->name, user, host, duration, reason);
-    }
-  }
+  kline_sts("*", user, host, duration, reason);
 
   return k;
 }
 
 void kline_delete(char *user, char *host)
 {
-  server_t *s;
   kline_t *k = kline_find(user, host);
-  node_t *n, *tn;
-  int i;
+  node_t *n;
 
   if (!k)
   {
@@ -397,18 +381,7 @@ void kline_delete(char *user, char *host)
 
   BlockHeapFree(kline_heap, k);
 
-  for (i = 0; i < HASHSIZE; i++)
-  {
-    LIST_FOREACH(tn, servlist[i].head)
-    {
-      s = (server_t *)tn->data;
-
-      if (s == me.me)
-        continue;
-
-      unkline_sts(s->name, user, host);
-    }
-  }
+  unkline_sts("*", user, host);
 
   cnt.kline--;
 }
