@@ -10,5 +10,5 @@ cannot be restored.
 Syntax: DROP <username|#channel> <password>
 
 Examples:
-    /msg S DROP foo bar
-    /msg S DROP #foo bar
+    /msg &nick& DROP foo bar
+    /msg &nick& DROP #foo bar

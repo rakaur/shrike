@@ -7,5 +7,5 @@ not be used unless you know what you're doing.
 Syntax: RAW <parameters>
 
 Examples:
-    /msg S RAW :S PRIVMSG #shrike :shrike owns you!
-    /msg S RAW :PING uplink.network.com
+    /msg &nick& RAW :&nick& PRIVMSG #shrike :shrike owns you!
+    /msg &nick& RAW :PING uplink.network.com

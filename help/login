@@ -7,4 +7,4 @@ require you to be logged in.
 Syntax: LOGIN <username> <password>
 
 Example:
-    /msg S LOGIN foo bar
+    /msg &nick& LOGIN foo bar

@@ -10,5 +10,5 @@ invites the specified nickname.
 Syntax: INVITE <#channel> [nickname]
 
 Examples:
-    /msg S INVITE #foo
-    /msg S INVITE #foo bar
+    /msg &nick& INVITE #foo
+    /msg &nick& INVITE #foo bar

@@ -8,4 +8,4 @@ command.
 Syntax: REHASH
 
 Example:
-    /msg S REHASH
+    /msg &nick& REHASH

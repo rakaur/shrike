@@ -6,5 +6,5 @@ expiring a username or channel.
 Syntax: SET <username|#channel> HOLD ON|OFF
 
 Examples:
-    /msg S SET foo HOLD ON
-    /msg S SET #foo HOLD OFF
+    /msg &nick& SET foo HOLD ON
+    /msg &nick& SET #foo HOLD OFF

@@ -530,6 +530,8 @@ user_t *user_find(char *nick)
     }
   }
 
+  slog(0, LG_DEBUG, "user_find(): called for nonexistant user `%s'", nick);
+
   return NULL;
 }
 
@@ -651,17 +653,20 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
   {
     if (*nick == '@')
     {
-      u = user_find(nick + 1);
-
       flags |= CMODE_OP;
       nick++;
+
+      if (*nick == '+')
+        u = user_find(nick + 1);
+      else
+        u = user_find(nick);
 
       /* see if we need to deop them */
       if ((mc = mychan_find(chan->name)))
       {
         if ((MC_SECURE & mc->flags) && (!is_founder(mc, u->myuser)) &&
-            (!is_xop(mc, u->myuser, CA_AOP)) &&
-            (!is_xop(mc, u->myuser, CA_SOP)))
+            (!is_successor(mc, u->myuser)) &&
+            (!is_xop(mc, u->myuser, (CA_AOP | CA_SOP))))
         {
           cmode(svs.nick, mc->name, "-o", u->nick);
           flags &= ~CMODE_OP;
@@ -751,7 +756,7 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
     strlcat(hostbuf, "@", BUFSIZE);
     strlcat(hostbuf, u->host, BUFSIZE);
 
-    if (should_voice_host(mc, hostbuf))  
+    if (should_voice_host(mc, hostbuf))
     {
       cmode(svs.nick, chan->name, "+v", u->nick);
       cu->modes |= CMODE_VOICE;
@@ -866,8 +871,10 @@ void myuser_delete(char *name)
 {
   sra_t *sra;
   myuser_t *mu = myuser_find(name);
+  mychan_t *mc;
   chanacs_t *ca;
   node_t *n;
+  uint32_t i;
 
   if (!mu)
   {
@@ -884,6 +891,18 @@ void myuser_delete(char *name)
     ca = (chanacs_t *)n->data;
 
     chanacs_delete(ca->mychan, ca->myuser, ca->level);
+  }
+
+  /* remove them as successors */
+  for (i = 0; i < HASHSIZE; i++);
+  {
+    LIST_FOREACH(n, mclist[i].head)
+    {
+      mc = (mychan_t *)n->data;
+
+      if ((mc->successor) && (mc->successor == mu))
+        mc->successor = NULL;
+    }
   }
 
   /* remove them from the sra list */
@@ -946,6 +965,8 @@ mychan_t *mychan_add(char *name, char *pass)
 
   mc->name = sstrdup(name);
   mc->pass = sstrdup(pass);
+  mc->founder = NULL;
+  mc->successor = NULL;
   mc->registered = CURRTIME;
   mc->chan = channel_find(name);
   mc->hash = MCHASH((unsigned char *)name);

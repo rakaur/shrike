@@ -6,4 +6,4 @@ address associated with a username.
 Syntax: SET <username> EMAIL <email>
 
 Example:
-    /msg S SET EMAIL foo foo@bar.com
+    /msg &nick& SET EMAIL foo foo@bar.com

@@ -319,6 +319,7 @@ struct mychan_
   char *pass;
 
   myuser_t *founder;
+  myuser_t *successor;
   channel_t *chan;
   list_t chanacs;
   time_t registered;
@@ -353,6 +354,7 @@ struct chanacs_
 #define CA_AOP           0x00000004
 #define CA_SOP           0x00000008
 #define CA_FOUNDER       0x00000010
+#define CA_SUCCESSOR     0x00000020
 
 /* struct for irc message hash table */
 struct message_

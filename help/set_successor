@@ -1,0 +1,12 @@
+Help for SET SUCCESSOR:
+
+SET SUCCESSOR allows the founder to set a
+successor for his channel. Successors can manipulate
+most channel settings and will become the founder should
+the founder's username expire.
+
+Syntax: SET <#channel> SUCCESSOR <username>|NONE
+
+Example:
+    /msg &nick& SET #foo SUCCESSOR bar
+    /msg &nick& SET #foo SUCCESSOR NONE

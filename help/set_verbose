@@ -6,4 +6,4 @@ makes changes to the access lists.
 Syntax: SET <#channel> VERBOSE ON|OFF
 
 Example:
-    /msg S SET #foo VERBOSE ON
+    /msg &nick& SET #foo VERBOSE ON

@@ -293,6 +293,39 @@ uint32_t shash(const unsigned char *text)
   return (h % HASHSIZE);
 }
 
+/* replace all occurances of 'old' with 'new' */
+char *replace(char *s, int32_t size, const char *old, const char *new)
+{
+  char *ptr = s;
+  int32_t left = strlen(s);
+  int32_t avail = size - (left + 1);
+  int32_t oldlen = strlen(old);
+  int32_t newlen = strlen(new);
+  int32_t diff = newlen - oldlen;
+
+  while (left >= oldlen)
+  {
+    if (strncmp(ptr, old, oldlen))
+    {
+      left--;
+      ptr++;
+      continue;
+    }
+
+    if (diff > avail)
+      break;
+
+    if (diff != 0)
+      memmove(ptr + oldlen + diff, ptr + oldlen, left + 1);
+
+    strncpy(ptr, new, newlen);
+    ptr += newlen;
+    left -= oldlen;
+  }
+
+  return s;
+}
+
 /* reverse of atoi() */
 char *itoa(int num)
 {
@@ -606,6 +639,17 @@ boolean_t is_founder(mychan_t *mychan, myuser_t *myuser)
   return FALSE;
 }
 
+boolean_t is_successor(mychan_t *mychan, myuser_t *myuser)
+{
+  if (mychan->successor == myuser)
+    return TRUE;
+
+  if ((chanacs_find(mychan, myuser, CA_SUCCESSOR)))
+    return TRUE;
+
+  return FALSE;
+}
+
 boolean_t is_xop(mychan_t *mychan, myuser_t *myuser, uint8_t level)
 {
   chanacs_t *ca;
@@ -643,7 +687,7 @@ boolean_t should_op(mychan_t *mychan, myuser_t *myuser)
   if (CMODE_OP & cu->modes)
     return FALSE;
 
-  if (is_founder(mychan, myuser))
+  if ((is_founder(mychan, myuser)) || (is_successor(mychan, myuser)))
     return TRUE;
 
   if (is_xop(mychan, myuser, (CA_SOP | CA_AOP)))

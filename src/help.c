@@ -44,17 +44,19 @@ void do_help(char *origin)
     if (is_sra(u->myuser))
     {
       notice(origin, "The following SRA commands are available.");
-      notice(origin, "\2UPDATE\2        Flush the database to disk.");
-      notice(origin, "\2REHASH\2        Reload the configuration file.");
-      notice(origin, "\2RAW\2           Send data to the uplink.");
-      notice(origin, "\2INJECT\2        Fake incoming data from the uplink.");
+      notice(origin, "\2UPDATE\2      Flush the database to disk.");
+      notice(origin, "\2REHASH\2      Reload the configuration file.");
+      notice(origin, "\2RAW\2         Send data to the uplink.");
+      notice(origin, "\2INJECT\2      Fake incoming data from the uplink.");
+      notice(origin, "\2RESTART\2     Restart services.");
+      notice(origin, "\2SHUTDOWN\2    Shuts down services.");
       notice(origin, " ");
     }
 
     if ((is_sra(u->myuser)) || (is_ircop(u)))
     {
       notice(origin, "The following IRCop commands are available.");
-      notice(origin, "\2SENDPASS\2      Email registration passwords.");
+      notice(origin, "\2SENDPASS\2    Email registration passwords.");
       notice(origin, " ");
     }
 
@@ -73,26 +75,28 @@ void do_help(char *origin)
     notice(origin, " ");
     notice(origin, "The following commands are available.");
     notice(origin, " ");
-    notice(origin, "EMAIL             Changes the email address associated "
+    notice(origin, "\2EMAIL\2         Changes the email address associated "
            "with a username.");
-    notice(origin, "HIDEMAIL          Hides a username's email address");
-    notice(origin, "MLOCK             Sets channel mode lock.");
-    notice(origin, "NEVEROP           Prevents services from automatically "
+    notice(origin, "\2FOUNDER\2       Sets you founder of a channel.");
+    notice(origin, "\2HIDEMAIL\2      Hides a username's email address");
+    notice(origin, "\2MLOCK\2         Sets channel mode lock.");
+    notice(origin, "\2NEVEROP\2       Prevents services from automatically "
            "setting modes associated with access lists.");
-    notice(origin, "NOOP              Prevents you from being added to access "
-           "lists.");
-    notice(origin, "PASSWORD          Change the password of a username or "
+    notice(origin, "\2NOOP\2          Prevents you from being added to "
+           "access lists.");
+    notice(origin, "\2PASSWORD\2      Change the password of a username or "
            "channel.");
-    notice(origin, "SECURE            Prevents unauthorized people from "
+    notice(origin, "\2SECURE\2        Prevents unauthorized people from "
            "gaining operator status.");
-    notice(origin, "VERBOSE           Notifys channel about access list "
+    notice(origin, "\2SUCCESSOR\2     Sets a channel successor.");
+    notice(origin, "\2VERBOSE\2       Notifies channel about access list "
            "modifications.");
     notice(origin, " ");
 
     if (is_sra(u->myuser))
     {
       notice(origin, "The following SRA commands are available.");
-      notice(origin, "HOLD              Prevents services from expiring a "
+      notice(origin, "HOLD            Prevents services from expiring a "
              "username or channel.");
       notice(origin, " ");
     }
@@ -118,6 +122,8 @@ void do_help(char *origin)
       while (fgets(buf, BUFSIZE, help_file))
       {
         strip(buf);
+
+        replace(buf, sizeof(buf), "&nick&", svs.nick);
 
         if (buf[0])
           notice(origin, "%s", buf);
@@ -153,19 +159,23 @@ struct help_command_ help_commands[] = {
   { "UPDATE",   AC_SRA,   "help/update"   },
   { "STATUS",   AC_NONE,  "help/status"   },
   { "SENDPASS", AC_IRCOP, "help/sendpass" },
+  { "RESTART",  AC_SRA,   "help/restart"  },
+  { "SHUTDOWN", AC_SRA,   "help/shutdown" },
   { "RAW",      AC_SRA,   "help/raw"      },
   { "REHASH",   AC_SRA,   "help/rehash"   },
   { "INJECT",   AC_SRA,   "help/inject"   },
 
-  { "SET EMAIL",    AC_NONE, "help/set_email"    },
-  { "SET HIDEMAIL", AC_NONE, "help/set_hidemail" },
-  { "SET HOLD",     AC_SRA,  "help/set_hold"     },
-  { "SET MLOCK",    AC_NONE, "help/set_mlock"    },
-  { "SET NEVEROP",  AC_NONE, "help/set_neverop"  },
-  { "SET NOOP",     AC_NONE, "help/set_noop"     },
-  { "SET PASSWORD", AC_NONE, "help/set_password" },
-  { "SET SECURE",   AC_NONE, "help/set_secure"   },
-  { "SET VERBOSE",  AC_NONE, "help/set_verbose"  },
+  { "SET EMAIL",     AC_NONE, "help/set_email"     },
+  { "SET FOUNDER",   AC_NONE, "help/set_founder"   },
+  { "SET HIDEMAIL",  AC_NONE, "help/set_hidemail"  },
+  { "SET HOLD",      AC_SRA,  "help/set_hold"      },
+  { "SET MLOCK",     AC_NONE, "help/set_mlock"     },
+  { "SET NEVEROP",   AC_NONE, "help/set_neverop"   },
+  { "SET NOOP",      AC_NONE, "help/set_noop"      },
+  { "SET PASSWORD",  AC_NONE, "help/set_password"  },
+  { "SET SECURE",    AC_NONE, "help/set_secure"    },
+  { "SET SUCCESSOR", AC_NONE, "help/set_successor" },
+  { "SET VERBOSE",   AC_NONE, "help/set_verbose"   },
 
   { NULL }
 };

@@ -7,5 +7,5 @@ be used for a single username or an entire channel.
 Syntax: SET <username|#channel> NEVEROP ON|OFF
 
 Examples:
-    /msg S SET foo NEVEROP ON
-    /msg S SET #foo NEVEROP OFF
+    /msg &nick& SET foo NEVEROP ON
+    /msg &nick& SET #foo NEVEROP OFF

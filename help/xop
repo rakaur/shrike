@@ -14,7 +14,7 @@ for the VOP and AOP lists.
 Syntax: VOP|AOP|SOP <#channel> ADD|DEL|LIST <username|hostmask>
 
 Examples:
-    /msg S VOP #foo ADD bar
-    /msg S VOP #foo ADD foo!*@bar.com
-    /msg S AOP #foo DEL bar
-    /msg S SOP #foo LIST
+    /msg &nick& VOP #foo ADD bar
+    /msg &nick& VOP #foo ADD foo!*@bar.com
+    /msg &nick& AOP #foo DEL bar
+    /msg &nick& SOP #foo LIST

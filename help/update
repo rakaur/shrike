@@ -5,4 +5,4 @@ UPDATE flushes the database to disk.
 Syntax: UPDATE
 
 Example:
-    /msg S UPDATE
+    /msg &nick& UPDATE

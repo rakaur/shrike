@@ -121,6 +121,58 @@ static void do_set_email(char *origin, char *name, char *params)
          mu->name, mu->email);
 }
 
+static void do_set_founder(char *origin, char *name, char *params)
+{
+  user_t *u = user_find(origin);
+  mychan_t *mc;
+
+  if (!u->myuser)
+  {
+    notice(origin, "You are not logged in.");
+    return;
+  }
+
+  if (*name != '#')
+  {
+    notice(origin, "Invalid parameters specified for \2FOUNDER\2.");
+    return;
+  }
+
+  /* only other people that supply the password can set themselves as founder.
+   * this prevents people from registering #kidsex and setting the founder to
+   * someone else.
+   */
+  if (!(mc = mychan_find(name)))
+  {
+    notice(origin, "No such channel: \2%s\2.", name);
+    return;
+  }
+
+  if (is_founder(mc, u->myuser))
+  {
+    notice(origin, "You are already founder on \2%s\2.", mc->name);
+    return;
+  }
+
+  if (strcmp(mc->pass, params))
+  {
+    notice(origin, "Authorization failed. Invalid password for \2%s\2.",
+           mc->name);
+    return;
+  }
+
+  chanacs_delete(mc, mc->founder, CA_FOUNDER);
+  chanacs_delete(mc, u->myuser, CA_VOP);
+  chanacs_delete(mc, u->myuser, CA_AOP);
+  chanacs_delete(mc, u->myuser, CA_SOP);
+  mc->founder = u->myuser;
+  chanacs_add(mc, u->myuser, CA_FOUNDER);
+
+  snoop("SET:FOUNDER: \2%s\2 -> \2%s\2", mc->name, u->nick);
+
+  notice(origin, "You have been set as founder for \2%s\2.", mc->name);
+}
+
 static void do_set_hidemail(char *origin, char *name, char *params)
 {
   user_t *u = user_find(origin);
@@ -317,7 +369,7 @@ static void do_set_mlock(char *origin, char *name, char *params)
     return;
   }
 
-  if (!is_founder(mc, u->myuser))
+  if ((!is_founder(mc, u->myuser)) && (!is_successor(mc, u->myuser)))
   {
     notice(origin, "You are not authorized to perform this command.");
     return;
@@ -463,7 +515,7 @@ static void do_set_neverop(char *origin, char *name, char *params)
       return;
     }
 
-    if (!is_founder(mc, u->myuser))
+    if ((!is_founder(mc, u->myuser)) && (!is_successor(mc, u->myuser)))
     {
       notice(origin, "You are not authorized to perform this command.");
       return;
@@ -715,7 +767,7 @@ static void do_set_secure(char *origin, char *name, char *params)
     return;
   }
 
-  if (!is_founder(mc, u->myuser))
+  if ((!is_founder(mc, u->myuser)) && (!is_successor(mc, u->myuser)))
   {
     notice(origin, "You are not authorized to perform this command.");
     return;
@@ -764,6 +816,91 @@ static void do_set_secure(char *origin, char *name, char *params)
   }
 }
 
+static void do_set_successor(char *origin, char *name, char *params)
+{
+  user_t *u = user_find(origin);
+  myuser_t *mu;
+  mychan_t *mc;
+
+  if (*name != '#')
+  {
+    notice(origin, "Invalid parameters specified for \2SUCCESSOR\2.");
+    return;
+  }
+
+  if (!u->myuser)
+  {
+    notice(origin, "You are not logged in.");
+    return;
+  }
+
+  if (!(mc = mychan_find(name)))
+  {
+    notice(origin, "No such chanel: \2%s\2.", name);
+    return;
+  }
+
+  if (!is_founder(mc, u->myuser))
+  {
+    notice(origin, "You are not authorized to perform this operation.");
+    return;
+  }
+
+  if (!strcasecmp("OFF", params) || !strcasecmp("NONE", params))
+  {
+    if (!mc->successor)
+    {
+      notice(origin, "There is no successor set for \2%s\2.", mc->name);
+      return;
+    }
+
+    snoop("SET:SUCCESSOR:NONE: \2%s\2", mc->name);
+
+    chanacs_delete(mc, mc->successor, CA_SUCCESSOR);
+
+    notice(origin, "\2%s\2 is no longer the successor of \2%s\2.",
+           mc->successor->name, mc->name);
+    notice(mc->successor->user->nick,
+           "You are no longer the successor of \2%s\2.", mc->name);
+
+    mc->successor = NULL;
+
+    return;
+  }
+
+  if (!(mu = myuser_find(params)))
+  {
+    notice(origin, "No such username: \2%s\2.", params);
+    return;
+  }
+
+  if (mu->flags & MU_NOOP)
+  {
+    notice(origin, "\2%s\2 does not wish to be added to access lists.",
+           mu->name);
+    return;
+  }
+
+  if (is_successor(mc, mu))
+  {
+    notice(origin, "\2%s\2 is already the successor of \2%s\2.", mu->name,
+           mc->name);
+    return;
+  }
+
+  chanacs_delete(mc, mu, CA_VOP);
+  chanacs_delete(mc, mu, CA_AOP);
+  chanacs_delete(mc, mu, CA_SOP);
+  mc->successor = mu;
+  chanacs_add(mc, mu, CA_SUCCESSOR);
+
+  snoop("SET:SUCCESSOR: \2%s\2 -> \2%s\2", mc->name, mu->name);
+
+  notice(origin, "\2%s\2 is now the successor of \2%s\2.", mu->name, mc->name);
+  notice(mu->user->nick, "\2%s\2 has set you as the successor of \2%s\2.",
+         u->myuser->name, mc->name);
+}
+
 static void do_set_verbose(char *origin, char *name, char *params)
 {
   user_t *u = user_find(origin);
@@ -781,7 +918,7 @@ static void do_set_verbose(char *origin, char *name, char *params)
     return;
   }
 
-  if (!is_founder(mc, u->myuser))
+  if ((!is_founder(mc, u->myuser)) && (!is_successor(mc, u->myuser)))
   {
     notice(origin, "You are not authorized to perform this command.");
     return;
@@ -835,6 +972,7 @@ static void do_set_verbose(char *origin, char *name, char *params)
 /* commands we understand */
 struct set_command_ set_commands[] = {
   { "EMAIL",      AC_NONE, do_set_email      },
+  { "FOUNDER",    AC_NONE, do_set_founder    },
   { "HIDEMAIL",   AC_NONE, do_set_hidemail   },
   { "HOLD",       AC_SRA,  do_set_hold       },
   { "MLOCK",      AC_NONE, do_set_mlock      },
@@ -842,6 +980,7 @@ struct set_command_ set_commands[] = {
   { "NOOP",       AC_NONE, do_set_noop       },
   { "PASSWORD",   AC_NONE, do_set_password   },
   { "SECURE",     AC_NONE, do_set_secure     },
+  { "SUCCESSOR",  AC_NONE, do_set_successor  }, 
   { "VERBOSE",    AC_NONE, do_set_verbose    },
   { NULL }
 };

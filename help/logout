@@ -12,5 +12,5 @@ supplied username.
 Syntax: LOGOUT [username] [password]
 
 Examples:
-    /msg S LOGOUT
-    /msg S LOGOUT foo bar
+    /msg &nick& LOGOUT
+    /msg &nick& LOGOUT foo bar

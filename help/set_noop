@@ -8,4 +8,4 @@ access lists.
 Syntax: SET <username> NOOP ON|OFF
 
 Example:
-    /msg S SET foo NOOP ON
+    /msg &nick& SET foo NOOP ON

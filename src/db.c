@@ -272,6 +272,7 @@ void db_load(void)
     /* chanacs */
     if (!strcmp("CA", item))
     {
+      chanacs_t *ca;
       char *cachan, *causer;
 
       cachan = strtok(NULL, " ");
@@ -285,9 +286,12 @@ void db_load(void)
         cain++;
 
         if ((!mu) && (validhostmask(causer)))
-          chanacs_add_host(mc, causer, atol(strtok(NULL, " ")));
+          ca = chanacs_add_host(mc, causer, atol(strtok(NULL, " ")));
         else
-          chanacs_add(mc, mu, atol(strtok(NULL, " ")));
+          ca = chanacs_add(mc, mu, atol(strtok(NULL, " ")));
+
+        if (ca->level & CA_SUCCESSOR)
+          ca->mychan->successor = ca->myuser;
 
         slog(0, LG_DEBUG, "db_load(): chanacs: %s -> %s", mc->name,
              (mu) ? mu->name : causer);

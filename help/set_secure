@@ -8,4 +8,4 @@ paranoid.
 Syntax: SET <#channel> SECURE ON|OFF
 
 Example:
-    /msg S SET #foo SECURE ON
+    /msg &nick& SET #foo SECURE ON

@@ -7,7 +7,7 @@ such as +kil.
 Syntax: SET <#channel> MLOCK <modes>
 
 Examples:
-    /msg S SET #foo MLOCK +nt-ilpksm
-    /msg S SET #foo MLOCK +nt
-    /msg S SET #foo MLOCK -kil
-    /msg S SET #foo MLOCK OFF
+    /msg &nick& SET #foo MLOCK +nt-ilpksm
+    /msg &nick& SET #foo MLOCK +nt
+    /msg &nick& SET #foo MLOCK -kil
+    /msg &nick& SET #foo MLOCK OFF

@@ -136,10 +136,10 @@ void part(char *chan, char *nick)
 
 void expire_check(event_t *e)
 {
-  uint32_t i, j;
+  uint32_t i, j, w, tcnt;
   myuser_t *mu;
-  mychan_t *mc;
-  node_t *n1, *n2, *tn;
+  mychan_t *mc, *tmc;
+  node_t *n1, *n2, *tn, *n3;
 
   for (i = 0; i < HASHSIZE; i++)
   {
@@ -162,6 +162,38 @@ void expire_check(event_t *e)
 
             if (mc->founder == mu)
             {
+              if (mc->successor)
+              {
+                /* make sure they're within limits */
+                for (w = 0, tcnt = 0; w < HASHSIZE; w++)
+                {
+                  LIST_FOREACH(n3, mclist[i].head)
+                  {
+                    tmc = (mychan_t *)n3->data;
+
+                    if (is_founder(tmc, mc->successor))
+                      tcnt++;
+                  }
+                }
+
+                if (tcnt >= me.maxchans)
+                  continue;
+
+                snoop("SUCCESSION: \2%s\2 -> \2%s\2 from \2%s\2",
+                      mc->successor->name, mc->name, mc->founder->name);
+
+                chanacs_delete(mc, mc->successor, CA_SUCCESSOR);
+                chanacs_add(mc, mc->successor, CA_FOUNDER);
+                mc->founder = mc->successor;
+                mc->successor = NULL;
+
+                if (mc->founder->user)
+                  notice(mc->founder->user->nick,
+                         "You are now founder on \2%s\2.", mc->name);
+
+                return;
+              }
+
               snoop("EXPIRE: \2%s\2 from \2%s\2", mc->name, mu->name);
 
               part(mc->name, svs.nick);
@@ -513,7 +545,8 @@ static void do_xop(char *origin, uint8_t level)
     /* VOP */
     if (CA_VOP & level)
     {
-      if ((!is_founder(mc, u->myuser)) && (!is_xop(mc, u->myuser, CA_SOP)))
+      if ((!is_founder(mc, u->myuser)) && (!is_successor(mc, u->myuser)) &&
+          (!is_xop(mc, u->myuser, CA_SOP)))
       {
         notice(origin, "You are not authorized to perform this operation.");
         return;
@@ -603,7 +636,8 @@ static void do_xop(char *origin, uint8_t level)
     /* AOP */
     if (CA_AOP & level)
     {
-      if ((!is_founder(mc, u->myuser)) && (!is_xop(mc, u->myuser, CA_SOP)))
+      if ((!is_founder(mc, u->myuser)) && (!is_successor(mc, u->myuser)) &&
+          (!is_xop(mc, u->myuser, CA_SOP)))
       {
         notice(origin, "You are not authorized to perform this operation.");
         return;
@@ -686,7 +720,7 @@ static void do_xop(char *origin, uint8_t level)
     /* SOP */
     if (CA_SOP & level)
     {
-      if (!is_founder(mc, u->myuser))
+      if ((!is_founder(mc, u->myuser)) && (!is_successor(mc, u->myuser)))
       {
         notice(origin, "You are not authorized to perform this operation.");
         return;
@@ -755,7 +789,8 @@ static void do_xop(char *origin, uint8_t level)
     /* VOP */
     if (CA_VOP & level)
     {
-      if ((!is_founder(mc, u->myuser)) && (!is_xop(mc, u->myuser, CA_SOP)))
+      if ((!is_founder(mc, u->myuser)) && (!is_successor(mc, u->myuser)) &&
+          (!is_xop(mc, u->myuser, CA_SOP)))
       {
         notice(origin, "You are not authorized to perform this operation.");
         return;
@@ -810,7 +845,8 @@ static void do_xop(char *origin, uint8_t level)
     /* AOP */
     if (CA_AOP & level)
     {
-      if ((!is_founder(mc, u->myuser)) && (!is_xop(mc, u->myuser, CA_SOP)))
+      if ((!is_founder(mc, u->myuser)) && (!is_successor(mc, u->myuser)) &&
+          (!is_xop(mc, u->myuser, CA_SOP)))
       {
         notice(origin, "You are not authorized to perform this operation.");
         return;
@@ -864,7 +900,7 @@ static void do_xop(char *origin, uint8_t level)
     /* SOP */
     if (CA_SOP & level)
     {
-      if (!is_founder(mc, u->myuser))
+      if ((!is_founder(mc, u->myuser)) && (!is_successor(mc, u->myuser)))
       {
         notice(origin, "You are not authorized to perform this operation.");
         return;
@@ -900,7 +936,7 @@ static void do_xop(char *origin, uint8_t level)
   {
     node_t *n;
 
-    if ((!is_founder(mc, u->myuser)) &&
+    if ((!is_founder(mc, u->myuser)) && (!is_successor(mc, u->myuser)) &&
         (!is_xop(mc, u->myuser, (CA_VOP | CA_AOP | CA_SOP))))
     {
       notice(origin, "You are not authorized to perform this operation.");
@@ -1038,7 +1074,7 @@ static void do_op(char *origin)
     return;
   }
 
-  if ((!is_founder(mc, u->myuser)) &&
+  if ((!is_founder(mc, u->myuser)) && (!is_successor(mc, u->myuser)) &&
       (!is_xop(mc, u->myuser, (CA_SOP | CA_VOP))))
   {
     notice(origin, "You are not authorized to perform this operation.");
@@ -1071,9 +1107,11 @@ static void do_op(char *origin)
       return;
     }
     else if ((MC_SECURE & mc->flags) && (!is_founder(mc, u->myuser)) &&
+             (!is_successor(mc, u->myuser)) &&
              (!is_xop(mc, u->myuser, (CA_SOP | CA_AOP))))
     {
-      notice(origin, "\2%s\2 could not be opped on \2%s\2.", u->nick, mc->name);
+      notice(origin, "\2%s\2 could not be opped on \2%s\2.", u->nick,
+             mc->name);
       return;
     }
   }
@@ -1125,7 +1163,7 @@ static void do_deop(char *origin)
     return;
   }
 
-  if ((!is_founder(mc, u->myuser)) &&
+  if ((!is_founder(mc, u->myuser)) && (!is_successor(mc, u->myuser)) &&
       (!is_xop(mc, u->myuser, (CA_AOP | CA_SOP))))
   {
     notice(origin, "You are not authorized to perform this operation.");
@@ -1189,7 +1227,7 @@ static void do_voice(char *origin)
     return;
   }
 
-  if ((!is_founder(mc, u->myuser)) &&
+  if ((!is_founder(mc, u->myuser)) && (!is_successor(mc, u->myuser)) &&
       (!is_xop(mc, u->myuser, (CA_AOP | CA_SOP))))
   {
     notice(origin, "You are not authorized to perform this operation.");
@@ -1253,7 +1291,7 @@ static void do_devoice(char *origin)
     return;
   }
 
-  if ((!is_founder(mc, u->myuser)) &&
+  if ((!is_founder(mc, u->myuser)) && (!is_successor(mc, u->myuser)) &&
       (!is_xop(mc, u->myuser, (CA_AOP | CA_SOP))))
   {
     notice(origin, "You are not authorized to perform this operation.");
@@ -1318,7 +1356,7 @@ static void do_invite(char *origin)
     return;
   }
 
-  if ((!is_founder(mc, u->myuser)) &&
+  if ((!is_founder(mc, u->myuser)) && (!is_successor(mc, u->myuser)) &&
       (!is_xop(mc, u->myuser, (CA_SOP | CA_AOP | CA_VOP))))
   {
     notice(origin, "You are not authorized to perform this operation.");
@@ -1382,7 +1420,16 @@ static void do_info(char *origin)
       notice(origin, "Founder    : %s (logged in from \2%s\2)",
              mc->founder->name, mc->founder->user->nick);
     else
-      notice(origin, "Founder    : %s (not logged in)");
+      notice(origin, "Founder    : %s (not logged in)", mc->founder->name);
+
+    if (mc->successor)
+    {
+      if (mc->successor->user)
+        notice(origin, "Successor  : %s (logged in from \2%s\2)",
+               mc->successor->name, mc->successor->user->nick);
+      else
+        notice(origin, "Successor  : %s (not logged in)", mc->successor->name);
+    }
 
     notice(origin, "Registered : %s (%s ago)", strfbuf,
            time_ago(mc->registered));
@@ -2022,6 +2069,33 @@ static void do_inject(char *origin)
   injecting = FALSE;
 }
 
+static void do_restart(char *origin)
+{
+  snoop("UPDATE: \2%s\2", origin);
+  wallops("Updating database by request of \2%s\2.", origin);
+  expire_check(NULL);
+  db_save();
+
+  snoop("RESTART: \2%s\2", origin);
+  wallops("Restarting in \2%d\2 seconds by request of \2%s\2.", me.restarttime,
+          origin);
+
+  runflags |= RF_RESTART;
+}
+
+static void do_shutdown(char *origin)
+{
+  snoop("UPDATE: \2%s\2", origin);
+  wallops("Updating database by request of \2%s\2.", origin);
+  expire_check(NULL);
+  db_save();
+
+  snoop("SHUTDOWN: \2%s\2", origin);
+  wallops("Shutting donw by request of \2%s\2.", origin);
+
+  runflags |= RF_SHUTDOWN;
+}
+
 /* *INDENT-OFF* */
 
 /* commands we understand */
@@ -2048,6 +2122,8 @@ struct command_ commands[] = {
   { "SENDPASS", AC_IRCOP, do_sendpass },
   { "RAW",      AC_SRA,   do_raw      },
   { "INJECT",   AC_SRA,   do_inject   },
+  { "RESTART",  AC_SRA,   do_restart  },
+  { "SHUTDOWN", AC_SRA,   do_shutdown },
   { NULL }
 };
 

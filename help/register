@@ -9,5 +9,5 @@ provided by IRC bots.
 Syntax: REGISTER <username|#channel> <password> [email]
 
 Examples:
-    /msg S REGISTER foo bar foo@bar.com
-    /msg S REGISTER #foo bar
+    /msg &nick& REGISTER foo bar foo@bar.com
+    /msg &nick& REGISTER #foo bar

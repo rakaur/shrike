@@ -6,4 +6,4 @@ being displayed to other users via INFO.
 Syntax: SET <username> HIDEMAIL ON|OFF
 
 Example:
-    /msg S SET foo HIDEMAIL ON
+    /msg &nick& SET foo HIDEMAIL ON

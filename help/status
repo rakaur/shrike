@@ -11,5 +11,5 @@ on the given channel is returned.
 Syntax: STATUS [#channel]
 
 Example:
-    /msg S STATUS
-    /msg S STATUS #foo
+    /msg &nick& STATUS
+    /msg &nick& STATUS #foo

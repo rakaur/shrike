@@ -63,31 +63,43 @@ static void sighandler(int signum)
     return;
   }
 
-  /* usually cause by ^C */
+  /* usually caused by ^C */
   else if (signum == SIGINT)
   {
+    wallops("Exiting on signal %d.", signum);
+    sts(":%s QUIT :caught interrupt", svs.nick);
     slog(0, LG_INFO, "sighandler(): caught interrupt; exiting...");
-    /* XXX disconnections? */
     runflags |= RF_SHUTDOWN;
   }
 
   else if (signum == SIGTERM)
   {
-    /* XXX disconnections? */
+    wallops("Exiting on signal %d.", signum);
     slog(0, LG_INFO, "sighandler(): got SIGTERM; exiting...");
     runflags |= RF_SHUTDOWN;
   }
 
   else if (signum == SIGUSR1)
   {
-    /* XXX disconnections? */
+    wallops("Panic! Out of memory.");
+    sts(":%s QUIT :out of memory!", svs.nick);
     slog(0, LG_INFO, "sighandler(): out of memory; exiting");
     runflags |= RF_SHUTDOWN;
   }
 
   else if (signum == SIGUSR2)
   {
-    /* XXX disconnections? */
+    wallops("Got SIGUSER2; restarting in \2%d\2 seconds.", me.restarttime);
+
+    snoop("UPDATE: \2%s\2", "system console");
+    wallops("Updating database by request of \2%s\2.", "system console");
+    expire_check(NULL);
+    db_save();
+
+    snoop("RESTART: \2%s\2", "system console");
+    wallops("Restarting in \2%d\2 seconds by request of \2%s\2.",
+            me.restarttime, "system console");
+
     slog(0, LG_INFO, "sighandler(): restarting...");
     runflags |= RF_RESTART;
   }
@@ -261,7 +273,7 @@ int main(int argc, char *argv[])
   runflags &= ~RF_STARTING;
 
   /* we probably have a few open already... */
-  me.maxfd = 5;
+  me.maxfd = 3;
 
   /* save dbs every 5 minutes */
   event_add("Save database", 300, (void *)db_save, TRUE);
@@ -285,6 +297,9 @@ int main(int argc, char *argv[])
   /* should we restart? */
   if (runflags & RF_RESTART)
   {
+    sts(":%s QUIT :restarting", svs.nick);
+    close(servsock);
+
     slog(0, LG_INFO, "main(): restarting in %d seconds", me.restarttime);
     restart_file = fopen("var/shrike.db", "w");
     fclose(restart_file);
@@ -296,6 +311,9 @@ int main(int argc, char *argv[])
 
     execve(argv[0], argv, environ);
   }
+
+  sts(":%s QUIT :shutting down", svs.nick);
+  close(servsock);
 
   slog(0, LG_INFO, "main(): shutting down: io_loop() exited");
 

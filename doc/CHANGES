@@ -29,6 +29,13 @@ shrike-1.0 - Matt Lanigan <rintaun@projectxero.net>
   + Added doc/COMMANDS.
 
 shrike-1.0 - E. Will <rakaur@malkier.net>
+  + Channel successors now work.
+  ~ Fixed a core when someone was opped and voiced.
+  ~ Fixed a pretty big problem with INFO.
+  + Added SET:FOUNDER.
+  + Added SHUTDOWN and RESTART.
+  ~ Handles signals better now.
+  ~ Help files now show the current nick.
   + Now handles JOIN 0 properly.
   + Now tracks hidden servers properly.
   ~ Changed validhostmask() so that it's not so picky.

@@ -503,7 +503,7 @@ boolean_t conf_rehash(void)
   if (hold_svs->join_chans != svs.join_chans)
   {
     mychan_t *mc;
-    
+
     for (i = 0; i < HASHSIZE; i++)
     {
       LIST_FOREACH(n, mclist[i].head)

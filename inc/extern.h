@@ -59,6 +59,7 @@ E uint32_t time_msec(void);
 E uint8_t regex_match(regex_t * preg, char *pattern, char *string,
                       size_t nmatch, regmatch_t pmatch[], int eflags);
 E uint32_t shash(const unsigned char *text);
+E char *replace(char *s, int32_t size, const char *old, const char *new);
 E char *itoa(int num);
 E char *flags_to_string(int32_t flags);
 E int32_t mode_to_flag(char c);
@@ -69,6 +70,7 @@ E int validhostmask(char *host);
 E void sendemail(char *what, const char *param, int type);
 
 E boolean_t is_founder(mychan_t *mychan, myuser_t *myuser);
+E boolean_t is_successor(mychan_t *mychan, myuser_t *myuser);
 E boolean_t is_xop(mychan_t *mychan, myuser_t *myuser, uint8_t level);
 E boolean_t is_on_mychan(mychan_t *mychan, myuser_t *myuser);
 E boolean_t should_op(mychan_t *mychan, myuser_t *myuser);
