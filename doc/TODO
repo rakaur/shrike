@@ -97,17 +97,18 @@ MUST BE IN shrike-1.0
       sts: :oper KLINE target.server duration user host :reason
       sts: :oper UNKLINE target.server user host
 [X] - move default flags to conf options
+[X] - STATS stuff
+[X] - a real bind style conf
+[ ] - a block allocator (mmap)
+[X] - rehash audit
 
 MAY BE IN shrike-1.0
 [X] - settings mirroring before rehash
       . this takes up a considerable amount of memory
 [X] - mode stacking
-[ ] - STATS stuff
 [ ] - automatic nightly backups of db
 
 I WANT SOMEDAY IN shrike
-[X] - a real bind style conf
-[ ] - a block allocator (mmap)
 [ ] - total clean up of node.c crap
 [ ]   . move all of the *_add() etc to localized files
 [ ]   . write a *real* node system based on dlink (or just use dlink..)

@@ -557,7 +557,8 @@ static void m_kill(char *origin, uint8_t parc, char *parv[])
   {
     services_init();
 
-    join(svs.chan, svs.nick);
+    if (svs.chan)
+      join(svs.chan, svs.nick);
 
     for (i = 0; i < HASHSIZE; i++)
     {
@@ -589,6 +590,67 @@ static void m_server(char *origin, uint8_t parc, char *parv[])
 
   if (cnt.server == 2)
     me.actual = sstrdup(parv[0]);
+}
+
+static void m_stats(char *origin, uint8_t parc, char *parv[])
+{
+  user_t *u = user_find(origin);
+  int i;
+
+  if (!parv[0][0])
+    return;
+
+  if (irccasecmp(me.name, parv[1]))
+    return;
+
+  snoop("STATS:%c: \2%s\2", parv[0][0], origin);
+
+  switch (parv[0][0])
+  {
+    case 'C':
+    case 'c':
+      sts(":%s 213 %s C *@127.0.0.1 A %s %d uplink", me.name, u->nick,
+          (is_ircop(u)) ? me.uplink : "127.0.0.1", me.port);
+      break;
+
+    case 'E':
+    case 'e':
+      if (!is_ircop(u))
+        break;
+
+      sts(":%s 249 %s E :Last event to run: %s", me.name, u->nick,
+          last_event_ran);
+
+      for (i = 0; i < MAX_EVENTS; i++)
+      {
+        if (event_table[i].active)
+          sts(":%s 249 %s E :%s (%d)", me.name, u->nick,
+              event_table[i].name, event_table[i].frequency);
+      }
+
+      break;
+
+    case 'H':
+    case 'h':
+      sts(":%s 244 %s H * * %s", me.name, u->nick,
+          (is_ircop(u)) ? me.uplink : "127.0.0.1");
+      break;
+
+    case 'I':
+    case 'i':
+      sts(":%s 215 %s I * * *@%s 0 nonopered", me.name, u->nick, me.name);
+      break;
+
+    case 'u':
+      sts(":%s 242 %s :Services Up %s", me.name, u->nick,
+          timediff(CURRTIME - me.start));
+      break;
+
+    default:
+      break;
+  }
+
+  sts(":%s 219 %s %c :End of STATS report", me.name, u->nick, parv[0][0]);
 }
 
 static void m_admin(char *origin, uint8_t parc, char *parv[])
@@ -695,6 +757,7 @@ struct message_ messages[] = {
   { "KILL",    m_kill    },
   { "SQUIT",   m_squit   },
   { "SERVER",  m_server  },
+  { "STATS",   m_stats   },
   { "ADMIN",   m_admin   },
   { "VERSION", m_version },
   { "INFO",    m_info    },

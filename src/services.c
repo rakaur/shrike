@@ -109,6 +109,9 @@ void snoop(char *fmt, ...)
   va_list ap;
   char buf[BUFSIZE];
 
+  if (!svs.chan)
+    return;
+
   if (me.bursting)
     return;
 
@@ -304,6 +307,9 @@ void services(char *origin, uint8_t parc, char *parv[])
 /* this is merely for debugging */
 static void do_list(char *origin)
 {
+  if (!svs.chan)
+    return;
+
   msg(svs.chan, "event   : %d", cnt.event);
   msg(svs.chan, "sra     : %d", cnt.sra);
   msg(svs.chan, "tld     : %d", cnt.tld);
@@ -446,7 +452,7 @@ static void do_login(char *origin)
     strftime(strfbuf, sizeof(strfbuf) - 1, "%b %d %H:%M:%S %Y", &tm);
 
     wallops("Warning: Numerous failed login attempts to \2%s\2. Last attempt "
-            "received from \2%s\2 on %s", mu->name, mu->lastfail, strfbuf);
+            "received from \2%s\2 on %s.", mu->name, mu->lastfail, strfbuf);
   }
 }
 

@@ -22,6 +22,7 @@ E void check_modes(mychan_t *mychan);
 
 /* conf.c */
 E void conf_parse(void);
+E void conf_init(void);
 E boolean_t conf_rehash(void);
 E boolean_t conf_check(void);
 
@@ -36,6 +37,7 @@ void db_load(void);
 
 /* event.c */
 E struct ev_entry event_table[MAX_EVENTS];
+E const char *last_event_ran;
 
 E uint32_t event_add(const char *name, EVH *func, void *arg, time_t when);
 E uint32_t event_add_once(const char *name, EVH *func, void *arg, time_t when);
@@ -81,6 +83,7 @@ E char *itoa(int num);
 E char *flags_to_string(int32_t flags);
 E int32_t mode_to_flag(char c);
 E char *time_ago(time_t event);
+E char *timediff(time_t u);
 E unsigned long makekey(void);
 E int validemail(char *email);
 E boolean_t validhostmask(char *host);

@@ -11,7 +11,7 @@ This document will guide you through the process of installing Shrike.  For
 general information about this program, see the README file.
 
 If you have any problems with the installation procedure, or need help with
-the general operation of this program, check http://shrike.malkier.net/forums/.
+the general operation of this program, check http://shrike.malkier.net/.
 
 Shrike should compile and run on most POSIX compliant systems.  The list of
 platforms that Shrike has been tested on includes:

@@ -241,6 +241,9 @@ int irccasecmp(char *s1, char *s2)
   unsigned char *str2 = (unsigned char *)s2;
   int res;
 
+  if (!s1 || !s2)
+    return -1;
+
   if (match_mapping == MATCH_ASCII)
     return strcasecmp(s1, s2);
 
@@ -259,6 +262,9 @@ int irccmp(char *s1, char *s2)
   unsigned char *str1 = (unsigned char *)s1;
   unsigned char *str2 = (unsigned char *)s2;
   int res;
+
+  if (!s1 || !s2)
+    return -1;
 
   if (match_mapping == MATCH_ASCII)
     return strcmp(s1, s2);

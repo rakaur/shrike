@@ -50,7 +50,7 @@ static int c_ci_raw(CONFIGENTRY *);
 static int c_ci_flood_msgs(CONFIGENTRY *);
 static int c_ci_flood_time(CONFIGENTRY *);
 static int c_ci_global(CONFIGENTRY *);
-static int c_ci_sra(CONFIGENTRY *);
+static int c_ci_sras(CONFIGENTRY *);
 
 struct ConfTable
 {
@@ -121,7 +121,7 @@ static struct ConfTable conf_ci_table[] = {
   { "FLOOD_MSGS",  1, c_ci_flood_msgs  },
   { "FLOOD_TIME",  1, c_ci_flood_time  },
   { "GLOBAL",      1, c_ci_global      },
-  { "SRA",         1, c_ci_sra         },
+  { "SRAS",        1, c_ci_sras        },
   { NULL, 0, NULL }
 };
 
@@ -168,26 +168,59 @@ void conf_parse(void)
 
 void conf_init(void)
 {
-  me.pass = me.vhost = me.netname = me.adminname = me.adminemail = me.mta
-          = svs.nick = svs.chan = svs.global = NULL;
+  if (me.pass)
+    free(me.pass);
+  if (me.netname)
+    free(me.netname);
+  if (me.adminname)
+    free(me.adminname);
+  if (me.adminemail)
+    free(me.adminemail);
+  if (me.mta)
+    free(me.mta);
+  if (svs.nick)
+    free(svs.nick);
+  if (svs.chan)
+    free(svs.chan);
+  if (svs.global)
+    free(svs.global);
 
-  me.recontime = me.restarttime = me.expire = me.maxusers = me.maxchans 
-               = svs.flood_msgs = svs.flood_time = 0;
+  me.pass = me.netname = me.adminname = me.adminemail = me.mta = svs.nick
+      = svs.chan = svs.global = NULL;
 
-  me.loglevel = svs.defuflags = svs.defcflags = 0x00000000;
+  me.recontime = me.restarttime = me.expire = me.maxusers = me.maxchans
+      = svs.flood_msgs = svs.flood_time = 0;
+
+  /* we don't reset loglevel because too much stuff uses it */
+  svs.defuflags = svs.defcflags = 0x00000000;
 
   svs.join_chans = svs.leave_chans = svs.raw = FALSE;
 
-  me.auth = AUTH_EMAIL; /* I guess this is a good default? */
+  me.auth = AUTH_NONE;
 
   if (!(runflags & RF_REHASHING))
   {
-    me.name = me.desc = me.uplink = me.port = me.vhost = svs.user = svs.host
-            = svs.real = NULL;
+    if (me.name)
+      free(me.name);
+    if (me.desc)
+      free(me.desc);
+    if (me.uplink)
+      free(me.uplink);
+    if (me.vhost)
+      free(me.vhost);
+    if (svs.user)
+      free(svs.user);
+    if (svs.host)
+      free(svs.host);
+    if (svs.real)
+      free(svs.real);
+
+    me.name = me.desc = me.uplink = me.vhost = svs.user = svs.host
+        = svs.real = NULL;
 
     me.port = 0;
 
-    set_match_mapping(MATCH_RFC1459); /* default to RFC compliancy */
+    set_match_mapping(MATCH_RFC1459);   /* default to RFC compliancy */
   }
 }
 
@@ -574,14 +607,12 @@ static int c_ci_global(CONFIGENTRY * ce)
   return 0;
 }
 
-static int c_ci_sra(CONFIGENTRY * ce)
+static int c_ci_sras(CONFIGENTRY * ce)
 {
-  if (ce->ce_vardata == NULL)
-  {
-    PARAM_ERROR(ce);
-  }
+  CONFIGENTRY *flce;
 
-  sra_add(ce->ce_vardata);
+  for (flce = ce->ce_entries; flce; flce = flce->ce_next)
+    sra_add(flce->ce_varname);
 
   return 0;
 }
@@ -591,7 +622,7 @@ static void copy_me(struct me *src, struct me *dst)
   dst->name = sstrdup(src->name);
   dst->desc = sstrdup(src->desc);
   dst->uplink = sstrdup(src->uplink);
-  dst->actual = sstrdup(src->actual);  /* ? */
+  dst->actual = sstrdup(src->actual);   /* ? */
   dst->port = src->port;
   dst->pass = sstrdup(src->pass);
   if (src->vhost)
@@ -621,7 +652,8 @@ static void copy_svs(struct svs *src, struct svs *dst)
   dst->user = sstrdup(src->user);
   dst->host = sstrdup(src->host);
   dst->real = sstrdup(src->real);
-  dst->chan = sstrdup(src->chan); /* ? */
+  if (src->chan)
+    dst->chan = sstrdup(src->chan);
   dst->join_chans = src->join_chans;
   dst->leave_chans = src->leave_chans;
   dst->defuflags = src->defuflags;
@@ -650,7 +682,8 @@ static void free_cstructs(struct me *mesrc, struct svs *svssrc)
   free(svssrc->user);
   free(svssrc->host);
   free(svssrc->real);
-  free(svssrc->chan);
+  if (svssrc->chan)
+    free(svssrc->chan);
   free(svssrc->global);
 }
 
@@ -660,7 +693,7 @@ boolean_t conf_rehash(void)
   struct svs *hold_svs = scalloc(sizeof(struct svs), 1);
   int i;
   sra_t *sra;
-  node_t *n;
+  node_t *n, *tn;
 
   /* we're rehashing */
   slog(LG_INFO, "conf_rehash(): rehashing");
@@ -670,18 +703,9 @@ boolean_t conf_rehash(void)
   copy_svs(&svs, hold_svs);
 
   /* reset everything */
-  free(me.pass);
-  free(me.netname);
-  free(me.adminname);
-  free(me.adminemail);
-  free(me.mta);
-  free(svs.nick);
-  free(svs.chan);
-  free(svs.global);
-
   conf_init();
 
-  LIST_FOREACH(n, sralist.head)
+  LIST_FOREACH_SAFE(n, tn, sralist.head)
   {
     sra = (sra_t *)n->data;
 
@@ -713,7 +737,9 @@ boolean_t conf_rehash(void)
   if (irccmp(hold_svs->chan, svs.chan))
   {
     part(hold_svs->chan, svs.nick);
-    join(svs.chan, svs.nick);
+
+    if (svs.chan)
+      join(svs.chan, svs.nick);
   }
 
   if (irccmp(hold_svs->nick, svs.nick))

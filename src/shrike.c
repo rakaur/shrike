@@ -216,6 +216,9 @@ int main(int argc, char *argv[])
   umask(077);
 #endif
 
+  /* init the conf settings */
+  conf_init();
+
   /* parse our config file */
   conf_parse();
 

@@ -1,4 +1,31 @@
 ------------------------------------------------------------------------
+r51 | sycobuny | 2004-04-03 01:12:21 -0600 (Sat, 03 Apr 2004) | 4 lines
+Changed paths:
+   M /trunk/src/conf.c
+
+Checked up on conf_rehash() to make sure it was saving all the right things.
+Requested sralist and svs.chan setup be looked at.
+Added a conf_init() function which initializes everything in the me/svs/etc. to 0/NULL/FALSE depending on type.
+
+------------------------------------------------------------------------
+r50 | rakaur | 2004-03-31 15:40:43 -0600 (Wed, 31 Mar 2004) | 2 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/dist/shrike.conf
+   M /trunk/doc/RELEASE
+   M /trunk/doc/TODO
+   M /trunk/inc/extern.h
+   M /trunk/inc/shrike.h
+   M /trunk/src/.depend
+   M /trunk/src/Makefile.in
+   M /trunk/src/conf.c
+   A /trunk/src/confp.c
+   M /trunk/src/function.c
+   M /trunk/src/node.c
+
+New bind-style conf with *real* parser (thanks Sarisa and Jeremy).
+
+------------------------------------------------------------------------
 r49 | rakaur | 2004-03-30 17:25:13 -0600 (Tue, 30 Mar 2004) | 6 lines
 Changed paths:
    M /trunk/ChangeLog
