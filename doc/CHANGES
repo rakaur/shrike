@@ -29,6 +29,8 @@ shrike-1.0 - Matt Lanigan <rintaun@projectxero.net>
   + Added doc/COMMANDS.
 
 shrike-1.0 - E. Will <rakaur@malkier.net>
+  + Now tracks hdden servers properly.
+  ~ Changed validhostmask() so that it's not so picky.
   ~ Fixed a problem with SECURE and hostmasks in channel_mode().
   ~ Updated help/xop to include hostmasks.
   ~ Updated TODO for beta3.

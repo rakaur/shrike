@@ -367,8 +367,11 @@ server_t *server_add(char *name, uint8_t hops, char *desc)
   s->name = sstrdup(name);
   s->desc = sstrdup(desc);
   s->hops = hops;
-
   s->connected_since = CURRTIME;
+
+  /* check to see if it's hidden */
+  if ((desc[0] == '(') && (desc[1] == 'H') && (desc[2] == ')'))
+    s->flags |= SF_HIDE;
 
   cnt.server++;
 

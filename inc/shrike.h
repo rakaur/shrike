@@ -212,6 +212,8 @@ struct server_
   server_t *uplink;
 };
 
+#define SF_HIDE        0x00000001
+
 /* channels struct */
 struct channel_
 {

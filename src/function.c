@@ -476,13 +476,13 @@ int validhostmask(char *host)
   if (!strchr(host, '!') || !strchr(host, '@') || !strchr(host, '.'))
     valid = 0;
 
-  /* make sure there are at least 7 characters besides the above
+  /* make sure there are at least 5 characters besides the above
    * mentioned !, @, and . */
   for (i = strlen(host) - 1; i > 0; i--)
     if (!(host[i] == '!' || host[i] == '@' || host[i] == '.'))
       chars++;
 
-  if (chars < 6)
+  if (chars < 4)
     valid = 0;
 
   return valid;

@@ -67,7 +67,7 @@ static void do_set_email(char *origin, char *name, char *params)
       mu->temp = NULL;
       mu->key = 0;
 
-      snoop("SET:EMAIL:V: \2%s\2 by \2%s\2", mu->email, origin);
+      snoop("SET:EMAIL:VS: \2%s\2 by \2%s\2", mu->email, origin);
 
       notice(origin, "\2%s\2 has now been verified.", mu->email);
 
