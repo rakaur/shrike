@@ -12,6 +12,7 @@
 
 list_t eventlist;
 list_t sralist;
+list_t tldlist;
 list_t servlist[HASHSIZE];
 list_t userlist[HASHSIZE];
 list_t chanlist[HASHSIZE];
@@ -347,6 +348,69 @@ sra_t *sra_find(myuser_t *myuser)
   return NULL;
 }
 
+/***********
+ * T L D S *
+ ***********/
+
+tld_t *tld_add(char *name)
+{
+  tld_t *tld;
+  node_t *n = node_create();
+
+  slog(0, LG_DEBUG, "tld_add(): %s", name);
+
+  tld = scalloc(sizeof(tld_t), 1);
+
+  node_add(tld, n, &tldlist);
+
+  tld->name = sstrdup(name);
+
+  cnt.tld++;
+
+  return tld;
+}
+
+void tld_delete(char *name)
+{
+  tld_t *tld = tld_find(name);
+  node_t *n;
+
+  if (!tld)
+  {
+    slog(0, LG_CRIT, "tld_delete(): called for nonexistant tld: %s",
+         name);
+
+    return;
+  }
+
+  slog(0, LG_DEBUG, "tld_delete(): %s", tld->name);
+
+  n = node_find(tld, &tldlist);
+  node_del(n, &tldlist);
+  node_free(n);
+
+  free(tld->name);
+  free(tld);
+
+  cnt.tld--;
+}
+
+tld_t *tld_find(char *name)
+{
+  tld_t *tld;
+  node_t *n;
+
+  LIST_FOREACH(n, tldlist.head)
+  {
+    tld = (tld_t *)n->data;
+
+    if (!strcasecmp(name, tld->name))
+      return tld;
+  }
+
+  return NULL;
+}
+
 /*****************
  * S E R V E R S *
  *****************/
@@ -355,6 +419,7 @@ server_t *server_add(char *name, uint8_t hops, char *desc)
 {
   server_t *s;
   node_t *n = node_create();
+  char *tld;
 
   slog(0, LG_DEBUG, "server_add(): %s", name);
 
@@ -372,6 +437,12 @@ server_t *server_add(char *name, uint8_t hops, char *desc)
   /* check to see if it's hidden */
   if ((desc[0] == '(') && (desc[1] == 'H') && (desc[2] == ')'))
     s->flags |= SF_HIDE;
+
+  /* tld list for global noticer */
+  tld = strrchr(name, '.');
+
+  if (!tld_find(tld))
+    tld_add(tld);
 
   cnt.server++;
 

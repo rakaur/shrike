@@ -73,16 +73,17 @@ MUST BE IN shrike-1.0b2
 [X] - SENDPASS
 [X] - SET:HIDEMAIL for usernames
 
-MUST BE IN shrike-1.0b3
+MUST BE IN shrike-1.0rc1
 [X] - RESTART
 [X] - SHUTDOWN
-[ ] - global notice that "learns" the tld's of the network
+[X] - global notice that "learns" the tld's of the network
 [X] - hidden server tracking
 [X] - SET:FOUNDER
 [X] - SET:SUCCESSOR
 [X] - deal with JOIN 0
 [X] - deal with signals
 [X] - fix help files (nick is static)
+[X] - deal with floods
 
 MAY BE IN shrike-1.0
 [X] - settings mirroring before rehash

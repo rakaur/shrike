@@ -24,14 +24,18 @@ shrike-1.0 - Stephen Belcher <sycobuny@malkier.net>
   + Added REHASH.
 
 shrike-1.0 - Matt Lanigan <rintaun@projectxero.net>
-  ~ Updated version flags and such.
-  + Can now disable raw/inject via conf option `raw'.
-  ~ Changed validhostmask() to not be picky at all.
   + Added commands that were not in COMMANDS file
   + Added m_info() and m_admin().
   + Added doc/COMMANDS.
 
 shrike-1.0 - E. Will <rakaur@malkier.net>
+  + Added featureful global noticer via conf option `global'.
+  + Added TLD tracking.
+  ~ Fixed a core in m_kill().
+  + Added flood protection.
+  ~ Updated version flags and such.
+  + Can now disable raw/inject via conf option `raw'.
+  ~ Changed validhostmask() to not be picky at all.
   + Channel successors now work.
   ~ Fixed a core when someone was opped and voiced.
   ~ Fixed a pretty big problem with INFO.

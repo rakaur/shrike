@@ -32,6 +32,8 @@ A: Lots of things.  First, it says "shrike-," followed by the version and
 
      * e - email auth is on
 
+     * F - flood protection is on
+
      * l - leave_chans is on
 
      * j - join_chans is on

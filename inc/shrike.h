@@ -85,6 +85,7 @@ typedef struct node_ node_t;
 typedef struct list_ list_t;
 typedef struct event_ event_t;
 typedef struct sra_ sra_t;
+typedef struct tld_ tld_t;
 typedef struct server_ server_t;
 typedef struct user_ user_t;
 typedef struct channel_ channel_t;
@@ -141,9 +142,14 @@ struct svs
   char *real;                   /* the IRC client's realname  */
   char *chan;                   /* channel we join/msg        */
 
+  uint16_t flood_msgs;          /* messages determining flood */
+  uint16_t flood_time;          /* time determining flood     */
+
   boolean_t join_chans;         /* join registered channels?  */
   boolean_t leave_chans;        /* leave channels when empty? */
   boolean_t raw;                /* enable raw/inject?         */
+
+  char *global;                 /* nick for global noticer    */
 } svs;
 
 /* keep track of how many of what we have */
@@ -151,6 +157,7 @@ struct cnt
 {
   uint32_t event;
   uint32_t sra;
+  uint32_t tld;
   uint32_t server;
   uint32_t user;
   uint32_t chan;
@@ -191,6 +198,16 @@ struct event_ {
 struct sra_ {
   myuser_t *myuser;
   char *name;
+};
+
+/* tld list struct */
+struct tld_ {
+  char *name;
+};
+
+/* global list struct */
+struct global_ {
+  char *text;
 };
 
 /* servers struct */
@@ -243,6 +260,10 @@ struct user_
 
   server_t *server;
   myuser_t *myuser;
+
+  uint8_t offenses;
+  uint8_t msgs;
+  time_t lastmsg;
 
   uint32_t flags;
   int32_t hash;

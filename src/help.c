@@ -62,6 +62,7 @@ void do_help(char *origin)
     {
       notice(origin, "The following IRCop commands are available.");
       notice(origin, "\2SENDPASS\2    Email registration passwords.");
+      notice(origin, "\2GLOBAL\2      Send a global notice.");
       notice(origin, " ");
     }
 
@@ -164,6 +165,7 @@ struct help_command_ help_commands[] = {
   { "UPDATE",   AC_SRA,   "help/update"   },
   { "STATUS",   AC_NONE,  "help/status"   },
   { "SENDPASS", AC_IRCOP, "help/sendpass" },
+  { "GLOBAL",   AC_IRCOP, "help/global"   },
   { "RESTART",  AC_SRA,   "help/restart"  },
   { "SHUTDOWN", AC_SRA,   "help/shutdown" },
   { "RAW",      AC_SRA,   "help/raw"      },

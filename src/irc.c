@@ -266,13 +266,99 @@ static void m_pong(char *origin, uint8_t parc, char *parv[])
 
 static void m_privmsg(char *origin, uint8_t parc, char *parv[])
 {
+  user_t *u;
   char buf[BUFSIZE];
-
-  /* don't forget user checks later.. */
 
   /* we should have no more and no less */
   if (parc != 2)
     return;
+
+  /* don't care about channels. */
+  if (parv[0][0] == '#')
+    return;
+
+  if (!(u = user_find(origin)))
+  {
+    slog(0, LG_DEBUG, "m_privmsg(): got message from nonexistant user `%s'",
+         origin);
+    return;
+  }
+
+  /* run it through flood checks */
+  if ((svs.flood_msgs) && (!is_sra(u->myuser)) && (!is_ircop(u)))
+  {
+    /* check if they're being ignored */
+    if (u->offenses > 10)
+    {
+      if ((CURRTIME - u->lastmsg) > 30)
+      {
+        u->offenses -= 10;
+        u->lastmsg = CURRTIME;
+        u->msgs = 0;
+      }
+      else
+        return;
+    }
+
+    if ((CURRTIME - u->lastmsg) > svs.flood_time)
+    {
+      u->lastmsg = CURRTIME;
+      u->msgs = 0;
+    }
+
+    u->msgs++;
+
+    if (u->msgs > svs.flood_msgs)
+    {
+      /* they're flooding. */
+      if (!u->offenses)
+      {
+        /* ignore them the first time */
+        u->lastmsg = CURRTIME;
+        u->msgs = 0;
+        u->offenses = 11;
+
+        notice(origin, "You have triggered services flood protection.");
+        notice(origin, "This is your first offense. You will be ignored for "
+               "30 seconds.");
+
+        snoop("FLOOD: \2%s\2", u->nick);
+
+        return;
+      }
+
+      if (u->offenses == 1)
+      {
+        /* ignore them the second time */
+        u->lastmsg = CURRTIME;
+        u->msgs = 0;
+        u->offenses = 12;
+
+        notice(origin, "You have triggered services flood protection.");
+        notice(origin, "This is your last warning. You will be ignored for "
+               "30 seconds.");
+
+        snoop("FLOOD: \2%s\2", u->nick);
+
+        return;
+      }
+
+      if (u->offenses == 2)
+      {
+        /* kill them the third time */
+        sts(":%s KILL %s :%s!%s!%s (flooding services)",
+            svs.nick, u->nick, svs.host, svs.user, svs.nick);
+
+        /* -> :rakaur KILL S :stan.othius.com!eric!rakaur (hi (plz)) */
+
+        snoop("FLOOD:KILL: \2%s\2", u->nick);
+
+        user_delete(u->nick);
+
+        return;
+      }
+    }
+  }
 
   /* is it for our services client? */
   if (!irccasecmp(parv[0], svs.nick))
@@ -462,15 +548,15 @@ static void m_kick(char *origin, uint8_t parc, char *parv[])
 
 static void m_kill(char *origin, uint8_t parc, char *parv[])
 {
+  mychan_t *mc;
+  node_t *n;
+  int i;
+
   slog(0, LG_DEBUG, "m_kill(): killed user: %s", parv[0]);
   user_delete(parv[0]);
 
   if (!irccasecmp(svs.nick, parv[0]))
   {
-    mychan_t *mc;
-    node_t *n;
-    int i;
-
     services_init();
 
     for (i = 0; i < HASHSIZE; i++)
@@ -479,12 +565,12 @@ static void m_kill(char *origin, uint8_t parc, char *parv[])
       {
         mc = (mychan_t *)n->data;
 
-        if ((mc->chan->nummembers >= 1) && (svs.join_chans))
-          join(mc->chan->name, svs.nick);
+        if ((svs.join_chans) && (mc->chan) && (mc->chan->nummembers >= 1))
+          join(mc->name, svs.nick);
 
-        if ((mc->chan->nummembers == 0) &&
-            (svs.join_chans) && (!svs.leave_chans))
-          join(mc->chan->name, svs.nick);
+        if ((svs.join_chans) && (!svs.leave_chans) && (mc->chan) &&
+            (mc->chan->nummembers == 0))
+          join(mc->name, svs.nick);
       }
     }
   }
@@ -512,16 +598,16 @@ static void m_admin(char *origin, uint8_t parc, char *parv[])
 
 static void m_version(char *origin, uint8_t parc, char *parv[])
 {
-  sts(":%s 351 %s :shrike-%s. %s %s%s%s%s%s%s%s%s TS5ow",
+  sts(":%s 351 %s :shrike-%s. %s %s%s%s%s%s%s%s%s%s TS5ow",
       me.name, origin, version, me.name,
       (match_mapping) ? "A" : "",
       (me.loglevel & LG_DEBUG) ? "d" : "",
       (me.auth) ? "e" : "",
+      (svs.flood_msgs) ? "F" : "",
       (svs.leave_chans) ? "l" : "",
       (svs.join_chans) ? "j" : "",
       (!match_mapping) ? "R" : "",
-      (svs.raw) ? "r" : "",
-      (runflags & RF_LIVE) ? "n" : "");
+      (svs.raw) ? "r" : "", (runflags & RF_LIVE) ? "n" : "");
 }
 
 static void m_info(char *origin, uint8_t parc, char *parv[])

@@ -321,15 +321,6 @@ void conf_parse(void)
 
             continue;
           }
-          else if (!strcasecmp("sra", lvalue))
-          {
-            /* we only make a temp list of sra's names.  after db_load() does
-             * its thing and we actually have myuser it will update the list
-             * properly.
-             */
-            sra_add(rvalue);
-            continue;
-          }
           else if (!strcasecmp("raw", lvalue))
           {
             if (!strcasecmp("yes", rvalue) || !strcasecmp("true", rvalue))
@@ -337,6 +328,30 @@ void conf_parse(void)
             else
               svs.raw = FALSE;
 
+            continue;
+          }
+          else if (!strcasecmp("flood_msgs", lvalue))
+          {
+            svs.flood_msgs = atoi(rvalue);
+            continue;
+          }
+          else if (!strcasecmp("flood_time", lvalue))
+          {
+            svs.flood_time = atoi(rvalue);
+            continue;
+          }
+          else if (!strcasecmp("global", lvalue))
+          {
+            svs.global = sstrdup(rvalue);
+            continue;
+          }
+          else if (!strcasecmp("sra", lvalue))
+          {
+            /* we only make a temp list of sra's names.  after db_load() does
+             * its thing and we actually have myuser it will update the list
+             * properly.
+             */
+            sra_add(rvalue);
             continue;
           }
           else
@@ -393,6 +408,10 @@ static void copy_svs(struct svs *src, struct svs *dst)
   dst->chan = sstrdup(src->chan);
   dst->join_chans = src->join_chans;
   dst->leave_chans = src->leave_chans;
+  dst->raw = src->raw;
+  dst->flood_msgs = src->flood_msgs;
+  dst->flood_time = src->flood_time;
+  dst->global = sstrdup(src->global);
 }
 
 static void free_cstructs(struct me *mesrc, struct svs *svssrc)
@@ -412,6 +431,7 @@ static void free_cstructs(struct me *mesrc, struct svs *svssrc)
   free(svssrc->host);
   free(svssrc->real);
   free(svssrc->chan);
+  free(svssrc->global);
 }
 
 boolean_t conf_rehash(void)
@@ -444,11 +464,14 @@ boolean_t conf_rehash(void)
   me.auth = 0;
   free(svs.nick);
   free(svs.chan);
+  free(svs.global);
   svs.join_chans = ERROR;
   svs.leave_chans = ERROR;
+  svs.raw = ERROR;
+  svs.flood_msgs = svs.flood_time = 0;
 
   me.pass = me.netname = me.adminname = me.adminemail = me.mta = NULL;
-  svs.nick = svs.chan = NULL;
+  svs.nick = svs.chan = svs.global = NULL;
 
   LIST_FOREACH(n, sralist.head)
   {
@@ -653,12 +676,15 @@ boolean_t conf_check(void)
     me.auth = AUTH_NONE;
   }
 
-  if (!svs.nick || !svs.user || !svs.host || !svs.real)
+  if (!svs.nick || !svs.user || !svs.host || !svs.real || !svs.global)
   {
     slog(0, LG_INFO, "check_conf(): invalid clientinfo{} block in %s",
          config_file);
     return FALSE;
   }
+
+  if (svs.flood_msgs && !svs.flood_time)
+    svs.flood_time = 10;
 
   return TRUE;
 }

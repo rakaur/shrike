@@ -238,12 +238,8 @@ void services(char *origin, uint8_t parc, char *parv[])
   char orig[BUFSIZE];
   struct command_ *c;
 
-  /* we don't care about channels */
-  if (*parv[0] == '#')
-    return;
-
   /* this should never happen */
-  if (*parv[0] == '&')
+  if (parv[0][0] == '&')
   {
     slog(0, LG_NOTICE, "services(): got parv with local channel: %s", parv[0]);
     return;
@@ -271,16 +267,16 @@ void services(char *origin, uint8_t parc, char *parv[])
   else if (!strcmp(cmd, "\001VERSION\001"))
   {
     notice(origin,
-           "\001VERSION shrike-%s. %s %s%s%s%s%s%s%s%s TS5ow\001",
+           "\001VERSION shrike-%s. %s %s%s%s%s%s%s%s%s%s TS5ow\001",
            version, me.name,
            (match_mapping) ? "A" : "",
            (me.loglevel & LG_DEBUG) ? "d" : "",
            (me.auth) ? "e" : "",
+           (svs.flood_msgs) ? "F" : "",
            (svs.leave_chans) ? "l" : "",
            (svs.join_chans) ? "j" : "",
            (!match_mapping) ? "R" : "",
-           (svs.raw) ? "r" : "",
-           (runflags & RF_LIVE) ? "n" : "");
+           (svs.raw) ? "r" : "", (runflags & RF_LIVE) ? "n" : "");
 
     return;
   }
@@ -304,17 +300,17 @@ void services(char *origin, uint8_t parc, char *parv[])
 /* this is merely for debugging */
 static void do_list(char *origin)
 {
-  sts(":%s PRIVMSG #shrike :servers: %d", svs.nick, cnt.server);
-  sts(":%s PRIVMSG #shrike :users: %d", svs.nick, cnt.user);
-  sts(":%s PRIVMSG #shrike :channels: %d", svs.nick, cnt.chan);
-  sts(":%s PRIVMSG #shrike :chanusers: %d", svs.nick, cnt.chanuser);
-  sts(":%s PRIVMSG #shrike :myusers: %d", svs.nick, cnt.myuser);
-  sts(":%s PRIVMSG #shrike :chanacs: %d", svs.nick, cnt.chanacs);
-  sts(":%s PRIVMSG #shrike :events: %d", svs.nick, cnt.event);
-  sts(":%s PRIVMSG #shrike :sras: %d", svs.nick, cnt.sra);
-
-  sts(":%s PRIVMSG #shrike :%s %s %s %s %s", svs.nick,
-      me.pass, me.netname, me.adminname, me.adminemail, svs.chan);
+  msg(svs.chan, "event   : %d", cnt.event);
+  msg(svs.chan, "sra     : %d", cnt.sra);
+  msg(svs.chan, "tld     : %d", cnt.tld);
+  msg(svs.chan, "server  : %d", cnt.server);
+  msg(svs.chan, "user    : %d", cnt.user);
+  msg(svs.chan, "chan    : %d", cnt.chan);
+  msg(svs.chan, "chanuser: %d", cnt.chanuser);
+  msg(svs.chan, "myuser  : %d", cnt.myuser);
+  msg(svs.chan, "mychan  : %d", cnt.mychan);
+  msg(svs.chan, "chanacs : %d", cnt.chanacs);
+  msg(svs.chan, "node    : %d", cnt.node);
 }
 
 /* LOGIN <username> <password> */
@@ -2029,6 +2025,97 @@ static void do_sendpass(char *origin)
   }
 }
 
+/* GLOBAL <parameters>|SEND|CLEAR */
+static void do_global(char *origin)
+{
+  struct global_ *global;
+  static list_t globlist;
+  node_t *n, *n2;
+  tld_t *tld;
+  char *params = strtok(NULL, "");
+
+  if (!params)
+  {
+    notice(origin, "Insufficient parameters for \2GLOBAL\2.");
+    notice(origin, "Syntax: GLOBAL <parameters>|SEND|CLEAR");
+    return;
+  }
+
+  if (!strcasecmp("CLEAR", params))
+  {
+    /* destroy the list we made */
+    LIST_FOREACH(n, globlist.head)
+    {
+      global = (struct global_ *)n->data;
+      n2 = node_find(global, &globlist);
+      node_del(n2, &globlist);
+      node_free(n2);
+      free(global->text);
+      free(global);
+    }
+
+    notice(origin, "The pending message has been deleted.");
+
+    return;
+  }
+
+  if (!strcasecmp("SEND", params))
+  {
+    if (!globlist.count)
+    {
+      notice(origin, "No message to send.");
+      return;
+    }
+
+    introduce_nick(svs.global, svs.user, svs.host, svs.real, "io");
+
+    LIST_FOREACH(n, globlist.head)
+    {
+      global = (struct global_ *)n->data;
+
+      /* send to every tld */
+      LIST_FOREACH(n2, tldlist.head)
+      {
+        tld = (tld_t *)n2->data;
+
+        sts(":%s NOTICE $$*%s :[Network Notice] %s", svs.global, tld->name,
+            global->text);
+      }
+    }
+
+    /* destroy the list we made */
+    LIST_FOREACH(n, globlist.head)
+    {
+      global = (struct global_ *)n->data;
+      n2 = node_find(global, &globlist);
+      node_del(n2, &globlist);
+      node_free(n2);
+      free(global->text);
+      free(global);
+    }
+
+    sts(":%s QUIT :finished", svs.global);
+    user_delete(svs.global);
+
+    snoop("GLOBAL: \2%s\2", origin);
+
+    notice(origin, "The global notice has been sent.");
+
+    return;
+  }
+
+  global = scalloc(sizeof(struct global_), 1);
+
+  global->text = sstrdup(params);
+
+  n = node_create();
+  node_add(global, n, &globlist);
+
+  notice(origin, "Stored text to be sent as line %d. Use \2GLOBAL SEND\2 "
+         "to send message, \2GLOBAL CLEAR\2 to delete the pending message, "
+         "or \2GLOBAL\2 to store additional lines.", globlist.count);
+}
+
 /* RAW <parameters> */
 static void do_raw(char *origin)
 {
@@ -2130,6 +2217,7 @@ struct command_ commands[] = {
   { "REHASH",   AC_SRA,   do_rehash   },
   { "STATUS",   AC_NONE,  do_status   },
   { "SENDPASS", AC_IRCOP, do_sendpass },
+  { "GLOBAL",   AC_IRCOP, do_global   },
   { "RAW",      AC_SRA,   do_raw      },
   { "INJECT",   AC_SRA,   do_inject   },
   { "RESTART",  AC_SRA,   do_restart  },
