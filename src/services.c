@@ -31,7 +31,6 @@ void join(char *chan, char *nick)
   if (!c)
   {
     sts(":%s SJOIN %ld %s +nt :@%s", me.name, now, chan, nick);
-    sts(":%s MODE %s +o %s", me.name, chan, nick);
 
     c = channel_add(chan, now);
   }
@@ -43,8 +42,7 @@ void join(char *chan, char *nick)
       return;
     }
 
-    sts(":%s SJOIN %ld %s + :%s", me.name, c->ts, chan, nick);
-    sts(":%s MODE %s +o %s", me.name, chan, nick);
+    sts(":%s SJOIN %ld %s + :@%s", me.name, c->ts, chan, nick);
   }
 
   cu = chanuser_add(c, nick);
@@ -55,7 +53,6 @@ void join(char *chan, char *nick)
 void services_init(void)
 {
   introduce_nick(svs.nick, svs.user, svs.host, svs.real, "io");
-  join(svs.chan, svs.nick);
 }
 
 /* PRIVMSG wrapper */

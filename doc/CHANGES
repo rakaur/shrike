@@ -29,6 +29,10 @@ shrike-1.0 - Matt Lanigan <rintaun@projectxero.net>
   + Added doc/COMMANDS.
 
 shrike-1.0 - E. Will <rakaur@malkier.net>
+  ~ Fixed a bug where server modes wouldn't play nicely with hyb6 servers on
+    the network. Please note that this only fixes the initial SJOIN. If the
+    client gets deopped it will break trying to send the +o again. This will
+    be fixed by beta2.
   + Added xOP:LIST.
   ~ Changed the verbosity of snoop() a bit.
   + You can now use LOGOUT on specific usernames.

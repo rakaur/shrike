@@ -626,6 +626,9 @@ channel_t *channel_add(char *name, uint32_t ts)
 
   cnt.chan++;
 
+  if (!strcasecmp(svs.chan, c->name))
+    join(svs.chan, svs.nick);
+
   return c;
 }
 
