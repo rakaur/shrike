@@ -508,9 +508,12 @@ static void do_xop(char *origin, uint8_t level)
   myuser_t *mu;
   mychan_t *mc;
   chanacs_t *ca;
+  chanuser_t *cu;
+  node_t *n;
   char *chan = strtok(NULL, " ");
   char *cmd = strtok(NULL, " ");
   char *uname = strtok(NULL, " ");
+  char hostbuf[BUFSIZE];
 
   if (!cmd || !chan)
   {
@@ -581,6 +584,26 @@ static void do_xop(char *origin, uint8_t level)
 
         notice(origin, "\2%s\2 has been added to the VOP list for \2%s\2.",
                uname, mc->name);
+
+        /* run through the channel's user list and do it */
+        LIST_FOREACH(n, mc->chan->members.head)
+        {
+          cu = (chanuser_t *)n->data;
+
+          hostbuf[0] = '\0';
+
+          strlcat(hostbuf, cu->user->nick, BUFSIZE);
+          strlcat(hostbuf, "!", BUFSIZE);
+          strlcat(hostbuf, cu->user->user, BUFSIZE);
+          strlcat(hostbuf, "@", BUFSIZE);
+          strlcat(hostbuf, cu->user->host, BUFSIZE);
+
+          if (should_voice_host(mc, hostbuf))
+          {
+            cmode(svs.nick, mc->name, "+v", cu->user->nick);
+            cu->modes |= CMODE_VOICE;
+          }
+        }
 
         return;
       }
@@ -672,6 +695,26 @@ static void do_xop(char *origin, uint8_t level)
 
         notice(origin, "\2%s\2 has been added to the AOP list for \2%s\2.",
                uname, mc->name);
+
+        /* run through the channel's user list and do it */
+        LIST_FOREACH(n, mc->chan->members.head)
+        {
+          cu = (chanuser_t *)n->data;
+
+          hostbuf[0] = '\0';
+
+          strlcat(hostbuf, cu->user->nick, BUFSIZE);
+          strlcat(hostbuf, "!", BUFSIZE);
+          strlcat(hostbuf, cu->user->user, BUFSIZE);
+          strlcat(hostbuf, "@", BUFSIZE);
+          strlcat(hostbuf, cu->user->host, BUFSIZE);
+
+          if (should_op_host(mc, hostbuf))
+          {
+            cmode(svs.nick, mc->name, "+o", cu->user->nick);
+            cu->modes |= CMODE_OP;
+          }
+        }
 
         return;
       }
@@ -938,8 +981,6 @@ static void do_xop(char *origin, uint8_t level)
 
   else if (!strcasecmp("LIST", cmd))
   {
-    node_t *n;
-
     if ((!is_founder(mc, u->myuser)) && (!is_successor(mc, u->myuser)) &&
         (!is_xop(mc, u->myuser, (CA_VOP | CA_AOP | CA_SOP))))
     {
@@ -1656,7 +1697,7 @@ static void do_register(char *origin)
     mc->used = CURRTIME;
     mc->mlock_on |= (CMODE_NOEXT | CMODE_TOPIC);
     mc->mlock_off |= (CMODE_INVITE | CMODE_LIMIT | CMODE_KEY);
-    mc->flags |= MC_SECURE;
+    mc->flags |= svs.defcflags;
 
     chanacs_add(mc, u->myuser, CA_FOUNDER);
 
@@ -1767,6 +1808,7 @@ static void do_register(char *origin)
     mu->registered = CURRTIME;
     mu->identified = TRUE;
     mu->lastlogin = CURRTIME;
+    mu->flags |= svs.defuflags;
 
     if (me.auth == AUTH_EMAIL)
     {
@@ -2196,7 +2238,7 @@ static void do_shutdown(char *origin)
   db_save(NULL);
 
   snoop("SHUTDOWN: \2%s\2", origin);
-  wallops("Shutting donw by request of \2%s\2.", origin);
+  wallops("Shutting down by request of \2%s\2.", origin);
 
   runflags |= RF_SHUTDOWN;
 }

@@ -148,6 +148,10 @@ struct svs
 
   boolean_t join_chans;         /* join registered channels?  */
   boolean_t leave_chans;        /* leave channels when empty? */
+
+  uint16_t defuflags;           /* default username flags     */
+  uint16_t defcflags;           /* default channel flags      */
+
   boolean_t raw;                /* enable raw/inject?         */
 
   char *global;                 /* nick for global noticer    */

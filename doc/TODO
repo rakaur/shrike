@@ -96,12 +96,14 @@ MUST BE IN shrike-1.0
 
       sts: :oper KLINE target.server duration user host :reason
       sts: :oper UNKLINE target.server user host
+[X] - move default flags to conf options
 
 MAY BE IN shrike-1.0
 [X] - settings mirroring before rehash
       . this takes up a considerable amount of memory
 [X] - mode stacking
 [ ] - STATS stuff
+[ ] - automatic nightly backups of db
 
 I WANT SOMEDAY IN shrike
 [ ] - a real bind style conf with lexing stuff

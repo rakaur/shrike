@@ -315,6 +315,38 @@ void conf_parse(void)
 
             continue;
           }
+          else if (!strcasecmp("uflags", lvalue))
+          {
+            char *s = strtok(rvalue, ":");
+
+            do
+            {
+              if (!strcasecmp("hold", s))
+                svs.defuflags |= MU_HOLD;
+              else if (!strcasecmp("neverop", s))
+                svs.defuflags |= MU_NEVEROP;
+              else if (!strcasecmp("noop", s))
+                svs.defuflags |= MU_NOOP;
+              else if (!strcasecmp("hidemail", s))
+                svs.defuflags |= MU_HIDEMAIL;
+            } while ((s = strtok(NULL, ":")));
+          }
+          else if (!strcasecmp("cflags", lvalue))
+          {
+            char *s = strtok(rvalue, ":");
+
+            do
+            {
+              if (!strcasecmp("hold", s))
+                svs.defcflags |= MC_HOLD;
+              else if (!strcasecmp("neverop", s))
+                svs.defcflags |= MC_NEVEROP;
+              else if (!strcasecmp("secure", s))
+                svs.defcflags |= MC_SECURE;
+              else if (!strcasecmp("verbose", s))
+                svs.defcflags |= MC_VERBOSE;
+            } while ((s = strtok(NULL, ":")));
+          }
           else if (!strcasecmp("raw", lvalue))
           {
             if (!strcasecmp("yes", rvalue) || !strcasecmp("true", rvalue))
@@ -402,6 +434,8 @@ static void copy_svs(struct svs *src, struct svs *dst)
   dst->chan = sstrdup(src->chan);
   dst->join_chans = src->join_chans;
   dst->leave_chans = src->leave_chans;
+  dst->defuflags = src->defuflags;
+  dst->defcflags = src->defcflags;
   dst->raw = src->raw;
   dst->flood_msgs = src->flood_msgs;
   dst->flood_time = src->flood_time;
@@ -460,6 +494,8 @@ boolean_t conf_rehash(void)
   free(svs.global);
   svs.join_chans = ERROR;
   svs.leave_chans = ERROR;
+  svs.defuflags = 0;
+  svs.defcflags = 0;
   svs.raw = ERROR;
   svs.flood_msgs = svs.flood_time = 0;
 

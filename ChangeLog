@@ -1,11 +1,38 @@
 ------------------------------------------------------------------------
+r44 | rakaur | 2004-03-27 17:16:05 -0600 (Sat, 27 Mar 2004) | 4 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/Makefile.in
+   M /trunk/dist/shrike.conf
+   M /trunk/doc/TODO
+   M /trunk/inc/extern.h
+   M /trunk/inc/shrike.h
+   M /trunk/src/.depend
+   M /trunk/src/Makefile.in
+   M /trunk/src/cmode.c
+   M /trunk/src/conf.c
+   M /trunk/src/db.c
+   M /trunk/src/event.c
+   M /trunk/src/function.c
+   M /trunk/src/irc.c
+   M /trunk/src/node.c
+   M /trunk/src/services.c
+   M /trunk/src/shrike.c
+   M /trunk/src/socket.c
+   M /trunk/src/version.sh
+
+Changed behavior of version.sh.
+Cleaned up logging... a lot.
+Fixed a "cd.." to "cd .." in src/Makefile.in.
+
+------------------------------------------------------------------------
 r43 | rakaur | 2004-03-27 10:28:31 -0600 (Sat, 27 Mar 2004) | 2 lines
 Changed paths:
    M /trunk/ChangeLog
    M /trunk/inc/shrike.h
    M /trunk/src/services.c
 
-*Really* fixed the core in GLOBAL this time (thanks W. Campbell).
+*Really* fixed the core in GLOBAL this time (thanks Sarisa).
 
 ------------------------------------------------------------------------
 r42 | rakaur | 2004-03-26 16:43:36 -0600 (Fri, 26 Mar 2004) | 2 lines
