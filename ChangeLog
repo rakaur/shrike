@@ -1,4 +1,20 @@
 ------------------------------------------------------------------------
+r78 | rakaur | 2004-04-29 07:25:36 -0500 (Thu, 29 Apr 2004) | 2 lines
+Changed paths:
+   A /branches/release-1.0rc1 (from /trunk:77)
+
+Branching off 1.0rc1.
+
+------------------------------------------------------------------------
+r77 | rakaur | 2004-04-29 07:24:24 -0500 (Thu, 29 Apr 2004) | 2 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/doc/RELEASE
+   M /trunk/src/services.c
+
+Added wildcard sanity on KLINE stuff.
+
+------------------------------------------------------------------------
 r76 | rakaur | 2004-04-19 17:56:02 -0500 (Mon, 19 Apr 2004) | 4 lines
 Changed paths:
    M /trunk/ChangeLog
