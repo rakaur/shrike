@@ -274,7 +274,6 @@ static void do_list(char *origin)
   sts(":%s PRIVMSG #shrike :chanusers: %d", svs.nick, cnt.chanuser);
   sts(":%s PRIVMSG #shrike :myusers: %d", svs.nick, cnt.myuser);
   sts(":%s PRIVMSG #shrike :chanacs: %d", svs.nick, cnt.chanacs);
-  sts(":%s PRIVMSG #shrike :connections: %d", svs.nick, cnt.connection);
   sts(":%s PRIVMSG #shrike :events: %d", svs.nick, cnt.event);
   sts(":%s PRIVMSG #shrike :sras: %d", svs.nick, cnt.sra);
 

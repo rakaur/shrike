@@ -274,7 +274,7 @@ int main(int argc, char *argv[])
   slog(0, LG_INFO, "main(): connecting to `%s' on %d as `%s'",
        me.uplink, me.port, me.name);
 
-  conn(me.uplink, me.port);
+  servsock = conn(me.uplink, me.port);
 
   /* main loop */
   io_loop();

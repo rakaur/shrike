@@ -65,10 +65,11 @@ MUST BE IN shrike-1.0b2
 [X]   . xOP:LIST
 [ ] - hostmasks on xOP lists
 [ ] - move joining channels to conf option
-[ ] - audit socket code so that it doesn't suck
-[ ]   . we don't need dcc, remove it
-[ ]   . we don't need connection list, remove it
-[ ]   . we don't need multiple connections, remove it
+[X] - audit socket code so that it doesn't suck
+[X]   . we don't need dcc, remove it
+[X]   . we don't need connection list, remove it
+[X]   . we don't need multiple connections, remove it
+[X]   . reading one char sucks, do something about it
 
 MAY BE IN shrike-1.0b2
 [X] - settings mirroring before rehash

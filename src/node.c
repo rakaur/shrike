@@ -10,7 +10,6 @@
 
 #include "../inc/shrike.h"
 
-list_t connlist;
 list_t eventlist;
 list_t sralist;
 list_t servlist[HASHSIZE];
@@ -115,69 +114,6 @@ node_t *node_find(void *data, list_t *l)
   return NULL;
 }
 
-/*************************
- * C O N N E C T I O N S *
- *************************/
-
-/* adds a connection */
-connection_t *connection_add(int sock, const char *name, uint32_t type)
-{
-  connection_t *c = scalloc(sizeof(connection_t), 1);
-  node_t *n = node_create();
-
-  slog(0, LG_DEBUG, "connection_add(): ``%s'' (fd: %d)", name, sock);
-
-  c->fd = sock;
-  c->flags = type;
-  c->name = sstrdup(name);
-  node_add(c, n, &connlist);
-
-  cnt.connection++;
-
-  return c;
-}
-
-/* removes a connection */
-void connection_delete(int sock)
-{
-  connection_t *c;
-  node_t *n;
-
-  LIST_FOREACH(n, connlist.head)
-  {
-    c = (connection_t *)n->data;
-
-    if (c->fd == sock)
-    {
-      slog(0, LG_DEBUG, "connection_delete(): %s (fd: %d)", c->name, c->fd);
-      free(c->name);
-      node_del(n, &connlist);
-      free(c);
-      cnt.connection--;
-      node_free(n);
-      return;
-    }
-  }
-
-  slog(0, LG_ERR, "connection_delete(): unable to remove connection: fd %d",
-       sock);
-}
-
-connection_t *connection_find(int sock)
-{
-  node_t *n;
-  connection_t *c;
-
-  LIST_FOREACH(n, connlist.head)
-  {
-    c = (connection_t *)n->data;
-    if (c->fd == sock)
-      return c;
-  }
-
-  return NULL;
-}
-
 /***************
  * E V E N T S *
  ***************/
@@ -247,8 +183,8 @@ void event_check(void)
          "disconnecting", diff);
 
     close(servsock);
-    connection_delete(servsock);
     servsock = -1;
+    me.connected = FALSE;
 
     LIST_FOREACH(n, eventlist.head)
     {

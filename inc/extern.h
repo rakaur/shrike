@@ -100,10 +100,6 @@ E void node_add(void *data, node_t *n, list_t *l);
 E void node_del(node_t *n, list_t *l);
 E node_t *node_find(void *data, list_t *l);
 
-E connection_t *connection_add(int sock, const char *name, uint32_t type);
-E void connection_delete(int sock);
-E connection_t *connection_find(int sock);
-
 E void event_check(void);
 E event_t *event_add
     (char *name, int delay, void (*func) (event_t *), boolean_t repeat);

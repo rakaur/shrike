@@ -83,7 +83,6 @@ typedef enum { ERROR = -1, FALSE, TRUE } l_boolean_t;
 
 typedef struct node_ node_t;
 typedef struct list_ list_t;
-typedef struct connection_ connection_t;
 typedef struct event_ event_t;
 typedef struct sra_ sra_t;
 typedef struct server_ server_t;
@@ -120,6 +119,7 @@ struct me
   uint32_t maxfd;               /* how many fds do we have?           */
   time_t start;                 /* starting time                      */
   server_t *me;                 /* pointer to our server struct       */
+  boolean_t connected;          /* are we connected?                  */
   boolean_t bursting;           /* are we bursting?                   */
 
   time_t uplinkpong;            /* when the uplink last sent a PONG   */
@@ -139,7 +139,6 @@ struct svs
 /* keep track of how many of what we have */
 struct cnt
 {
-  uint32_t connection;
   uint32_t event;
   uint32_t sra;
   uint32_t server;
@@ -164,21 +163,6 @@ struct list_
 {
   node_t *head, *tail;
   int count;                    /* how many entries in the list */
-};
-
-/* connection list struct */
-struct connection_
-{
-  char *name;                   /* name of connection         */
-  char buf[BUFSIZE];            /* read buffer                */
-  time_t last;                  /* TS of last incoming data   */
-  int32_t flags;                /* connection flags           */
-
-    int8_t(*readhdlr) ();       /* pointer to reader function */
-    int8_t(*writehdlr) ();      /* pointer to writer function */
-
-  int fd;                       /* file descriptor            */
-  struct sockaddr_in *sa;       /* socket structure           */
 };
 
 /* event list struct */
@@ -405,13 +389,6 @@ int runflags;
 #define LG_ERR          0x00000010      /* log real important stuff */
 #define LG_CRIT         0x00000020      /* log critical stuff       */
 #define LG_DEBUG        0x00000040      /* log debugging stuff      */
-
-/* connection flags */
-#define CONN_SERV       0x00000001      /* server uplink connection */
-#define CONN_DCCOUT     0x00000002      /* outgoing dcc connection  */
-#define CONN_DCCIN      0x00000004      /* incoming dcc connection  */
-#define CONN_CONNECTING 0x00000008      /* connecting connection    */
-#define CONN_CONNECTED  0x00000010      /* connected connection     */
 
 /* bursting timer */
 #if HAVE_GETTIMEOFDAY

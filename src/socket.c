@@ -13,56 +13,40 @@
 fd_set readfds, writefds, nullfds;
 char IRC_RAW[BUFSIZE + 1];
 uint16_t IRC_RAW_LEN = 0;
-connection_t *sconn = NULL;
 int servsock = -1;
 
-static int8_t irc_read(connection_t *c)
+static int irc_read(int fd, char *buf)
 {
-  uint16_t len;
-  char ch;
+  int n = read(fd, buf, BUFSIZE);
+  buf[n] = '\0';
+  return n;
+}
 
-  while ((len = recv(c->fd, &ch, 1, 0)))
+static void irc_packet(char *buf)
+{
+  char *ptr, buf2[BUFSIZE * 2];
+  static char tmp[BUFSIZE * 2 + 1];
+
+  while((ptr = strchr(buf, '\n')))
   {
-    /* len will always be 1 on success, as we are only reading 1 
-     * character. 
-     */
-    if (len != 1)
-      return 0;
+    *ptr = '\0';
 
-    if (IRC_RAW_LEN > BUFSIZE)
-    {
-      slog(0, LG_WARN, "irc_read(): buffer overflow; last text received: %s",
-           IRC_RAW);
-      return 0;
-    }
+    if (*(ptr - 1) == '\r')
+      *(ptr - 1) = '\0';
 
-    if (ch == '\r')
-      continue;
+    snprintf(buf2, (BUFSIZE * 2), "%s%s", tmp, buf);
+    *tmp = '\0';
 
-    if (ch == '\n')
-    {
-      /* NULL string */
-      IRC_RAW[IRC_RAW_LEN] = '\0';
+    irc_parse(buf2);
 
-      /* reset counter */
-      IRC_RAW_LEN = 0;
-
-      /* update count stuff? */
-
-      /* now parse it... */
-      irc_parse((char *)&IRC_RAW);
-
-      break;
-    }
-
-    if (ch != '\r' && ch != '\n' && ch != 0)
-      IRC_RAW[IRC_RAW_LEN++] = ch;
+    buf = ptr + 1;
   }
 
-  if (len <= 0)
-    return 0;
-
-  return 1;
+  if (*buf)
+  {
+    strncpy(tmp, buf, (BUFSIZE * 2) - strlen(tmp));
+    tmp[BUFSIZE * 2] = '\0';
+  }
 }
 
 /* send a line to the server, append the \r\n */
@@ -94,8 +78,8 @@ int8_t sts(char *fmt, ...)
     {
       slog(0, LG_WARN, "sts(): write error to server");
       close(servsock);
-      connection_delete(servsock);
       servsock = -1;
+      me.connected = FALSE;
       return 1;
     }
   }
@@ -133,11 +117,9 @@ static void ping_uplink(event_t *e)
 }
 
 /* called to finalize the uplink connection */
-static int8_t irc_estab(connection_t *c)
+static int8_t irc_estab(void)
 {
   uint8_t ret;
-
-  servsock = c->fd;
 
   ret = server_login();
   if (ret == 1)
@@ -145,12 +127,11 @@ static int8_t irc_estab(connection_t *c)
     slog(0, LG_ERR, "irc_estab(): unable to connect to `%s' on port %d",
          me.uplink, me.port);
     servsock = -1;
-    connection_delete(c->fd);
+    me.connected = FALSE;
     return 0;
   }
 
-  c->flags &= ~CONN_CONNECTING;
-  c->flags |= CONN_CONNECTED;
+  me.connected = TRUE;
 
   slog(0, LG_INFO, "irc_estab(): connection to uplink established");
   slog(0, LG_INFO, "irc_estab(): synching with uplink");
@@ -243,7 +224,6 @@ int conn(char *host, uint32_t port)
   /* connect it */
   connect(s, (struct sockaddr *)&sa, sizeof(sa));
 
-  sconn = connection_add(s, "Server uplink", CONN_SERV | CONN_CONNECTING);
   return s;
 }
 
@@ -253,11 +233,13 @@ void reconn(event_t *e)
   server_t *s;
   node_t *n;
 
+  if (me.connected)
+    return;
+
   if (servsock == -1)
   {
     shutdown(servsock, SHUT_RDWR);
     close(servsock);
-    connection_delete(servsock);
 
     slog(0, LG_DEBUG,
          "reconn(): ----------------------- clearing -----------------------");
@@ -282,7 +264,7 @@ void reconn(event_t *e)
     slog(0, LG_INFO, "reconn(): connecting to `%s' on %d as `%s'",
          me.uplink, me.port, me.name);
 
-    conn(me.uplink, me.port);
+    servsock = conn(me.uplink, me.port);
   }
 }
 
@@ -294,77 +276,51 @@ void io_loop(void)
 {
   int8_t sr;
   struct timeval to;
-  node_t *tn;
-  connection_t *c;
+  static char buf[BUFSIZE + 1];
+  boolean_t eadded = FALSE;
 
   while (!(runflags & (RF_SHUTDOWN | RF_RESTART)))
   {
     /* check for events */
     event_check();
 
+    memset(buf, '\0', BUFSIZE + 1);
     FD_ZERO(&readfds);
     FD_ZERO(&writefds);
     to.tv_sec = 1;
     to.tv_usec = 0L;
 
-    /* add the fds... */
-    LIST_FOREACH(tn, connlist.head)
+    if ((!me.connected) && (servsock != -1))
+      FD_SET(servsock, &writefds);
+    else if (servsock != -1)
+      FD_SET(servsock, &readfds);
+
+    if ((servsock == -1) && (!eadded))
     {
-      c = (connection_t *)tn->data;
-
-      c->readhdlr = NULL;
-      c->writehdlr = NULL;
-
-      if (c->flags & CONN_CONNECTING)
-      {
-        /* dcc stuff here */
-        if (c->flags & CONN_SERV)
-        {
-          FD_SET(c->fd, &writefds);
-          c->writehdlr = irc_estab;
-        }
-      }
-      else
-      {
-        FD_SET(c->fd, &readfds);
-        if (c->fd == servsock)
-          c->readhdlr = irc_read;
-        /* dcc stuff here */
-      }
+      event_add("Uplink connect", me.recontime, (void *)reconn, FALSE);
+      eadded = TRUE;
     }
 
     /* select() time */
     if ((sr = select(me.maxfd + 1, &readfds, &writefds, &nullfds, &to)) > 0)
     {
-      int8_t ret;
-
-      LIST_FOREACH(tn, connlist.head)
+      if (FD_ISSET(servsock, &writefds))
       {
-        c = (connection_t *)tn->data;
+        if (irc_estab() == 0)
+          continue;
 
-        if (FD_ISSET(c->fd, &readfds))
-        {
-          /* send it off to the read handler */
-          ret = c->readhdlr(c);
-          if (ret == 0)
-          {
-            slog(0, LG_NOTICE, "io_loop(): lost connection to ``%s''",
-                 c->name);
-            close(servsock);
-            connection_delete(servsock);
-            servsock = -1;
-            event_add("Uplink connect", me.recontime, (void *)reconn, FALSE);
-            continue;
-          }
-        }
-        if (FD_ISSET(c->fd, &writefds))
-        {
-          /* send it off to the write handler */
-          ret = c->writehdlr(c);
-          if (ret == 0)
-            continue;
-        }
+        eadded = FALSE;
       }
+
+      if (!irc_read(servsock, buf))
+      {
+        slog(0, LG_INFO, "io_loop(): lost connection to uplink.");
+        close(servsock);
+        servsock = -1;
+        me.connected = FALSE;
+      }
+
+      irc_packet(buf);
     }
     else
     {
@@ -383,8 +339,8 @@ void io_loop(void)
              strerror(errno));
 
         close(servsock);
-        connection_delete(servsock);
         servsock = -1;
+        me.connected = FALSE;
         event_add("Uplink connect", me.recontime, (void *)reconn, FALSE);
         return;
       }
