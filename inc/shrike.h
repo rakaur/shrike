@@ -130,8 +130,8 @@ struct me
   time_t uplinkpong;            /* when the uplink last sent a PONG   */
 } me;
 
-#define AUTH_NORMAL  0
-#define AUTH_EMAIL   1
+#define AUTH_NONE  0
+#define AUTH_EMAIL 1
 
 struct svs
 {
@@ -141,6 +141,7 @@ struct svs
   char *real;                   /* the IRC client's realname  */
   char *chan;                   /* channel we join/msg        */
 
+  boolean_t join_chans;         /* join registered channels?  */
   boolean_t leave_chans;        /* leave channels when empty? */
 } svs;
 

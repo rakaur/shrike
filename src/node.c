@@ -710,7 +710,7 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
 
   if ((chan->nummembers == 1) && (irccasecmp(svs.chan, chan->name)))
   {
-    if ((mc = mychan_find(chan->name)))
+    if ((mc = mychan_find(chan->name)) && (svs.join_chans))
     {
       join(chan->name, svs.nick);
       mc->used = CURRTIME;

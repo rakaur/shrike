@@ -63,7 +63,7 @@ MUST BE IN shrike-1.0b2
 [X]   . status on channel
 [X]   . xOP:LIST
 [X] - hostmasks on xOP lists
-[ ] - move joining channels to conf option
+[X] - move joining channels to conf option
 [X] - audit socket code so that it doesn't suck
 [X]   . we don't need dcc, remove it
 [X]   . we don't need connection list, remove it

@@ -207,19 +207,7 @@ void channel_mode(channel_t *chan, uint8_t parc, char *parv[])
           }
         }
         else
-        {
           cu->modes &= ~status_mode_list[i].value;
-
-          /* see if they deopped me */
-          if (cu->user == user_find(svs.nick))
-          {
-            if (!(CMODE_OP & cu->modes))
-            {
-              sts(":%s MODE %s +o %s", me.name, cu->chan->name, svs.nick);
-              cu->modes |= CMODE_OP;
-            }
-          }
-        }
 
         parpos++;
         break;

@@ -1616,7 +1616,8 @@ static void do_register(char *origin)
            "The password is \2%s\2. Please write this down for "
            "future reference.", mc->pass);
 
-    join(mc->name, svs.nick);
+    if (svs.join_chans)
+      join(mc->name, svs.nick);
   }
 
   else

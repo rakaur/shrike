@@ -479,10 +479,11 @@ static void m_kill(char *origin, uint8_t parc, char *parv[])
       {
         mc = (mychan_t *)n->data;
 
-        if (mc->chan->nummembers >= 1)
+        if ((mc->chan->nummembers >= 1) && (svs.join_chans))
           join(mc->chan->name, svs.nick);
 
-        if ((mc->chan->nummembers == 0) && (!svs.leave_chans))
+        if ((mc->chan->nummembers == 0) &&
+            (svs.join_chans) && (!svs.leave_chans))
           join(mc->chan->name, svs.nick);
       }
     }

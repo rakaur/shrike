@@ -203,10 +203,10 @@ void conf_parse(void)
           }
           else if (!strcasecmp("auth", lvalue))
           {
-            if (!strcasecmp("EMAIL", rvalue))
+            if (!strcasecmp("email", rvalue))
               me.auth = AUTH_EMAIL;
             else
-              me.auth = AUTH_NORMAL;
+              me.auth = AUTH_NONE;
           }
           else if (!strcasecmp("casemapping", lvalue))
           {
@@ -303,6 +303,15 @@ void conf_parse(void)
             svs.chan = sstrdup(rvalue);
             continue;
           }
+          else if (!strcasecmp("join_chans", lvalue))
+          {
+            if (!strcasecmp("yes", rvalue) || !strcasecmp("true", rvalue))
+              svs.join_chans = TRUE;
+            else
+              svs.join_chans = FALSE;
+
+            continue;
+          }
           else if (!strcasecmp("leave_chans", lvalue))
           {
             if (!strcasecmp("yes", rvalue) || !strcasecmp("true", rvalue))
@@ -373,6 +382,7 @@ static void copy_svs(struct svs *src, struct svs *dst)
   dst->host = sstrdup(src->host);
   dst->real = sstrdup(src->real);
   dst->chan = sstrdup(src->chan);
+  dst->join_chans = src->join_chans;
   dst->leave_chans = src->leave_chans;
 }
 
@@ -425,6 +435,7 @@ boolean_t conf_rehash(void)
   me.auth = 0;
   free(svs.nick);
   free(svs.chan);
+  svs.join_chans = ERROR;
   svs.leave_chans = ERROR;
 
   me.pass = me.netname = me.adminname = me.adminemail = me.mta = NULL;
@@ -489,10 +500,31 @@ boolean_t conf_rehash(void)
     node_add(u, n, &userlist[u->hash]);
   }
 
+  if (hold_svs->join_chans != svs.join_chans)
+  {
+    mychan_t *mc;
+    
+    for (i = 0; i < HASHSIZE; i++)
+    {
+      LIST_FOREACH(n, mclist[i].head)
+      {
+        mc = (mychan_t *)n->data;
+
+        if (mc->chan->nummembers >= 1)
+        {
+          if ((!chanuser_find(mc->chan, user_find(svs.nick))) &&
+              (svs.join_chans))
+            join(mc->chan->name, svs.nick);
+          else
+            part(mc->chan->name, svs.nick);
+        }
+      }
+    }
+  }
+
   if (hold_svs->leave_chans != svs.leave_chans)
   {
     mychan_t *mc;
-    chanuser_t *cu;
 
     for (i = 0; i < HASHSIZE; i++)
     {
@@ -501,11 +533,11 @@ boolean_t conf_rehash(void)
         mc = (mychan_t *)n->data;
 
         if ((mc->chan->nummembers == 1) &&
-            (cu = chanuser_find(mc->chan, user_find(svs.nick))))
+            (chanuser_find(mc->chan, user_find(svs.nick))))
         {
           if (svs.leave_chans)
             part(mc->chan->name, svs.nick);
-          else
+          else if (svs.join_chans)
             join(mc->chan->name, svs.nick);
         }
       }
@@ -608,8 +640,8 @@ boolean_t conf_check(void)
   if (me.auth != 0 && me.auth != 1)
   {
     slog(0, LG_INFO, "conf_check(): no `auth' set in %s; "
-         "defaulting to NORMAL", config_file);
-    me.auth = AUTH_NORMAL;
+         "defaulting to NONE", config_file);
+    me.auth = AUTH_NONE;
   }
 
   if (!svs.nick || !svs.user || !svs.host || !svs.real)

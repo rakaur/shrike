@@ -29,6 +29,8 @@ shrike-1.0 - Matt Lanigan <rintaun@projectxero.net>
   + Added doc/COMMANDS.
 
 shrike-1.0 - E. Will <rakaur@malkier.net>
+  ~ MODEs should play nice with hybrid6 now.
+  + Joining of registered channels is now a conf option via `join_chans' in.
   + Added SET:HIDEMAIL for usernames.
   ~ SRAs now have access to IRCop commands.
   + Added hostmasks to VOP and AOP lists.
