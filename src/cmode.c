@@ -198,7 +198,7 @@ void channel_mode(channel_t *chan, uint8_t parc, char *parv[])
             {
               char hostbuf[BUFSIZE];
 
-              strlcat(hostbuf, cu->user->nick, BUFSIZE);
+              strlcpy(hostbuf, cu->user->nick, BUFSIZE);
               strlcat(hostbuf, "!", BUFSIZE);
               strlcat(hostbuf, cu->user->user, BUFSIZE);
               strlcat(hostbuf, "@", BUFSIZE);
