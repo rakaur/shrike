@@ -275,27 +275,6 @@ void user_mode(user_t *user, char *modes)
             snoop("DEOPER: %s (%s)", user->nick, user->server->name);
           }
         }
-      case 'a':
-        if (toadd)
-        {
-          if (!is_admin(user))
-          {
-            user->flags |= UF_ADMIN;
-            slog(0, LG_DEBUG, "user_mode(): %s is now an admin", user->nick);
-            snoop("ADMIN: %s (%s)", user->nick, user->server->name);
-          }
-        }
-        else
-        {
-          if (is_admin(user))
-          {
-            user->flags &= ~UF_ADMIN;
-            slog(0, LG_DEBUG, "user_mode(): %s is no longer an admin",
-                 user->nick);
-            snoop("DEADMIN: %s (%s)", user->nick, user->server->name);
-          }
-        }
-        break;
       default:
         break;
     }
