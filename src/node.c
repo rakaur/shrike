@@ -385,9 +385,9 @@ kline_t *kline_find_num(long number)
 void kline_expire(void *arg)
 {
   kline_t *k;
-  node_t *n;
+  node_t *n, *tn;
 
-  LIST_FOREACH(n, klnlist.head)
+  LIST_FOREACH_SAFE(n, tn, klnlist.head)
   {
     k = (kline_t *)n->data;
 
@@ -845,9 +845,9 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
 void chanuser_delete(channel_t *chan, user_t *user)
 {
   chanuser_t *cu;
-  node_t *n, *n2;
+  node_t *n, *tn, *n2;
 
-  LIST_FOREACH(n, chan->members.head)
+  LIST_FOREACH_SAFE(n, tn, chan->members.head)
   {
     cu = (chanuser_t *)n->data;
 
@@ -944,7 +944,7 @@ void myuser_delete(char *name)
   myuser_t *mu = myuser_find(name);
   mychan_t *mc;
   chanacs_t *ca;
-  node_t *n;
+  node_t *n, *tn;
   uint32_t i;
 
   if (!mu)
@@ -956,7 +956,7 @@ void myuser_delete(char *name)
   slog(LG_DEBUG, "myuser_delete(): %s", mu->name);
 
   /* remove their chanacs shiz */
-  LIST_FOREACH(n, mu->chanacs.head)
+  LIST_FOREACH_SAFE(n, tn, mu->chanacs.head)
   {
     ca = (chanacs_t *)n->data;
 
@@ -1052,7 +1052,7 @@ void mychan_delete(char *name)
 {
   mychan_t *mc = mychan_find(name);
   chanacs_t *ca;
-  node_t *n;
+  node_t *n, *tn;
 
   if (!mc)
   {
@@ -1063,7 +1063,7 @@ void mychan_delete(char *name)
   slog(LG_DEBUG, "mychan_delete(): %s", mc->name);
 
   /* remove the chanacs shiz */
-  LIST_FOREACH(n, mc->chanacs.head)
+  LIST_FOREACH_SAFE(n, tn, mc->chanacs.head)
   {
     ca = (chanacs_t *)n->data;
 
@@ -1168,9 +1168,9 @@ chanacs_t *chanacs_add_host(mychan_t *mychan, char *host, uint8_t level)
 void chanacs_delete(mychan_t *mychan, myuser_t *myuser, uint8_t level)
 {
   chanacs_t *ca;
-  node_t *n, *n2;
+  node_t *n, *tn, *n2;
 
-  LIST_FOREACH(n, mychan->chanacs.head)
+  LIST_FOREACH_SAFE(n, tn, mychan->chanacs.head)
   {
     ca = (chanacs_t *)n->data;
 
@@ -1195,9 +1195,9 @@ void chanacs_delete(mychan_t *mychan, myuser_t *myuser, uint8_t level)
 void chanacs_delete_host(mychan_t *mychan, char *host, uint8_t level)
 {
   chanacs_t *ca;
-  node_t *n;
+  node_t *n, *tn;
 
-  LIST_FOREACH(n, mychan->chanacs.head)
+  LIST_FOREACH_SAFE(n, tn, mychan->chanacs.head)
   {
     ca = (chanacs_t *)n->data;
 

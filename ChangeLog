@@ -1,4 +1,24 @@
 ------------------------------------------------------------------------
+r62 | rakaur | 2004-04-10 16:27:03 -0500 (Sat, 10 Apr 2004) | 5 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/INSTALL
+   A /trunk/dist/shrike.chk
+   M /trunk/inc/extern.h
+   M /trunk/inc/shrike.h
+   M /trunk/src/Makefile.in
+   M /trunk/src/cmode.c
+   M /trunk/src/irc.c
+   M /trunk/src/node.c
+   M /trunk/src/services.c
+   M /trunk/src/shrike.c
+
+Added a crontab script.
+Fixed pid checking (actually checks to see if pid is running).
+"Fixed" a core in m_kick() (seems a user_t was messed up... that's bad).
+No longer deops itself because of SECURE.
+
+------------------------------------------------------------------------
 r61 | rakaur | 2004-04-09 20:49:38 -0500 (Fri, 09 Apr 2004) | 4 lines
 Changed paths:
    M /trunk/ChangeLog
