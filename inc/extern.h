@@ -83,7 +83,7 @@ E char *itoa(int num);
 E char *flags_to_string(int32_t flags);
 E int32_t mode_to_flag(char c);
 E char *time_ago(time_t event);
-E char *timediff(time_t u);
+E char *timediff(time_t seconds);
 E unsigned long makekey(void);
 E int validemail(char *email);
 E boolean_t validhostmask(char *host);

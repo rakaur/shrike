@@ -1,4 +1,16 @@
 ------------------------------------------------------------------------
+r58 | rakaur | 2004-04-06 16:40:40 -0500 (Tue, 06 Apr 2004) | 2 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/dist/shrike.conf
+   M /trunk/doc/RELEASE
+   M /trunk/inc/shrike.h
+   M /trunk/src/conf.c
+   M /trunk/src/services.c
+
+Added a `silent' conf option to prevent WALLOPS.
+
+------------------------------------------------------------------------
 r54 | rakaur | 2004-04-04 23:58:34 -0500 (Sun, 04 Apr 2004) | 6 lines
 Changed paths:
    M /trunk/ChangeLog

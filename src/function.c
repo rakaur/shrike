@@ -446,38 +446,21 @@ char *time_ago(time_t event)
   return ret;
 }
 
-/* print a period of seconds into human readable format */
-char *timediff(time_t u)
+char *timediff(time_t seconds)
 {
-  static char buf[128];
+  static char buf[BUFSIZE];
+  int days, hours, minutes;
 
-  if (u > 86400)
-  {
-    time_t days = u / 86400;
+  days = (int)(seconds / 86400);
+  seconds %= 86400;
+  hours = (int)(seconds / 3600);
+  hours %= 3600;
+  minutes = (int)(seconds / 60);
+  seconds %= 60;
 
-    snprintf(buf, 128, "%ld %s, %02ld:%02ld",
-             (long)days, (days == 1) ? "day" : "days",
-             (long)((u / 3600) % 24), (long)((u / 60) % 60));
-  }
-  else if (u > 3600)
-  {
-    time_t hours = u / 3600;
-    time_t minutes = (u / 60) % 60;
-
-    snprintf(buf, 128, "%ld %s, %ld %s",
-             (long)hours, (hours == 1) ? "hour" : "hours", (long)minutes,
-             (minutes == 1) ? "minute" : "minutes");
-  }
-  else
-  {
-    time_t minutes = u / 60;
-    time_t seconds = u % 60;
-
-    snprintf(buf, 128,
-             "%ld %s, %ld %s",
-             (long)minutes, (minutes == 1) ? "minute" : "minutes",
-             (long)seconds, (seconds == 1) ? "second" : "seconds");
-  }
+  snprintf(buf, sizeof(buf), "%d day%s, %d:%02d:%02lu",
+           days, (days == 1) ? "" : "s", hours,
+           minutes, (unsigned long)seconds);
 
   return buf;
 }
