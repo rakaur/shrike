@@ -61,6 +61,9 @@ MUST BE IN shrike-1.0b2
 [ ] - utility commands
 [X]   . op/deop/voice/devoice
 [ ]   . invite
+[ ]   . kick
+[ ]   . info
+[ ]   . status on channel
 
 MAY BE IN shrike-1.0b2
 [X] - settings mirroring before rehash
