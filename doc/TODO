@@ -92,11 +92,24 @@ MUST BE IN shrike-1.0
 
       sts: :oper KLINE target.server duration user host :reason
       sts: :oper UNKLINE target.server user host
+[ ] - sort out the horrible mess that is the logging.
+[ ]   . get rid of the sameline crap
+[ ] - new event system... probably based on ratbox's (squid's)
 
 MAY BE IN shrike-1.0
 [X] - settings mirroring before rehash
+      . this takes up a considerable amount of memory
 [X] - mode stacking
+[ ] - maybe STATS stuff
 
-WON'T BE IN shrike-1.0
-[ ] - event system that doesn't suck
-[/] - "tagging" users (suspected abusers)
+I WANT SOMEDAY IN shrike
+[ ] - a real bind style conf with lexing stuff
+[ ] - a block allocator (mmap)
+[ ] - total clean up of node.c crap
+[ ]   . move all of the *_add() etc to localized files
+[ ]   . write a *real* node system based on dlink (or just use dlink..)
+[ ] - audit everything and make it all logical.
+[ ]   . more header files than shrike.h... maybe? i like this kind of.
+[ ] - better io stuff (allow poll/kqueue/etc - like ircd)
+[ ] - TS6
+[ ] - major structural changes to the code

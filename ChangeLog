@@ -1,0 +1,524 @@
+------------------------------------------------------------------------
+r37 | rakaur | 2004-03-14 20:01:50 -0600 (Sun, 14 Mar 2004) | 3 lines
+Changed paths:
+   M /trunk/doc/CHANGES
+   M /trunk/doc/TODO
+   M /trunk/src/help.c
+   M /trunk/src/services.c
+
+Services client now tracks its own oper status.
+Fixed up some formatting problems in HELP.
+
+------------------------------------------------------------------------
+r36 | rakaur | 2004-03-14 17:37:36 -0600 (Sun, 14 Mar 2004) | 5 lines
+Changed paths:
+   M /trunk/dist/shrike.conf
+   M /trunk/doc/CHANGES
+   M /trunk/doc/FAQ
+   M /trunk/doc/TODO
+   A /trunk/help/global
+   M /trunk/inc/extern.h
+   M /trunk/inc/shrike.h
+   M /trunk/src/conf.c
+   M /trunk/src/help.c
+   M /trunk/src/irc.c
+   M /trunk/src/node.c
+   M /trunk/src/services.c
+
+Added featureful global noticer via conf option `global'.
+Added TLD tracking.
+Fixed a core in m_kill().
+Added flood protection.
+
+------------------------------------------------------------------------
+r35 | rakaur | 2004-03-14 12:37:56 -0600 (Sun, 14 Mar 2004) | 4 lines
+Changed paths:
+   M /trunk/dist/shrike.conf
+   M /trunk/doc/CHANGES
+   M /trunk/doc/FAQ
+   M /trunk/inc/extern.h
+   M /trunk/inc/shrike.h
+   M /trunk/src/conf.c
+   M /trunk/src/function.c
+   M /trunk/src/help.c
+   M /trunk/src/irc.c
+   M /trunk/src/services.c
+
+Updated version flags and such.
+Can now disable raw/inject via conf option `raw'.
+Changed validhostmask() to not be picky at all.
+
+------------------------------------------------------------------------
+r34 | rakaur | 2004-03-14 11:47:40 -0600 (Sun, 14 Mar 2004) | 8 lines
+Changed paths:
+   M /trunk/dist/shrike.conf
+   M /trunk/doc/CHANGES
+   M /trunk/doc/TODO
+   M /trunk/help/drop
+   M /trunk/help/help
+   M /trunk/help/info
+   M /trunk/help/inject
+   M /trunk/help/invite
+   M /trunk/help/login
+   M /trunk/help/logout
+   M /trunk/help/op_voice
+   M /trunk/help/raw
+   M /trunk/help/register
+   M /trunk/help/rehash
+   A /trunk/help/restart
+   M /trunk/help/sendpass
+   M /trunk/help/set_email
+   A /trunk/help/set_founder
+   M /trunk/help/set_hidemail
+   M /trunk/help/set_hold
+   M /trunk/help/set_mlock
+   M /trunk/help/set_neverop
+   M /trunk/help/set_noop
+   M /trunk/help/set_password
+   M /trunk/help/set_secure
+   A /trunk/help/set_successor
+   M /trunk/help/set_verbose
+   A /trunk/help/shutdown
+   M /trunk/help/status
+   M /trunk/help/update
+   M /trunk/help/xop
+   M /trunk/inc/extern.h
+   M /trunk/inc/shrike.h
+   M /trunk/src/conf.c
+   M /trunk/src/db.c
+   M /trunk/src/function.c
+   M /trunk/src/help.c
+   M /trunk/src/node.c
+   M /trunk/src/services.c
+   M /trunk/src/set.c
+   M /trunk/src/shrike.c
+
+Channel successors now work.
+Fixed a core when someone was opped and voiced.
+Fixed a pretty big problem with INFO.
+Added SET:FOUNDER.
+Added SHUTDOWN and RESTART.
+Handles signals better now.
+Help files now show the current nick.
+
+------------------------------------------------------------------------
+r33 | rakaur | 2004-03-13 23:18:15 -0600 (Sat, 13 Mar 2004) | 2 lines
+Changed paths:
+   M /trunk/doc/CHANGES
+   M /trunk/doc/TODO
+   M /trunk/src/irc.c
+
+Now handles JOIN 0 properly.
+
+------------------------------------------------------------------------
+r32 | rakaur | 2004-03-13 11:14:44 -0600 (Sat, 13 Mar 2004) | 3 lines
+Changed paths:
+   M /trunk/doc/CHANGES
+   M /trunk/doc/TODO
+   M /trunk/help/xop
+   M /trunk/inc/shrike.h
+   M /trunk/src/function.c
+   M /trunk/src/node.c
+   M /trunk/src/set.c
+
+Now tracks hidden servers properly.
+Changed validhostmask() so that it's not so picky.
+
+------------------------------------------------------------------------
+r31 | rakaur | 2004-03-13 00:16:38 -0600 (Sat, 13 Mar 2004) | 4 lines
+Changed paths:
+   M /trunk/doc/CHANGES
+   M /trunk/doc/TODO
+   M /trunk/help/xop
+   M /trunk/src/cmode.c
+
+Fixed a problem with SECURE and hostmasks in channel_mode().
+Updated help/xop to include hostmasks.
+Updated TODO for beta3.
+
+------------------------------------------------------------------------
+r27 | rakaur | 2004-03-12 18:21:58 -0600 (Fri, 12 Mar 2004) | 3 lines
+Changed paths:
+   M /trunk/dist/shrike.conf
+   M /trunk/doc/CHANGES
+   M /trunk/doc/TODO
+   M /trunk/inc/shrike.h
+   M /trunk/src/cmode.c
+   M /trunk/src/conf.c
+   M /trunk/src/irc.c
+   M /trunk/src/match.c
+   M /trunk/src/node.c
+   M /trunk/src/services.c
+
+MODEs should play nice with hybrid6 now.
+Joining of registered channels is now a conf option via `join_chans'.
+
+------------------------------------------------------------------------
+r26 | rakaur | 2004-03-12 16:13:17 -0600 (Fri, 12 Mar 2004) | 6 lines
+Changed paths:
+   M /trunk/doc/CHANGES
+   M /trunk/doc/TODO
+   A /trunk/help/sendpass
+   A /trunk/help/set_hidemail
+   M /trunk/inc/extern.h
+   M /trunk/inc/shrike.h
+   M /trunk/src/cmode.c
+   M /trunk/src/conf.c
+   M /trunk/src/db.c
+   M /trunk/src/function.c
+   M /trunk/src/help.c
+   M /trunk/src/irc.c
+   M /trunk/src/node.c
+   M /trunk/src/services.c
+   M /trunk/src/set.c
+   M /trunk/src/shrike.c
+   M /trunk/src/socket.c
+
+Added SET:HIDEMAIL for usernames.
+SRAs now have access to IRCop commands.
+Added hostmasks to VOP and AOP lists.
+Added SENDPASS.
+Changed most time(NULL) calls to a single CURRTIME variable (less CPU).
+
+------------------------------------------------------------------------
+r25 | rakaur | 2004-03-12 13:01:46 -0600 (Fri, 12 Mar 2004) | 3 lines
+Changed paths:
+   M /trunk/doc/CHANGES
+   M /trunk/src/node.c
+   M /trunk/src/services.c
+   M /trunk/src/shrike.c
+   M /trunk/src/socket.c
+
+Fixed expiring for unverified usernames.
+Fixed a bug where it tried to reconnect forever with no success.
+
+------------------------------------------------------------------------
+r24 | rakaur | 2004-03-12 12:07:15 -0600 (Fri, 12 Mar 2004) | 3 lines
+Changed paths:
+   M /trunk/dist/shrike.conf
+   M /trunk/doc/CHANGES
+   M /trunk/doc/TODO
+   M /trunk/inc/extern.h
+   M /trunk/inc/shrike.h
+   M /trunk/src/cmode.c
+   M /trunk/src/conf.c
+   M /trunk/src/db.c
+   M /trunk/src/function.c
+   M /trunk/src/services.c
+   M /trunk/src/set.c
+
+Added email verification via conf option `auth'.           
+Added email support via conf option `mta'.
+
+------------------------------------------------------------------------
+r23 | rakaur | 2004-03-11 22:12:42 -0600 (Thu, 11 Mar 2004) | 2 lines
+Changed paths:
+   M /trunk/src/irc.c
+   M /trunk/src/services.c
+
+Updated version flags and such.
+
+------------------------------------------------------------------------
+r22 | rakaur | 2004-03-11 22:09:31 -0600 (Thu, 11 Mar 2004) | 2 lines
+Changed paths:
+   M /trunk/doc/CHANGES
+   M /trunk/doc/FAQ
+   M /trunk/inc/extern.h
+   M /trunk/src/irc.c
+   M /trunk/src/match.c
+   M /trunk/src/services.c
+
+Updated version flags and such.
+
+------------------------------------------------------------------------
+r21 | rakaur | 2004-03-11 21:48:32 -0600 (Thu, 11 Mar 2004) | 3 lines
+Changed paths:
+   M /trunk/Makefile.inc.in
+   M /trunk/dist/shrike.conf
+   M /trunk/doc/CHANGES
+   M /trunk/doc/TODO
+   M /trunk/inc/extern.h
+   M /trunk/src/Makefile
+   M /trunk/src/conf.c
+   M /trunk/src/irc.c
+   A /trunk/src/match.c
+   M /trunk/src/node.c
+   M /trunk/src/services.c
+   M /trunk/src/socket.c
+
+Added conf option `casemapping' for `rfc1459' and `ascii'.
+Added support for CASEMAPPING=rfc1459.
+
+------------------------------------------------------------------------
+r20 | rakaur | 2004-03-11 17:37:38 -0600 (Thu, 11 Mar 2004) | 2 lines
+Changed paths:
+   M /trunk/doc/CHANGES
+   M /trunk/src/help.c
+
+Fixed multiple typos.
+
+------------------------------------------------------------------------
+r19 | rakaur | 2004-03-11 17:12:45 -0600 (Thu, 11 Mar 2004) | 5 lines
+Changed paths:
+   M /trunk/doc/CHANGES
+   M /trunk/doc/TODO
+   M /trunk/inc/extern.h
+   M /trunk/inc/shrike.h
+   M /trunk/src/node.c
+   M /trunk/src/services.c
+   M /trunk/src/shrike.c
+   M /trunk/src/socket.c
+
+Rewrote socket code:
+  No longer supports multiple connections.
+  No longer reads one char at a time but 512b blocks instead.
+  This lowers CPU usage by about five times since it uses one system call for a line instead of 512.
+
+------------------------------------------------------------------------
+r18 | rakaur | 2004-03-11 16:00:36 -0600 (Thu, 11 Mar 2004) | 3 lines
+Changed paths:
+   M /trunk/doc/CHANGES
+   M /trunk/doc/TODO
+   A /trunk/help/info
+   A /trunk/help/invite
+   M /trunk/inc/shrike.h
+   M /trunk/src/function.c
+   M /trunk/src/help.c
+   M /trunk/src/irc.c
+   M /trunk/src/node.c
+   M /trunk/src/services.c
+   M /trunk/src/socket.c
+
+Added help files for INVITE and INFO.
+Added INVITE.
+
+------------------------------------------------------------------------
+r17 | rakaur | 2004-03-11 07:23:54 -0600 (Thu, 11 Mar 2004) | 2 lines
+Changed paths:
+   M /trunk/doc/CHANGES
+   M /trunk/doc/TODO
+   M /trunk/inc/extern.h
+   M /trunk/src/function.c
+   M /trunk/src/services.c
+   M /trunk/src/set.c
+
+Added INFO for usernames and channel names.
+
+------------------------------------------------------------------------
+r16 | rakaur | 2004-03-10 21:10:31 -0600 (Wed, 10 Mar 2004) | 2 lines
+Changed paths:
+   M /trunk/doc/CHANGES
+   M /trunk/doc/TODO
+   M /trunk/help/status
+   M /trunk/src/services.c
+
+You can now request STATUS on a channel (your access level).
+
+------------------------------------------------------------------------
+r15 | rakaur | 2004-03-10 20:19:16 -0600 (Wed, 10 Mar 2004) | 4 lines
+Changed paths:
+   M /trunk/doc/CHANGES
+   M /trunk/doc/TODO
+   M /trunk/src/node.c
+   M /trunk/src/services.c
+
+Fixed a bug where server modes wouldn't play nicely with hyb6 servers on the network.
+Please note that this only fixes the initial SJOIN.
+If the client gets deopped it will break trying to send the +o again. This will be fixed by beta2.
+
+------------------------------------------------------------------------
+r14 | rakaur | 2004-03-10 19:42:46 -0600 (Wed, 10 Mar 2004) | 2 lines
+Changed paths:
+   M /trunk/doc/CHANGES
+   M /trunk/doc/TODO
+   M /trunk/src/services.c
+
+Added xOP:LIST.
+
+------------------------------------------------------------------------
+r13 | sycobuny | 2004-03-10 18:13:26 -0600 (Wed, 10 Mar 2004) | 3 lines
+Changed paths:
+   M /trunk/doc/CHANGES
+   M /trunk/doc/TODO
+   M /trunk/src/services.c
+
+Fixed do_op/do_voice bug that did not ever change modes with NEVEROP set
+Updated TODO (added hostmasks for xOP lists and xOP:LIST)
+
+------------------------------------------------------------------------
+r12 | rakaur | 2004-03-10 16:59:02 -0600 (Wed, 10 Mar 2004) | 2 lines
+Changed paths:
+   M /trunk/doc/CHANGES
+   M /trunk/src/set.c
+
+Changed the verbosity of snoop() a bit.
+
+------------------------------------------------------------------------
+r11 | rakaur | 2004-03-10 15:33:54 -0600 (Wed, 10 Mar 2004) | 2 lines
+Changed paths:
+   M /trunk/doc/CHANGES
+   M /trunk/help/logout
+   M /trunk/src/services.c
+
+You can now use LOGOUT on specific usernames.
+
+------------------------------------------------------------------------
+r10 | rakaur | 2004-03-09 20:55:33 -0600 (Tue, 09 Mar 2004) | 2 lines
+Changed paths:
+   M /trunk/doc/CHANGES
+   M /trunk/src/cmode.c
+
+Removed admin tracking, as it is useless.
+
+------------------------------------------------------------------------
+r9 | rakaur | 2004-03-09 20:52:52 -0600 (Tue, 09 Mar 2004) | 2 lines
+Changed paths:
+   M /trunk/doc/TODO
+
+Updated TODO.
+
+------------------------------------------------------------------------
+r7 | rakaur | 2004-03-09 19:56:56 -0600 (Tue, 09 Mar 2004) | 2 lines
+Changed paths:
+   M /trunk/doc/CHANGES
+   M /trunk/src/services.c
+
+Fixed verbose() to actually check for the VERBOSE flag...
+
+------------------------------------------------------------------------
+r3 | rakaur | 2004-03-09 19:03:42 -0600 (Tue, 09 Mar 2004) | 2 lines
+Changed paths:
+   M /trunk/INSTALL
+   M /trunk/Makefile
+   M /trunk/Makefile.inc.in
+   M /trunk/README
+   M /trunk/autoconf/configure.in
+   M /trunk/autoconf/install-sh
+   M /trunk/configure
+   M /trunk/dist/shrike.conf
+   M /trunk/dist/shrike.db
+   M /trunk/doc/AUTHORS
+   M /trunk/doc/CHANGES
+   M /trunk/doc/COMMANDS
+   M /trunk/doc/FAQ
+   M /trunk/doc/LICENSE
+   M /trunk/doc/RELEASE
+   M /trunk/doc/RFC1459
+   M /trunk/doc/TODO
+   M /trunk/help/drop
+   M /trunk/help/help
+   M /trunk/help/inject
+   M /trunk/help/login
+   M /trunk/help/logout
+   M /trunk/help/op_voice
+   M /trunk/help/raw
+   M /trunk/help/register
+   M /trunk/help/rehash
+   M /trunk/help/set_email
+   M /trunk/help/set_hold
+   M /trunk/help/set_mlock
+   M /trunk/help/set_neverop
+   M /trunk/help/set_noop
+   M /trunk/help/set_password
+   M /trunk/help/set_secure
+   M /trunk/help/set_verbose
+   M /trunk/help/status
+   M /trunk/help/update
+   M /trunk/help/xop
+   M /trunk/inc/.indent.pro
+   M /trunk/inc/extern.h
+   M /trunk/inc/shrike.h
+   M /trunk/inc/sysconf.h.in
+   M /trunk/indent
+   M /trunk/setup
+   M /trunk/src/.indent.pro
+   M /trunk/src/Makefile
+   M /trunk/src/cmode.c
+   M /trunk/src/conf.c
+   M /trunk/src/db.c
+   M /trunk/src/function.c
+   M /trunk/src/help.c
+   M /trunk/src/irc.c
+   M /trunk/src/node.c
+   M /trunk/src/services.c
+   M /trunk/src/set.c
+   M /trunk/src/shrike.c
+   M /trunk/src/socket.c
+   M /trunk/src/version.sh
+
+Expanded svn keywords.
+
+------------------------------------------------------------------------
+r1 | rakaur | 2004-03-09 18:51:13 -0600 (Tue, 09 Mar 2004) | 2 lines
+Changed paths:
+   A /.indent.pro
+   A /branches
+   A /tags
+   A /trunk
+   A /trunk/INSTALL
+   A /trunk/Makefile
+   A /trunk/Makefile.inc.in
+   A /trunk/README
+   A /trunk/autoconf
+   A /trunk/autoconf/configure.in
+   A /trunk/autoconf/install-sh
+   A /trunk/configure
+   A /trunk/dist
+   A /trunk/dist/shrike.conf
+   A /trunk/dist/shrike.db
+   A /trunk/doc
+   A /trunk/doc/AUTHORS
+   A /trunk/doc/CHANGES
+   A /trunk/doc/COMMANDS
+   A /trunk/doc/FAQ
+   A /trunk/doc/LICENSE
+   A /trunk/doc/RELEASE
+   A /trunk/doc/RFC1459
+   A /trunk/doc/TODO
+   A /trunk/help
+   A /trunk/help/drop
+   A /trunk/help/help
+   A /trunk/help/inject
+   A /trunk/help/login
+   A /trunk/help/logout
+   A /trunk/help/op_voice
+   A /trunk/help/raw
+   A /trunk/help/register
+   A /trunk/help/rehash
+   A /trunk/help/set_email
+   A /trunk/help/set_hold
+   A /trunk/help/set_mlock
+   A /trunk/help/set_neverop
+   A /trunk/help/set_noop
+   A /trunk/help/set_password
+   A /trunk/help/set_secure
+   A /trunk/help/set_verbose
+   A /trunk/help/status
+   A /trunk/help/update
+   A /trunk/help/xop
+   A /trunk/inc
+   A /trunk/inc/.indent.pro
+   A /trunk/inc/extern.h
+   A /trunk/inc/shrike.h
+   A /trunk/inc/sysconf.h.in
+   A /trunk/indent
+   A /trunk/setup
+   A /trunk/src
+   A /trunk/src/.indent.pro
+   A /trunk/src/Makefile
+   A /trunk/src/cmode.c
+   A /trunk/src/conf.c
+   A /trunk/src/db.c
+   A /trunk/src/function.c
+   A /trunk/src/help.c
+   A /trunk/src/irc.c
+   A /trunk/src/node.c
+   A /trunk/src/services.c
+   A /trunk/src/set.c
+   A /trunk/src/shrike.c
+   A /trunk/src/socket.c
+   A /trunk/src/version.sh
+
+Moved shrike repository from CVS to SVN.
+
+------------------------------------------------------------------------

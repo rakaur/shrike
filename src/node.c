@@ -377,8 +377,7 @@ void tld_delete(char *name)
 
   if (!tld)
   {
-    slog(0, LG_CRIT, "tld_delete(): called for nonexistant tld: %s",
-         name);
+    slog(0, LG_CRIT, "tld_delete(): called for nonexistant tld: %s", name);
 
     return;
   }
