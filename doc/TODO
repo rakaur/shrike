@@ -113,3 +113,4 @@ I WANT SOMEDAY IN shrike
 [ ] - better io stuff (allow poll/kqueue/etc - like ircd)
 [ ] - TS6
 [ ] - major structural changes to the code
+[X] - decent Makefile system

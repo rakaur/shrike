@@ -1,4 +1,26 @@
 ------------------------------------------------------------------------
+r39 | rakaur | 2004-03-15 18:27:39 -0600 (Mon, 15 Mar 2004) | 3 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/doc/TODO
+   M /trunk/inc/.indent.pro
+   M /trunk/inc/extern.h
+   M /trunk/inc/shrike.h
+   M /trunk/src/.indent.pro
+   M /trunk/src/Makefile
+   M /trunk/src/cmode.c
+   M /trunk/src/db.c
+   A /trunk/src/event.c
+   M /trunk/src/irc.c
+   M /trunk/src/node.c
+   M /trunk/src/services.c
+   M /trunk/src/shrike.c
+   M /trunk/src/socket.c
+
+Fixed dead server checking.
+Replaced the event system with a much better one.
+
+------------------------------------------------------------------------
 r38 | rakaur | 2004-03-14 22:41:46 -0600 (Sun, 14 Mar 2004) | 4 lines
 Changed paths:
    A /trunk/ChangeLog

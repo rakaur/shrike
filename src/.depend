@@ -1,0 +1,16 @@
+cmode.o: cmode.c ../inc/shrike.h ../inc/sysconf.h ../inc/extern.h
+conf.o: conf.c ../inc/shrike.h ../inc/sysconf.h ../inc/extern.h
+db.o: db.c ../inc/shrike.h ../inc/sysconf.h ../inc/extern.h
+event.o: event.c ../inc/shrike.h ../inc/sysconf.h ../inc/extern.h
+function.o: function.c ../inc/shrike.h ../inc/sysconf.h \
+ ../inc/extern.h
+help.o: help.c ../inc/shrike.h ../inc/sysconf.h ../inc/extern.h
+irc.o: irc.c ../inc/shrike.h ../inc/sysconf.h ../inc/extern.h
+match.o: match.c ../inc/shrike.h ../inc/sysconf.h ../inc/extern.h
+node.o: node.c ../inc/shrike.h ../inc/sysconf.h ../inc/extern.h
+set.o: set.c ../inc/shrike.h ../inc/sysconf.h ../inc/extern.h
+services.o: services.c ../inc/shrike.h ../inc/sysconf.h \
+ ../inc/extern.h
+shrike.o: shrike.c ../inc/shrike.h ../inc/sysconf.h ../inc/extern.h \
+ ../inc/version.h
+socket.o: socket.c ../inc/shrike.h ../inc/sysconf.h ../inc/extern.h

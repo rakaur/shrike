@@ -1,0 +1,105 @@
+# Copyright (c) 2003-2004 E. Will et al.
+# Rights to this code are documented in doc/LICENSE.
+#
+# This file contains build instructions.
+#
+# $$Id$
+#
+
+CC		= @CC@
+RM		= @RM@
+CP		= @CP@
+INSTALL		= @INSTALL@
+PREFIX		= @prefix@
+BIN		= shrike@EXEEXT@
+MKDEP		= @MKDEP@ -DPREFIX=\"@prefix@\"
+
+# Default CFLAGS
+#CFLAGS		= -g -O2 -Wall
+
+# Developer CFLAGS
+CFLAGS		= -g -O2 -Wunused -Wall -ggdb -pedantic -Wshadow -Wmissing-declarations -Wno-long-long
+
+CFLAGS		+= -DPREFIX=\"@prefix@\"
+
+VERSION		= devel
+
+LIBS		= @LIBS@
+LDFLAGS		= @LDFLAGS@
+CPPFLAGS	= @CPPFLAGS@
+
+default: all
+
+BASE_SRCS =			\
+  cmode.c			\
+  conf.c			\
+  db.c				\
+  event.c			\
+  function.c			\
+  help.c			\
+  irc.c				\
+  match.c			\
+  node.c			\
+  set.c				\
+  services.c			\
+  shrike.c			\
+  socket.c
+
+SRCS = ${BASE_SRCS}
+
+OBJS = ${SRCS:.c=.o}
+
+all: version shrike
+
+build: all
+
+shrike: $(OBJS)
+	${CC} ${CFLAGS} ${LDFLAGS} -o $@ ${OBJS} ${LIBS}
+
+install: build
+	$(INSTALL) -m 755 -d $(PREFIX)
+	$(INSTALL) -m 755 -d $(PREFIX)/bin
+	$(INSTALL) -m 755 -d $(PREFIX)/etc
+	$(INSTALL) -m 755 -d $(PREFIX)/var
+	$(INSTALL) -m 755 -c $(BIN) $(PREFIX)/bin
+	if [ ! -r $(PREFIX)/etc/shrike.conf ]; then \
+		$(INSTALL) -m 640 -c ../dist/shrike.conf $(PREFIX)/etc ; \
+	fi
+	if [ ! -r $(PREFIX)/etc/shrike.db ]; then \
+		$(INSTALL) -m 640 -c ../dist/shrike.db $(PREFIX)/etc ; \
+	fi
+	if [ -e $(PREFIX)/doc ]; then \
+		$(RM) -rf $(PREFIX)/doc ; \
+	fi
+	if [ -e $(PREFIX)/help ]; then \
+		$(RM) -rf $(PREFIX)/help ; \
+	fi
+	$(CP) -R ../doc $(PREFIX)
+	$(CP) -R ../help $(PREFIX)
+
+	@echo "----------------------------------------------------------------"
+	@echo ">>> Remember to cd to ${PREFIX} and edit your config file.";
+	@echo "----------------------------------------------------------------"
+
+deinstall:
+	if [ -d ${PREFIX} ] ; then \
+		$(RM) -rf ${PREFIX}; \
+	fi
+
+version:
+	sh version.sh $(VERSION);
+
+.c.o:
+	${CC} ${CPPFLAGS} ${CFLAGS} -c $<
+
+.PHONY: depend clean distclean
+depend:
+	${MKDEP} ${CPPFLAGS} ${BASE_SRCS} > .depend
+
+clean:
+	${RM} -f *.o *.exe *~ shrike.core core shrike
+
+distclean: clean
+	${RM} -f Makefile
+
+include .depend

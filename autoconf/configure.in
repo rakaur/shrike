@@ -3,7 +3,7 @@ dnl Rights to this code are documented in doc/LICENSE.
 dnl
 dnl This file contains the main() routine.
 dnl
-dnl $Id: configure.in,v 1.6 2004/03/06 03:54:09 emw Exp $
+dnl $Id$
 
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT
@@ -39,6 +39,22 @@ AC_PATH_PROG(MV, mv)
 AC_PATH_PROG(CP, cp)
 AC_C_INLINE
 
+AC_MSG_CHECKING(how to generate dependancy info)
+if test "$SunWorkShop" = "yes"; then
+  AC_MSG_RESULT(Sun WorkShop/Forte using $CC -xM)
+  MKDEP="$CC -xM"
+fi
+if test "$HPUX" = "yes"; then
+  AC_MSG_RESULT(HP-UX C Compiler using makedepend)
+  MKDEP="makedepend"
+fi
+if test "x$MKDEP" = "x"; then
+  AC_MSG_RESULT(assuming $CC -MM)
+  MKDEP="$CC -MM"
+fi
+
+AC_SUBST(MKDEP)
+
 dnl Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS(sys/time.h sys/select.h getopt.h)
@@ -66,4 +82,4 @@ AC_CHECK_FUNC(gethostbyname,, AC_CHECK_LIB(nsl, gethostbyname))
 
 AC_SUBST(ASSERT)
 
-AC_OUTPUT(Makefile.inc)
+AC_OUTPUT(Makefile src/Makefile)
