@@ -53,6 +53,31 @@
 #define TOKEN_UNMATCHED -1
 #define TOKEN_ERROR -2
 
+#undef DEBUG_BALLOC
+
+#ifdef DEBUG_BALLOC
+#define BALLOC_MAGIC 0x3d3a3c3d
+#endif
+
+#ifdef LARGE_NETWORK
+#define HEAP_CHANNEL    1024
+#define HEAP_CHANUSER   1024
+#define HEAP_USER       1024
+#define HEAP_SERVER     16
+#define HEAP_NODE       1024
+#define HEAP_CHANACS    1024
+#else
+#define HEAP_CHANNEL    64
+#define HEAP_CHANUSER   128
+#define HEAP_USER       128
+#define HEAP_SERVER     8
+#define HEAP_NODE       128
+#define HEAP_CHANACS    128
+#endif
+
+#define CACHEFILE_HEAP_SIZE     32
+#define CACHELINE_HEAP_SIZE     64
+
 #ifndef uint8_t
 #define uint8_t u_int8_t
 #define uint16_t u_int16_t
@@ -104,6 +129,8 @@ typedef struct _configentry CONFIGENTRY;
 /* macros for linked lists */
 #define LIST_FOREACH(n, head) for (n = (head); n; n = n->next)
 #define LIST_FOREACH_NEXT(n, head) for (n = (head); n->next; n = n->next)
+
+#define LIST_LENGTH(list) (list)->count
 
 #define LIST_FOREACH_SAFE(n, tn, head) for (n = (head), tn = n ? n->next : NULL; n != NULL; n = tn, tn = n ? n->next : NULL)
 
@@ -232,6 +259,40 @@ struct list_
   node_t *head, *tail;
   int count;                    /* how many entries in the list */
 };
+
+/* status information for an allocated block in heap */
+struct Block
+{
+  size_t alloc_size;
+  struct Block *next;     /* Next in our chain of blocks */
+  void *elems;            /* Points to allocated memory */
+  list_t free_list;
+  list_t used_list;
+};
+typedef struct Block Block;
+
+struct MemBlock
+{
+#ifdef DEBUG_BALLOC
+  unsigned long magic;
+#endif
+  node_t self;
+  Block *block;           /* Which block we belong to */
+};
+
+typedef struct MemBlock MemBlock;
+
+/* information for the root node of the heap */
+struct BlockHeap
+{
+  node_t hlist;
+  size_t elemSize;        /* Size of each element to be stored */
+  unsigned long elemsPerBlock;    /* Number of elements per block */
+  unsigned long blocksAllocated;  /* Number of blocks allocated */
+  unsigned long freeElems;                /* Number of free elements */
+  Block *base;            /* Pointer to first block */
+};
+typedef struct BlockHeap BlockHeap;
 
 /* event list struct */
 struct ev_entry

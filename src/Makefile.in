@@ -32,6 +32,7 @@ CPPFLAGS	= @CPPFLAGS@
 default: all
 
 BASE_SRCS =			\
+  balloc.c			\
   cmode.c			\
   conf.c			\
   confp.c			\

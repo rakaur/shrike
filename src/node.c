@@ -21,9 +21,45 @@ list_t mclist[HASHSIZE];
 
 list_t sendq;
 
+static BlockHeap *node_heap;
+static BlockHeap *sra_heap;
+static BlockHeap *tld_heap;
+static BlockHeap *kline_heap;
+static BlockHeap *serv_heap;
+static BlockHeap *user_heap;
+static BlockHeap *chan_heap;
+static BlockHeap *myuser_heap;
+static BlockHeap *mychan_heap;
+
+static BlockHeap *chanuser_heap;
+static BlockHeap *chanacs_heap;
+
 /*************
  * L I S T S *
  *************/
+
+void init_nodes(void)
+{
+  node_heap = BlockHeapCreate(sizeof(node_t), HEAP_NODE);
+  sra_heap = BlockHeapCreate(sizeof(sra_t), 2);
+  tld_heap = BlockHeapCreate(sizeof(tld_t), 4);
+  kline_heap = BlockHeapCreate(sizeof(kline_t), 16);
+  serv_heap = BlockHeapCreate(sizeof(server_t), HEAP_SERVER);
+  user_heap = BlockHeapCreate(sizeof(user_t), HEAP_USER);
+  chan_heap = BlockHeapCreate(sizeof(channel_t), HEAP_CHANNEL);
+  myuser_heap = BlockHeapCreate(sizeof(myuser_t), HEAP_USER);
+  mychan_heap = BlockHeapCreate(sizeof(mychan_t), HEAP_CHANNEL);
+  chanuser_heap = BlockHeapCreate(sizeof(chanuser_t), HEAP_CHANUSER);
+  chanacs_heap = BlockHeapCreate(sizeof(chanacs_t), HEAP_CHANACS);
+
+  if (!node_heap || !tld_heap || !kline_heap || !serv_heap || !user_heap ||
+      !chan_heap || !myuser_heap || !mychan_heap || !sra_heap ||
+      !chanuser_heap || !chanacs_heap)
+  {
+    slog(LG_INFO, "init_nodes(): block allocator failed.");
+    exit(EXIT_FAILURE);
+  }
+}
 
 /* creates a new node */
 node_t *node_create(void)
@@ -31,7 +67,7 @@ node_t *node_create(void)
   node_t *n;
 
   /* allocate it */
-  n = (node_t *)scalloc(sizeof(node_t), 1);
+  n = BlockHeapAlloc(node_heap);
 
   /* initialize */
   n->next = n->prev = n->data = NULL;
@@ -47,7 +83,7 @@ node_t *node_create(void)
 void node_free(node_t *n)
 {
   /* free it */
-  free(n);
+  BlockHeapFree(node_heap, n);
 
   /* down the count */
   cnt.node--;
@@ -122,6 +158,33 @@ node_t *node_find(void *data, list_t *l)
   return NULL;
 }
 
+void node_move(node_t *m, list_t *oldlist, list_t *newlist)
+{
+  /* Assumption: If m->next == NULL, then list->tail == m
+   *      and:   If m->prev == NULL, then list->head == m
+   */
+  if (m->next)
+    m->next->prev = m->prev;
+  else
+    oldlist->tail = m->prev;
+
+  if (m->prev)
+    m->prev->next = m->next;
+  else
+    oldlist->head = m->next;
+
+  m->prev = NULL;
+  m->next = newlist->head;
+  if (newlist->head != NULL)
+    newlist->head->prev = m;
+  else if (newlist->tail == NULL)
+    newlist->tail = m;
+  newlist->head = m;
+
+  oldlist->count--;
+  newlist->count++;
+}
+
 /***********
  * S R A S *
  ***********/
@@ -134,7 +197,7 @@ sra_t *sra_add(char *name)
 
   slog(LG_DEBUG, "sra_add(): %s", (mu) ? mu->name : name);
 
-  sra = scalloc(sizeof(sra_t), 1);
+  sra = BlockHeapAlloc(sra_heap);
 
   node_add(sra, n, &sralist);
 
@@ -177,7 +240,7 @@ void sra_delete(myuser_t *myuser)
   if (sra->name)
     free(sra->name);
 
-  free(sra);
+  BlockHeapFree(sra_heap, sra);
 
   cnt.sra--;
 }
@@ -209,7 +272,7 @@ tld_t *tld_add(char *name)
 
   slog(LG_DEBUG, "tld_add(): %s", name);
 
-  tld = scalloc(sizeof(tld_t), 1);
+  tld = BlockHeapAlloc(tld_heap);
 
   node_add(tld, n, &tldlist);
 
@@ -239,7 +302,7 @@ void tld_delete(char *name)
   node_free(n);
 
   free(tld->name);
-  free(tld);
+  BlockHeapFree(tld_heap, tld);
 
   cnt.tld--;
 }
@@ -276,7 +339,7 @@ kline_t *kline_add(char *user, char *host, char *reason, long duration)
   slog(LG_DEBUG, "kline_add(): %s@%s -> %s (%ld)", user, host, reason,
        duration);
 
-  k = scalloc(sizeof(kline_t), 1);
+  k = BlockHeapAlloc(kline_heap);
 
   node_add(k, n, &klnlist);
 
@@ -332,7 +395,7 @@ void kline_delete(char *user, char *host)
   free(k->reason);
   free(k->setby);
 
-  free(k);
+  BlockHeapFree(kline_heap, k);
 
   for (i = 0; i < HASHSIZE; i++)
   {
@@ -416,7 +479,7 @@ server_t *server_add(char *name, uint8_t hops, char *desc)
 
   slog(LG_DEBUG, "server_add(): %s", name);
 
-  s = scalloc(sizeof(server_t), 1);
+  s = BlockHeapAlloc(serv_heap);
 
   s->hash = SHASH((unsigned char *)name);
 
@@ -477,7 +540,7 @@ void server_delete(char *name)
 
   free(s->name);
   free(s->desc);
-  free(s);
+  BlockHeapFree(serv_heap, s);
 
   cnt.server--;
 }
@@ -510,7 +573,7 @@ user_t *user_add(char *nick, char *user, char *host, server_t *server)
   slog(LG_DEBUG, "user_add(): %s (%s@%s) -> %s", nick, user, host,
        server->name);
 
-  u = scalloc(sizeof(user_t), 1);
+  u = BlockHeapAlloc(user_heap);
 
   u->hash = UHASH((unsigned char *)nick);
 
@@ -571,7 +634,8 @@ void user_delete(char *nick)
   free(u->nick);
   free(u->user);
   free(u->host);
-  free(u);
+
+  BlockHeapFree(user_heap, u);
 
   cnt.user--;
 }
@@ -624,7 +688,7 @@ channel_t *channel_add(char *name, uint32_t ts)
   slog(LG_DEBUG, "channel_add(): %s", name);
 
   n = node_create();
-  c = scalloc(sizeof(channel_t), 1);
+  c = BlockHeapAlloc(chan_heap);
 
   c->name = sstrdup(name);
   c->ts = ts;
@@ -668,7 +732,7 @@ void channel_delete(char *name)
     mc->chan = NULL;
 
   free(c->name);
-  free(c);
+  BlockHeapFree(chan_heap, c);
 
   cnt.chan--;
 }
@@ -773,7 +837,7 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
   n1 = node_create();
   n2 = node_create();
 
-  cu = scalloc(sizeof(chanuser_t), 1);
+  cu = BlockHeapAlloc(chanuser_heap);
 
   cu->chan = chan;
   cu->user = u;
@@ -923,7 +987,7 @@ myuser_t *myuser_add(char *name, char *pass, char *email)
   slog(LG_DEBUG, "myuser_add(): %s -> %s", name, email);
 
   n = node_create();
-  mu = scalloc(sizeof(myuser_t), 1);
+  mu = BlockHeapAlloc(myuser_heap);
 
   mu->name = sstrdup(name);
   mu->pass = sstrdup(pass);
@@ -986,7 +1050,7 @@ void myuser_delete(char *name)
   free(mu->name);
   free(mu->pass);
   free(mu->email);
-  free(mu);
+  BlockHeapFree(myuser_heap, mu);
 
   cnt.myuser--;
 }
@@ -1031,7 +1095,7 @@ mychan_t *mychan_add(char *name, char *pass)
   slog(LG_DEBUG, "mychan_add(): %s", name);
 
   n = node_create();
-  mc = scalloc(sizeof(mychan_t), 1);
+  mc = BlockHeapAlloc(mychan_heap);
 
   mc->name = sstrdup(name);
   mc->pass = sstrdup(pass);
@@ -1079,7 +1143,7 @@ void mychan_delete(char *name)
 
   free(mc->name);
   free(mc->pass);
-  free(mc);
+  BlockHeapFree(mychan_heap, mc);
 
   cnt.mychan--;
 }
@@ -1125,7 +1189,7 @@ chanacs_t *chanacs_add(mychan_t *mychan, myuser_t *myuser, uint8_t level)
   n1 = node_create();
   n2 = node_create();
 
-  ca = scalloc(sizeof(chanacs_t), 1);
+  ca = BlockHeapAlloc(chanacs_heap);
 
   ca->mychan = mychan;
   ca->myuser = myuser;
@@ -1154,7 +1218,7 @@ chanacs_t *chanacs_add_host(mychan_t *mychan, char *host, uint8_t level)
 
   n = node_create();
 
-  ca = scalloc(sizeof(chanacs_t), 1);
+  ca = BlockHeapAlloc(chanacs_heap);
 
   ca->mychan = mychan;
   ca->myuser = NULL;
@@ -1212,6 +1276,8 @@ void chanacs_delete_host(mychan_t *mychan, char *host, uint8_t level)
       free(ca->host);
       node_del(n, &mychan->chanacs);
       node_free(n);
+
+      BlockHeapFree(chanacs_heap, ca);
 
       cnt.chanacs--;
 

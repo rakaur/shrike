@@ -1,3 +1,4 @@
+balloc.o: balloc.c
 cmode.o: cmode.c ../inc/shrike.h ../inc/sysconf.h ../inc/extern.h
 conf.o: conf.c ../inc/shrike.h ../inc/sysconf.h ../inc/extern.h
 confp.o: confp.c ../inc/shrike.h ../inc/sysconf.h ../inc/extern.h

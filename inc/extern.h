@@ -13,6 +13,19 @@
 /* save some space/typing */
 #define E extern
 
+/* balloc.c */
+E BlockHeap *strdup_heap;
+
+E int BlockHeapFree(BlockHeap *bh, void *ptr);
+E void *BlockHeapAlloc(BlockHeap *bh);
+
+E BlockHeap *BlockHeapCreate(size_t elemsize, int elemsperblock);
+E int BlockHeapDestroy(BlockHeap *bh);
+
+E void initBlockHeap(void);
+E void BlockHeapUsage(BlockHeap *bh, size_t * bused, size_t * bfree,
+                      size_t * bmemusage);
+
 /* cmode.c */
 E void channel_mode(channel_t *chan, uint8_t parc, char *parv[]);
 E void user_mode(user_t *user, char *modes);
@@ -163,11 +176,13 @@ E list_t mclist[HASHSIZE];
 
 E list_t sendq;
 
+E void init_nodes(void);
 E node_t *node_create(void);
 E void node_free(node_t *n);
 E void node_add(void *data, node_t *n, list_t *l);
 E void node_del(node_t *n, list_t *l);
 E node_t *node_find(void *data, list_t *l);
+E void node_move(node_t *m, list_t *oldlist, list_t *newlist);
 
 E sra_t *sra_add(char *name);
 E void sra_delete(myuser_t *myuser);

@@ -43,3 +43,6 @@
 -T chanacs_t
 -T CONFIGENTRY
 -T CONFIGFILE
+-T Block
+-T MemBlock
+-T BlockHeap

@@ -62,21 +62,13 @@ AC_CHECK_HEADERS(sys/time.h sys/select.h getopt.h)
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_TYPE_SIZE_T
-dnl AC_CHECK_TYPE(uint8_t)
-dnl AC_CHECK_TYPE(uint16_t)
-dnl AC_CHECK_TYPE(uint32_t)
-dnl AC_CHECK_TYPE(uint64_t)
-dnl AC_CHECK_TYPE(int8_t)
-dnl AC_CHECK_TYPE(int16_t)
-dnl AC_CHECK_TYPE(int32_t)
-dnl AC_CHECK_TYPE(int64_t)
 AC_HEADER_TIME
 AC_STRUCT_TM
 
 dnl Checks for library functions.
 AC_TYPE_SIGNAL
 AC_FUNC_STRFTIME
-AC_CHECK_FUNCS(select strdup strlcpy strlcat inet_pton inet_ntop gettimeofday umask)
+AC_CHECK_FUNCS(select strdup strlcpy strlcat inet_pton inet_ntop gettimeofday umask mmap)
 AC_CHECK_FUNC(socket,, AC_CHECK_LIB(socket, socket))
 AC_CHECK_FUNC(gethostbyname,, AC_CHECK_LIB(nsl, gethostbyname))
 

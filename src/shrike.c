@@ -227,6 +227,11 @@ int main(int argc, char *argv[])
   umask(077);
 #endif
 
+  /* setup stuff */
+  event_init();
+  initBlockHeap();
+  init_nodes();
+
   /* init the conf settings */
   conf_init();
 
@@ -287,9 +292,6 @@ int main(int argc, char *argv[])
 
   /* we probably have a few open already... */
   me.maxfd = 3;
-
-  /* initialize event system */
-  event_init();
 
   /* save dbs every 5 minutes */
   event_add("db_save", db_save, NULL, 300);

@@ -1,4 +1,16 @@
 ------------------------------------------------------------------------
+r66 | rakaur | 2004-04-12 15:35:42 -0500 (Mon, 12 Apr 2004) | 4 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/src/irc.c
+   M /trunk/src/match.c
+   M /trunk/src/socket.c
+
+Added a match() speedup patch (thanks Hwy).
+Fixed PING/PONG messages (formatted incorrectly).
+No longer supports EOB as it's been removed from ircd-ratbox.
+
+------------------------------------------------------------------------
 r65 | rakaur | 2004-04-11 20:43:26 -0500 (Sun, 11 Apr 2004) | 3 lines
 Changed paths:
    M /trunk/ChangeLog
@@ -112,7 +124,7 @@ Changed paths:
    M /trunk/src/function.c
    M /trunk/src/services.c
 
-Fixed a problem where I swapped hops and ts in introduce_nick() (thanks Sarisa).
+Fixed a problem where I swapped hops and ts in introduce_nick() (thanks Hwy).
 Changed timediff() to print the same format, not what it feels like.
 
 ------------------------------------------------------------------------
@@ -232,7 +244,7 @@ Changed paths:
    M /trunk/src/function.c
    M /trunk/src/node.c
 
-New bind-style conf with *real* parser (thanks Sarisa and Jeremy).
+New bind-style conf with *real* parser (thanks Hwy and Jeremy).
 
 ------------------------------------------------------------------------
 r49 | rakaur | 2004-03-30 17:25:13 -0600 (Tue, 30 Mar 2004) | 6 lines
@@ -265,9 +277,9 @@ Changed paths:
    M /trunk/src/conf.c
    M /trunk/src/services.c
 
-Can now specify default flags via `uflags' and `cflags' in config (suggested by Sarisa).
+Can now specify default flags via `uflags' and `cflags' in config (suggested by Hwy).
 Now checks a channel's userlist for updating after an access entry is added.
-Fixed a typo (thanks Sarisa).
+Fixed a typo (thanks Hwy).
 
 ------------------------------------------------------------------------
 r44 | rakaur | 2004-03-27 17:16:05 -0600 (Sat, 27 Mar 2004) | 4 lines
@@ -303,7 +315,7 @@ Changed paths:
    M /trunk/inc/shrike.h
    M /trunk/src/services.c
 
-*Really* fixed the core in GLOBAL this time (thanks Sarisa).
+*Really* fixed the core in GLOBAL this time (thanks Hwy).
 
 ------------------------------------------------------------------------
 r42 | rakaur | 2004-03-26 16:43:36 -0600 (Fri, 26 Mar 2004) | 2 lines

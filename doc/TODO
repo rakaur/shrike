@@ -99,7 +99,7 @@ MUST BE IN shrike-1.0
 [X] - move default flags to conf options
 [X] - STATS stuff
 [X] - a real bind style conf
-[ ] - a block allocator (mmap)
+[X] - a block allocator (mmap)
 [X] - rehash audit
 
 MAY BE IN shrike-1.0

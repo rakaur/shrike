@@ -51,6 +51,7 @@ Special thanks to:
   dbn, for the original Website.
 
 Files that we didn't write most of:
+  src/balloc.c, this was stolen from ircd-ratbox.
   src/confp.c, this was stolen from Sentinel (from csircd).
   src/event.c, this was stolen from ircd-ratbox.
   src/match.c, this was stolen from Sentinel (from IRCnet ircd).
