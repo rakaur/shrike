@@ -1,0 +1,9 @@
+Help for SET HIDEMAIL:
+
+SET HIDEMAIL prevents you email address from
+being displayed to other users via INFO.
+
+Syntax: SET <username> HIDEMAIL ON|OFF
+
+Example:
+    /msg S SET foo HIDEMAIL ON

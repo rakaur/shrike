@@ -13,10 +13,8 @@
 void introduce_nick(char *nick, char *user, char *host, char *real,
                     char *modes)
 {
-  time_t now = time(NULL);
-
   sts("NICK %s %ld 1 +%s %s %s %s :%s",
-      nick, now, modes, user, host, me.name, real);
+      nick, CURRTIME, modes, user, host, me.name, real);
 
   user_add(nick, user, host, me.me);
 }
@@ -26,13 +24,12 @@ void join(char *chan, char *nick)
 {
   channel_t *c = channel_find(chan);
   chanuser_t *cu;
-  time_t now = time(NULL);
 
   if (!c)
   {
-    sts(":%s SJOIN %ld %s +nt :@%s", me.name, now, chan, nick);
+    sts(":%s SJOIN %ld %s +nt :@%s", me.name, CURRTIME, chan, nick);
 
-    c = channel_add(chan, now);
+    c = channel_add(chan, CURRTIME);
   }
   else
   {
@@ -153,8 +150,8 @@ void expire_check(event_t *e)
       if (MU_HOLD & mu->flags)
         continue;
 
-      if (((time(NULL) - mu->lastlogin) >= me.expire) ||
-          ((mu->flags & MU_WAITAUTH) && (time(NULL) - mu->registered >= 86400)))
+      if (((CURRTIME - mu->lastlogin) >= me.expire) ||
+          ((mu->flags & MU_WAITAUTH) && (CURRTIME - mu->registered >= 86400)))
       {
         /* kill all their channels */
         for (j = 0; j < HASHSIZE; j++)
@@ -191,7 +188,7 @@ void expire_check(event_t *e)
       if (MC_HOLD & mc->flags)
         continue;
 
-      if ((time(NULL) - mc->used) >= me.expire)
+      if ((CURRTIME - mc->used) >= me.expire)
       {
         snoop("EXPIRE: \2%s\2 from \2%s\2", mc->name, mc->founder->name);
 
@@ -363,7 +360,7 @@ static void do_login(char *origin)
       free(u->myuser->lastfail);
     }
 
-    mu->lastlogin = time(NULL);
+    mu->lastlogin = CURRTIME;
 
     /* now we get to check for xOP */
     LIST_FOREACH(n, mu->chanacs.head)
@@ -405,7 +402,7 @@ static void do_login(char *origin)
   strlcat(buf, u->host, BUFSIZE);
   mu->lastfail = sstrdup(buf);
   mu->failnum++;
-  mu->lastfailon = time(NULL);
+  mu->lastfailon = CURRTIME;
 
   if (mu->failnum == 10)
   {
@@ -468,7 +465,7 @@ static void do_logout(char *origin)
   u->myuser = NULL;
 }
 
-/* SOP|AOP|VOP <#channel> ADD|DEL|LIST <username> */
+/* SOP|AOP|VOP <#channel> ADD|DEL|LIST <username|hostmask> */
 static void do_xop(char *origin, uint8_t level)
 {
   user_t *u = user_find(origin);
@@ -525,7 +522,29 @@ static void do_xop(char *origin, uint8_t level)
       mu = myuser_find(uname);
       if (!mu)
       {
-        notice(origin, "The username \2%s\2 is not registered.", uname);
+        /* we might be adding a hostmask */
+        if (!validhostmask(uname))
+        {
+          notice(origin, "\2%s\2 is neither a username nor hostmask.", uname);
+          return;
+        }
+
+        if (chanacs_find_host(mc, uname, CA_VOP))
+        {
+          notice(origin, "\2%s\2 is already on the VOP list for \2%s\2",
+                 uname, mc->name);
+          return;
+        }
+
+        uname = collapse(uname);
+
+        chanacs_add_host(mc, uname, CA_VOP);
+
+        verbose(mc, "\2%s\2 added \2%s\2 to the VOP list.", u->nick, uname);
+
+        notice(origin, "\2%s\2 has been added to the VOP list for \2%s\2.",
+               uname, mc->name);
+
         return;
       }
 
@@ -593,7 +612,29 @@ static void do_xop(char *origin, uint8_t level)
       mu = myuser_find(uname);
       if (!mu)
       {
-        notice(origin, "The username \2%s\2 is not registered.", uname);
+        /* we might be adding a hostmask */
+        if (!validhostmask(uname))
+        {
+          notice(origin, "\2%s\2 is neither a username nor hostmask.", uname);
+          return;
+        }
+
+        if (chanacs_find_host(mc, uname, CA_AOP))
+        {
+          notice(origin, "\2%s\2 is already on the AOP list for \2%s\2",
+                 uname, mc->name);
+          return;
+        }
+
+        uname = collapse(uname);
+
+        chanacs_add_host(mc, uname, CA_AOP);
+
+        verbose(mc, "\2%s\2 added \2%s\2 to the AOP list.", u->nick, uname);
+
+        notice(origin, "\2%s\2 has been added to the AOP list for \2%s\2.",
+               uname, mc->name);
+
         return;
       }
 
@@ -654,7 +695,11 @@ static void do_xop(char *origin, uint8_t level)
       mu = myuser_find(uname);
       if (!mu)
       {
-        notice(origin, "The username \2%s\2 is not registered.", uname);
+        if (validhostmask(uname))
+          notice(origin, "Hostmasks cannot be added to the SOP list.");
+        else
+          notice(origin, "No such username: \2%s\2.", uname);
+
         return;
       }
 
@@ -719,7 +764,28 @@ static void do_xop(char *origin, uint8_t level)
       mu = myuser_find(uname);
       if (!mu)
       {
-        notice(origin, "The username \2%s\2 is not registered.", uname);
+        /* we might be deleting a hostmask */
+        if (!validhostmask(uname))
+        {
+          notice(origin, "\2%s\2 is neither a username nor hostmask.", uname);
+          return;
+        }
+
+        if (!chanacs_find_host(mc, uname, CA_VOP))
+        {
+          notice(origin, "\2%s\2 is not on the VOP list for \2%s\2.",
+                 uname, mc->name);
+          return;
+        }
+
+        chanacs_delete_host(mc, uname, CA_VOP);
+
+        verbose(mc, "\2%s\2 removed \2%s\2 from the VOP list.", u->nick,
+                uname);
+
+        notice(origin, "\2%s\2 has been removed to the VOP list for \2%s\2.",
+               uname, mc->name);
+
         return;
       }
 
@@ -753,7 +819,27 @@ static void do_xop(char *origin, uint8_t level)
       mu = myuser_find(uname);
       if (!mu)
       {
-        notice(origin, "The username \2%s\2 is not registered.", uname);
+        /* we might be deleting a hostmask */
+        if (!validhostmask(uname))
+        {
+          notice(origin, "\2%s\2 is neither a username nor hostmask.", uname);
+          return;
+        }
+
+        if (!chanacs_find_host(mc, uname, CA_AOP))
+        {
+          notice(origin, "\2%s\2 is not on the AOP list for \2%s\2.",
+                 uname, mc->name);
+          return;
+        }
+
+        chanacs_delete_host(mc, uname, CA_AOP);
+
+        verbose(mc, "\2%s\2 removed \2%s\2 from the AOP list.", u->nick,
+                uname);
+        notice(origin, "\2%s\2 has been removed to the AOP list for \2%s\2.",
+               uname, mc->name);
+
         return;
       }
 
@@ -787,7 +873,7 @@ static void do_xop(char *origin, uint8_t level)
       mu = myuser_find(uname);
       if (!mu)
       {
-        notice(origin, "The username \2%s\2 is not registered.", uname);
+        notice(origin, "No such username: \2%s\2.", uname);
         return;
       }
 
@@ -834,7 +920,10 @@ static void do_xop(char *origin, uint8_t level)
 
         if (CA_VOP & ca->level)
         {
-          if (ca->myuser->user)
+          if (ca->host)
+            notice(origin, "%d: \2%s\2", ++i, ca->host);
+
+          else if (ca->myuser->user)
             notice(origin, "%d: \2%s\2 (logged in from \2%s\2)", ++i,
                    ca->myuser->name, ca->myuser->user->nick);
           else
@@ -860,7 +949,10 @@ static void do_xop(char *origin, uint8_t level)
 
         if (CA_AOP & ca->level)
         {
-          if (ca->myuser->user)
+          if (ca->host)
+            notice(origin, "%d: \2%s\2", ++i, ca->host);
+
+          else if (ca->myuser->user)
             notice(origin, "%d: \2%s\2 (logged in from \2%s\2)", ++i,
                    ca->myuser->name, ca->myuser->user->nick);
           else
@@ -923,6 +1015,7 @@ static void do_op(char *origin)
   mychan_t *mc;
   user_t *u;
   chanuser_t *cu;
+  char hostbuf[BUFSIZE];
 
   if (!chan)
   {
@@ -962,16 +1055,27 @@ static void do_op(char *origin)
     }
   }
 
-  if ((MC_SECURE & mc->flags) && (!u->myuser))
+  hostbuf[0] = '\0';
+
+  strlcat(hostbuf, u->nick, BUFSIZE);
+  strlcat(hostbuf, "!", BUFSIZE);
+  strlcat(hostbuf, u->user, BUFSIZE);
+  strlcat(hostbuf, "@", BUFSIZE);
+  strlcat(hostbuf, u->host, BUFSIZE);
+
+  if (!chanacs_find_host(mc, hostbuf, CA_AOP))
   {
-    notice(origin, "The \2SECURE\2 flag is set for \2%s\2.", mc->name);
-    return;
-  }
-  else if ((MC_SECURE & mc->flags) && (!is_founder(mc, u->myuser)) &&
-           (!is_xop(mc, u->myuser, (CA_SOP | CA_AOP))))
-  {
-    notice(origin, "\2%s\2 could not be opped on \2%s\2.", u->nick, mc->name);
-    return;
+    if ((MC_SECURE & mc->flags) && (!u->myuser))
+    {
+      notice(origin, "The \2SECURE\2 flag is set for \2%s\2.", mc->name);
+      return;
+    }
+    else if ((MC_SECURE & mc->flags) && (!is_founder(mc, u->myuser)) &&
+             (!is_xop(mc, u->myuser, (CA_SOP | CA_AOP))))
+    {
+      notice(origin, "\2%s\2 could not be opped on \2%s\2.", u->nick, mc->name);
+      return;
+    }
   }
 
   cu = chanuser_find(mc->chan, u);
@@ -1028,7 +1132,7 @@ static void do_deop(char *origin)
     return;
   }
 
-  /* figure out who we're going to devoice */
+  /* figure out who we're going to deop */
   if (nick)
   {
     if (!(u = user_find(nick)))
@@ -1245,6 +1349,7 @@ static void do_invite(char *origin)
 /* INFO <username|#channel> */
 static void do_info(char *origin)
 {
+  user_t *u = user_find(origin);
   myuser_t *mu;
   mychan_t *mc;
   char *name = strtok(NULL, " ");
@@ -1364,13 +1469,22 @@ static void do_info(char *origin)
     notice(origin, "Registered : %s (%s ago)", strfbuf,
            time_ago(mu->registered));
 
-    notice(origin, "Email      : %s", mu->email);
+    if ((!(mu->flags & MU_HIDEMAIL)) ||
+        (is_sra(u->myuser) || is_ircop(u) || u->myuser == mu))
+      notice(origin, "Email      : %s", mu->email);
 
     *buf = '\0';
 
-    if (MU_HOLD & mu->flags)
-      strcat(buf, "HOLD");
+    if (MU_HIDEMAIL & mu->flags)
+      strcat(buf, "HIDEMAIL");
 
+    if (MU_HOLD & mu->flags)
+    {
+      if (*buf)
+        strcat(buf, " ");
+
+      strcat(buf, "HOLD");
+    }
     if (MU_NEVEROP & mu->flags)
     {
       if (*buf)
@@ -1487,8 +1601,8 @@ static void do_register(char *origin)
 
     mc = mychan_add(name, pass);
     mc->founder = u->myuser;
-    mc->registered = time(NULL);
-    mc->used = time(NULL);
+    mc->registered = CURRTIME;
+    mc->used = CURRTIME;
     mc->mlock_on |= (CMODE_NOEXT | CMODE_TOPIC);
     mc->mlock_off |= (CMODE_INVITE | CMODE_LIMIT | CMODE_KEY);
     mc->flags |= MC_SECURE;
@@ -1598,9 +1712,9 @@ static void do_register(char *origin)
 
     u->myuser = mu;
     mu->user = u;
-    mu->registered = time(NULL);
+    mu->registered = CURRTIME;
     mu->identified = TRUE;
-    mu->lastlogin = time(NULL);
+    mu->lastlogin = CURRTIME;
 
     if (me.auth == AUTH_EMAIL)
     {
@@ -1814,6 +1928,55 @@ static void do_status(char *origin)
     notice(origin, "You are an IRC operator.");
 }
 
+/* SENDPASS <username|#channel> */
+static void do_sendpass(char *origin)
+{
+  myuser_t *mu;
+  mychan_t *mc;
+  char *name = strtok(NULL, " ");
+
+  if (!name)
+  {
+    notice(origin, "Insufficient parameters for \2SENDPASS\2.");
+    notice(origin, "Syntax: SENDPASS <username|#channel>");
+    return;
+  }
+
+  if (*name == '#')
+  {
+    if (!(mc = mychan_find(name)))
+    {
+      notice(origin, "No such channel: \2%s\2.", name);
+      return;
+    }
+
+    if (mc->founder)
+    {
+      notice(origin, "The password for \2%s\2 has been sent to \2%s\2.",
+             mc->name, mc->founder->email);
+
+      sendemail(mc->name, mc->pass, 4);
+
+      return;
+    }
+  }
+  else
+  {
+    if (!(mu = myuser_find(name)))
+    {
+      notice(origin, "No such username: \2%s\2.", name);
+      return;
+    }
+
+    notice(origin, "The password for \2%s\2 has been sent to \2%s\2.",
+           mu->name, mu->email);
+
+    sendemail(mu->name, mu->pass, 2);
+
+    return;
+  }
+}
+
 /* RAW <parameters> */
 static void do_raw(char *origin)
 {
@@ -1862,27 +2025,28 @@ static void do_inject(char *origin)
 
 /* commands we understand */
 struct command_ commands[] = {
-  { "LIST",     AC_NONE, do_list     },
-  { "LOGIN",    AC_NONE, do_login    },
-  { "LOGOUT",   AC_NONE, do_logout   },
-  { "HELP",     AC_NONE, do_help     },
-  { "SET",      AC_NONE, do_set      },
-  { "SOP",      AC_NONE, do_sop      },
-  { "AOP",      AC_NONE, do_aop      },
-  { "VOP",      AC_NONE, do_vop      },
-  { "OP",       AC_NONE, do_op       },
-  { "DEOP",     AC_NONE, do_deop     },
-  { "VOICE",    AC_NONE, do_voice    },
-  { "DEVOICE",  AC_NONE, do_devoice  },
-  { "INVITE",   AC_NONE, do_invite   },
-  { "INFO",     AC_NONE, do_info     },
-  { "REGISTER", AC_NONE, do_register },
-  { "DROP",     AC_NONE, do_drop     },
-  { "UPDATE",   AC_SRA,  do_update   },
-  { "REHASH",   AC_SRA,  do_rehash   },
-  { "STATUS",   AC_NONE, do_status   },
-  { "RAW",      AC_SRA,  do_raw      },
-  { "INJECT",   AC_SRA,  do_inject   },
+  { "LIST",     AC_NONE,  do_list     },
+  { "LOGIN",    AC_NONE,  do_login    },
+  { "LOGOUT",   AC_NONE,  do_logout   },
+  { "HELP",     AC_NONE,  do_help     },
+  { "SET",      AC_NONE,  do_set      },
+  { "SOP",      AC_NONE,  do_sop      },
+  { "AOP",      AC_NONE,  do_aop      },
+  { "VOP",      AC_NONE,  do_vop      },
+  { "OP",       AC_NONE,  do_op       },
+  { "DEOP",     AC_NONE,  do_deop     },
+  { "VOICE",    AC_NONE,  do_voice    },
+  { "DEVOICE",  AC_NONE,  do_devoice  },
+  { "INVITE",   AC_NONE,  do_invite   },
+  { "INFO",     AC_NONE,  do_info     },
+  { "REGISTER", AC_NONE,  do_register },
+  { "DROP",     AC_NONE,  do_drop     },
+  { "UPDATE",   AC_SRA,   do_update   },
+  { "REHASH",   AC_SRA,   do_rehash   },
+  { "STATUS",   AC_NONE,  do_status   },
+  { "SENDPASS", AC_IRCOP, do_sendpass },
+  { "RAW",      AC_SRA,   do_raw      },
+  { "INJECT",   AC_SRA,   do_inject   },
   { NULL }
 };
 
@@ -1906,7 +2070,7 @@ struct command_ *cmd_find(char *origin, char *command)
         return c;
 
       /* ircop? */
-      if ((c->access == AC_IRCOP) && (is_ircop(u)))
+      if ((c->access == AC_IRCOP) && (is_sra(u->myuser) || (is_ircop(u))))
         return c;
 
       /* otherwise... */

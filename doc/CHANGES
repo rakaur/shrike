@@ -29,6 +29,11 @@ shrike-1.0 - Matt Lanigan <rintaun@projectxero.net>
   + Added doc/COMMANDS.
 
 shrike-1.0 - E. Will <rakaur@malkier.net>
+  + Added SET:HIDEMAIL for usernames.
+  ~ SRAs now have access to IRCop commands.
+  + Added hostmasks to VOP and AOP lists.
+  + Added SENDPASS.
+  ~ Changed most time(NULL) calls to a single CURRTIME variable (less CPU).
   ~ Fixed expiring for unverified usernames.
   ~ Fixed a bug where it tried to reconnect forever with no success.
   + Added email verification via conf option `auth'.

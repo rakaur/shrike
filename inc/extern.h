@@ -65,13 +65,16 @@ E int32_t mode_to_flag(char c);
 E char *time_ago(time_t event);
 E unsigned long makekey(void);
 E int validemail(char *email);
+E int validhostmask(char *host);
 E void sendemail(char *what, const char *param, int type);
 
 E boolean_t is_founder(mychan_t *mychan, myuser_t *myuser);
 E boolean_t is_xop(mychan_t *mychan, myuser_t *myuser, uint8_t level);
 E boolean_t is_on_mychan(mychan_t *mychan, myuser_t *myuser);
 E boolean_t should_op(mychan_t *mychan, myuser_t *myuser);
+E boolean_t should_op_host(mychan_t *mychan, char *host);
 E boolean_t should_voice(mychan_t *mychan, myuser_t *myuser);
+E boolean_t should_voice_host(mychan_t *mychan, char *host);
 E boolean_t is_sra(myuser_t *myuser);
 E boolean_t is_ircop(user_t *user);
 E boolean_t is_admin(user_t *user);
@@ -174,8 +177,11 @@ E void mychan_delete(char *name);
 E mychan_t *mychan_find(char *name);
 
 E chanacs_t *chanacs_add(mychan_t *mychan, myuser_t *myuser, uint8_t level);
+E chanacs_t *chanacs_add_host(mychan_t *mychan, char *host, uint8_t level);
 E void chanacs_delete(mychan_t *mychan, myuser_t *myuser, uint8_t level);
+E void chanacs_delete_host(mychan_t *mychan, char *host, uint8_t level);
 E chanacs_t *chanacs_find(mychan_t *mychan, myuser_t *myuser, uint8_t level);
+E chanacs_t *chanacs_find_host(mychan_t *mychan, char *host, uint8_t level);
 
 /* set.c */
 E void do_set(char *origin);
@@ -209,6 +215,7 @@ E const char *infotext[];
 
 /* socket.c */
 E int servsock;
+E time_t CURRTIME;
 
 E int8_t sts(char *fmt, ...);
 E int conn(char *host, uint32_t port);

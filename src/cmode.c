@@ -455,7 +455,7 @@ void cmode(char *sender, ...)
           flush_cmode(&modedata[which]);
           strscpy(md->sender, sender, 32);
           strscpy(md->channel, channel, 64);
-          md->used = time(NULL);
+          md->used = CURRTIME;
         }
 
         s = md->opmodes + strlen(md->opmodes);
@@ -497,7 +497,7 @@ void cmode(char *sender, ...)
   }
 
   va_end(args);
-  md->used = time(NULL);
+  md->used = CURRTIME;
 
   if (!md->event)
   {

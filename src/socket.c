@@ -14,6 +14,7 @@ fd_set readfds, writefds, nullfds;
 char IRC_RAW[BUFSIZE + 1];
 uint16_t IRC_RAW_LEN = 0;
 int servsock = -1;
+time_t CURRTIME;
 
 static int irc_read(int fd, char *buf)
 {
@@ -106,7 +107,7 @@ static uint8_t server_login(void)
 
   sts("CAPAB :QS EOB");
   sts("SERVER %s 1 :%s", me.name, me.desc);
-  sts("SVINFO 5 3 0 :%ld", time(NULL));
+  sts("SVINFO 5 3 0 :%ld", CURRTIME);
 
   return 0;
 }
@@ -152,8 +153,6 @@ static int8_t irc_estab(void)
 
   /* ping our uplink every 5 minutes */
   event_add("Uplink ping", 300, (void *)ping_uplink, TRUE);
-
-  me.uplinkpong = time(NULL);
 
   return 1;
 }
@@ -283,6 +282,9 @@ void io_loop(void)
 
   while (!(runflags & (RF_SHUTDOWN | RF_RESTART)))
   {
+    /* update the current time */
+    CURRTIME = time(NULL);
+
     /* check for events */
     event_check();
 

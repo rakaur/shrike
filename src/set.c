@@ -121,6 +121,73 @@ static void do_set_email(char *origin, char *name, char *params)
          mu->name, mu->email);
 }
 
+static void do_set_hidemail(char *origin, char *name, char *params)
+{
+  user_t *u = user_find(origin);
+  myuser_t *mu;
+
+  if (*name == '#')
+  {
+    notice(origin, "Invalid parameters specified for \2HIDEMAIL\2.");
+    return;
+  }
+
+  if (!(mu = myuser_find(name)))
+  {
+    notice(origin, "No such username: \2%s\2.", name);
+    return;
+  }
+
+  if (mu != u->myuser)
+  {
+    notice(origin, "You are not authorized to perform this command.");
+    return;
+  }
+
+
+  if (!strcasecmp("ON", params))
+  {
+    if (MU_HIDEMAIL & mu->flags)
+    {
+      notice(origin, "The \2HIDEMAIL\2 flag is already set for \2%s\2.",
+             mu->name);
+      return;
+    }
+
+    snoop("SET:HIDEMAIL:ON: for \2%s\2", mu->name);
+
+    mu->flags |= MU_HIDEMAIL;
+
+    notice(origin, "The \2HIDEMAIL\2 flag has been set for \2%s\2.", mu->name);
+
+    return;
+  }
+
+  else if (!strcasecmp("OFF", params))
+  {
+    if (!(MU_HIDEMAIL & mu->flags))
+    {
+      notice(origin, "The \2HIDEMAIL\2 flag is not set for \2%s\2.", mu->name);
+      return;
+    }
+
+    snoop("SET:HIDEMAIL:OFF: for \2%s\2", mu->name);
+
+    mu->flags &= ~MU_HIDEMAIL;
+
+    notice(origin, "The \2HIDEMAIL\2 flag has been removed for \2%s\2.",
+           mu->name);
+
+    return;
+  }
+
+  else
+  {
+    notice(origin, "Invalid parameters specified for \2HIDEMAIL\2.");
+    return;
+  }
+}
+
 static void do_set_hold(char *origin, char *name, char *params)
 {
   myuser_t *mu;
@@ -768,6 +835,7 @@ static void do_set_verbose(char *origin, char *name, char *params)
 /* commands we understand */
 struct set_command_ set_commands[] = {
   { "EMAIL",      AC_NONE, do_set_email      },
+  { "HIDEMAIL",   AC_NONE, do_set_hidemail   },
   { "HOLD",       AC_SRA,  do_set_hold       },
   { "MLOCK",      AC_NONE, do_set_mlock      },
   { "NEVEROP",    AC_NONE, do_set_neverop    },

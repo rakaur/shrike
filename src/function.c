@@ -243,7 +243,7 @@ uint32_t time_msec(void)
   gettimeofday(&tv, NULL);
   return tv.tv_sec * 1000 + tv.tv_usec / 1000;
 #else
-  return time(NULL) * 1000;
+  return CURRTIME * 1000;
 #endif
 }
 
@@ -359,7 +359,7 @@ char *time_ago(time_t event)
   static char ret[128];
   int years, weeks, days, hours, minutes, seconds;
 
-  event = time(NULL) - event;
+  event = CURRTIME - event;
   years = weeks = days = hours = minutes = seconds = 0;
 
   while (event >= 60 * 60 * 24 * 365)
@@ -424,7 +424,7 @@ unsigned long makekey(void)
 {
   unsigned long i, j, k;
 
-  i = rand() % (time(NULL) / cnt.user + 1);
+  i = rand() % (CURRTIME / cnt.user + 1);
   j = rand() % (me.start * cnt.chan + 1);
 
   if (i > j)
@@ -468,6 +468,26 @@ int validemail(char *email)
   return valid;
 }
 
+int validhostmask(char *host)
+{
+  int i, valid = 1, chars = 0;
+
+  /* make sure it has !, @, and . */
+  if (!strchr(host, '!') || !strchr(host, '@') || !strchr(host, '.'))
+    valid = 0;
+
+  /* make sure there are at least 7 characters besides the above
+   * mentioned !, @, and . */
+  for (i = strlen(host) - 1; i > 0; i--)
+    if (!(host[i] == '!' || host[i] == '@' || host[i] == '.'))
+      chars++;
+
+  if (chars < 6)
+    valid = 0;
+
+  return valid;
+}
+
 /* send the specified type of email.
  *
  * what is what we're sending to, a username.
@@ -478,31 +498,44 @@ int validemail(char *email)
  *   1 - username REGISTER
  *   2 - username SENDPASS
  *   3 - username SET:EMAIL
+ *   4 - channel  SENDPASS
  */
 void sendemail(char *what, const char *param, int type)
 {
   myuser_t *mu;
+  mychan_t *mc;
   char *email, *date, *pass = NULL;
   char cmdbuf[512], timebuf[256], to[128], from[128], subject[128];
   FILE *out;
   time_t t;
   struct tm tm;
 
-  /* get the username we're talking to */
-  mu = myuser_find(what);
+  if (type == 1 || type == 2 || type == 3)
+  {
+    if (!(mu = myuser_find(what)))
+      return;
 
-  if (!mu)
-    return;
+    if (type == 1 || type == 3)
+      pass = itoa(mu->key);
+    else
+      pass = mu->pass;
 
-  if (type == 1 || type == 3)
-    pass = itoa(mu->key);
+    if (type == 3)
+      email = mu->temp;
+    else
+      email = mu->email;
+  }
   else
-    pass = mu->pass;
+  {
+    if (!(mc = mychan_find(what)))
+      return;
 
-  if (type == 3)
-    email = mu->temp;
-  else
+    mu = mc->founder;
+
+    pass = mc->pass;
+
     email = mu->email;
+  }
 
   /* set up the email headers */
   time(&t);
@@ -516,7 +549,7 @@ void sendemail(char *what, const char *param, int type)
 
   if (type == 1)
     strlcpy(subject, "Username Registration", 128);
-  else if (type == 2)
+  else if (type == 2 || type == 4)
     strlcpy(subject, "Password Retrieval", 128);
   else if (type == 3)
     strlcpy(subject, "Change Email Confirmation", 128);
@@ -542,7 +575,7 @@ void sendemail(char *what, const char *param, int type)
     fprintf(out, "Thank you for registering your username on the %s IRC "
             "network!\n", me.netname);
   }
-  else if (type == 2)
+  else if (type == 2 || type == 4)
   {
     fprintf(out, "Someone has requested the password for %s be sent to the "
             "corresponding email address. If you did not request this action "
@@ -619,6 +652,16 @@ boolean_t should_op(mychan_t *mychan, myuser_t *myuser)
   return FALSE;
 }
 
+boolean_t should_op_host(mychan_t *mychan, char *host)
+{
+  chanacs_t *ca;
+
+  if ((ca = chanacs_find_host(mychan, host, CA_AOP)))
+    return TRUE;
+
+  return FALSE;
+}
+
 boolean_t should_voice(mychan_t *mychan, myuser_t *myuser)
 {
   chanuser_t *cu;
@@ -637,6 +680,16 @@ boolean_t should_voice(mychan_t *mychan, myuser_t *myuser)
     return FALSE;
 
   if (is_xop(mychan, myuser, CA_VOP))
+    return TRUE;
+
+  return FALSE;
+}
+
+boolean_t should_voice_host(mychan_t *mychan, char *host)
+{
+  chanacs_t *ca;
+
+  if ((ca = chanacs_find_host(mychan, host, CA_VOP)))
     return TRUE;
 
   return FALSE;

@@ -304,9 +304,10 @@ struct myuser_
 #define MU_NEVEROP     0x00000002
 #define MU_NOOP        0x00000004
 #define MU_WAITAUTH    0x00000008
+#define MU_HIDEMAIL    0x00000010
 
-#define MU_IRCOP       0x00000010
-#define MU_SRA         0x00000020
+#define MU_IRCOP       0x00001000
+#define MU_SRA         0x00002000
 
 /* struct for registered channels */
 struct mychan_
@@ -340,6 +341,7 @@ struct chanacs_
 {
   myuser_t *myuser;
   mychan_t *mychan;
+  char *host;
   uint32_t level;
 };
 

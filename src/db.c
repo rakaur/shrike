@@ -131,9 +131,9 @@ void db_save(void)
       {
         ca = (chanacs_t *)tn->data;
 
-        /* CA <mychan> <myuser> <level> */
-        fprintf(f, "CA %s %s %ld\n", ca->mychan->name, ca->myuser->name,
-                (long)ca->level);
+        /* CA <mychan> <myuser|hostmask> <level> */
+        fprintf(f, "CA %s %s %ld\n", ca->mychan->name,
+                (ca->host) ? ca->host : ca->myuser->name, (long)ca->level);
 
         caout++;
       }
@@ -284,9 +284,13 @@ void db_load(void)
 
         cain++;
 
-        chanacs_add(mc, mu, atol(strtok(NULL, " ")));
+        if ((!mu) && (validhostmask(causer)))
+          chanacs_add_host(mc, causer, atol(strtok(NULL, " ")));
+        else
+          chanacs_add(mc, mu, atol(strtok(NULL, " ")));
 
-        slog(0, LG_DEBUG, "db_load(): chanacs: %s -> %s", mc->name, mu->name);
+        slog(0, LG_DEBUG, "db_load(): chanacs: %s -> %s", mc->name,
+             (mu) ? mu->name : causer);
       }
     }
 

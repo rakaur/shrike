@@ -51,6 +51,13 @@ void do_help(char *origin)
       notice(origin, " ");
     }
 
+    if ((is_sra(u->myuser)) || (is_ircop(u)))
+    {
+      notice(origin, "The following IRCop commands are available.");
+      notice(origin, "\2SENDPASS\2      Email registration passwords.");
+      notice(origin, " ");
+    }
+
     notice(origin, "For more specific help use \2HELP \37command\37\2.");
 
     return;
@@ -68,6 +75,7 @@ void do_help(char *origin)
     notice(origin, " ");
     notice(origin, "EMAIL             Changes the email address associated "
            "with a username.");
+    notice(origin, "HIDEMAIL          Hides a username's email address");
     notice(origin, "MLOCK             Sets channel mode lock.");
     notice(origin, "NEVEROP           Prevents services from automatically "
            "setting modes associated with access lists.");
@@ -128,27 +136,29 @@ void do_help(char *origin)
 
 /* help commands we understand */
 struct help_command_ help_commands[] = {
-  { "LOGIN",    AC_NONE, "help/login"    },
-  { "LOGOUT",   AC_NONE, "help/logout"   },
-  { "HELP",     AC_NONE, "help/help"     },
-  { "SOP",      AC_NONE, "help/xop"      },
-  { "AOP",      AC_NONE, "help/xop"      },
-  { "VOP",      AC_NONE, "help/xop"      },
-  { "OP",       AC_NONE, "help/op_voice" },
-  { "DEOP",     AC_NONE, "help/op_voice" },
-  { "VOICE",    AC_NONE, "help/op_voice" },
-  { "DEVOICE",  AC_NONE, "help/op_voice" },
-  { "INVITE",   AC_NONE, "help/invite"   },
-  { "INFO",     AC_NONE, "help/info"     },
-  { "REGISTER", AC_NONE, "help/register" },
-  { "DROP",     AC_NONE, "help/drop"     },
-  { "UPDATE",   AC_SRA,  "help/update"   },
-  { "STATUS",   AC_NONE, "help/status"   },
-  { "RAW",      AC_SRA,  "help/raw"      },
-  { "REHASH",   AC_SRA,  "help/rehash"   },
-  { "INJECT",   AC_SRA,  "help/inject"   },
+  { "LOGIN",    AC_NONE,  "help/login"    },
+  { "LOGOUT",   AC_NONE,  "help/logout"   },
+  { "HELP",     AC_NONE,  "help/help"     },
+  { "SOP",      AC_NONE,  "help/xop"      },
+  { "AOP",      AC_NONE,  "help/xop"      },
+  { "VOP",      AC_NONE,  "help/xop"      },
+  { "OP",       AC_NONE,  "help/op_voice" },
+  { "DEOP",     AC_NONE,  "help/op_voice" },
+  { "VOICE",    AC_NONE,  "help/op_voice" },
+  { "DEVOICE",  AC_NONE,  "help/op_voice" },
+  { "INVITE",   AC_NONE,  "help/invite"   },
+  { "INFO",     AC_NONE,  "help/info"     },
+  { "REGISTER", AC_NONE,  "help/register" },
+  { "DROP",     AC_NONE,  "help/drop"     },
+  { "UPDATE",   AC_SRA,   "help/update"   },
+  { "STATUS",   AC_NONE,  "help/status"   },
+  { "SENDPASS", AC_IRCOP, "help/sendpass" },
+  { "RAW",      AC_SRA,   "help/raw"      },
+  { "REHASH",   AC_SRA,   "help/rehash"   },
+  { "INJECT",   AC_SRA,   "help/inject"   },
 
   { "SET EMAIL",    AC_NONE, "help/set_email"    },
+  { "SET HIDEMAIL", AC_NONE, "help/set_hidemail" },
   { "SET HOLD",     AC_SRA,  "help/set_hold"     },
   { "SET MLOCK",    AC_NONE, "help/set_mlock"    },
   { "SET NEVEROP",  AC_NONE, "help/set_neverop"  },
@@ -180,7 +190,7 @@ struct help_command_ *help_cmd_find(char *origin, char *command)
         return c;
 
       /* ircop? */
-      if ((c->access == AC_IRCOP) && (is_ircop(u)))
+      if ((c->access == AC_IRCOP) && (is_sra(u->myuser) || (is_ircop(u))))
         return c;
 
       /* otherwise... */

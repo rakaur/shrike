@@ -62,7 +62,7 @@ MUST BE IN shrike-1.0b2
 [X]   . info
 [X]   . status on channel
 [X]   . xOP:LIST
-[ ] - hostmasks on xOP lists
+[X] - hostmasks on xOP lists
 [ ] - move joining channels to conf option
 [X] - audit socket code so that it doesn't suck
 [X]   . we don't need dcc, remove it
@@ -70,7 +70,8 @@ MUST BE IN shrike-1.0b2
 [X]   . we don't need multiple connections, remove it
 [X]   . reading one char sucks, do something about it
 [X]   . rfc1459 casemapping
-[ ] - SENDPASS
+[X] - SENDPASS
+[X] - SET:HIDEMAIL for usernames
 
 MAY BE IN shrike-1.0b2
 [X] - settings mirroring before rehash

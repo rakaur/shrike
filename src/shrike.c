@@ -160,7 +160,6 @@ int main(int argc, char *argv[])
   }
 
   me.start = time(NULL);
-  me.uplinkpong = time(NULL);
 
   /* set signal handlers */
   signal(SIGINT, sighandler);

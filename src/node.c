@@ -177,29 +177,29 @@ void event_check(void)
   if (me.connected)
   {
     /* check to see if our uplink is dead
-    diff = now - me.uplinkpong;
+       diff = now - me.uplinkpong;
 
-    if (diff > 300)
-    {
-      slog(0, LG_INFO,
-           "check_events(): no response from server in %d seconds; "
-           "disconnecting", diff);
+       if (diff > 300)
+       {
+       slog(0, LG_INFO,
+       "check_events(): no response from server in %d seconds; "
+       "disconnecting", diff);
 
-      close(servsock);
-      servsock = -1;
-      me.connected = FALSE;
+       close(servsock);
+       servsock = -1;
+       me.connected = FALSE;
 
-      LIST_FOREACH(n, eventlist.head)
-      {
-        e = (event_t *)n->data;
+       LIST_FOREACH(n, eventlist.head)
+       {
+       e = (event_t *)n->data;
 
-        if (!strcasecmp("Uplink ping", e->name))
-        {
-          event_del(e);
-          return;
-        }
-      }
-    }*/
+       if (!strcasecmp("Uplink ping", e->name))
+       {
+       event_del(e);
+       return;
+       }
+       }
+       } */
   }
 
   check_events = FALSE;
@@ -227,7 +227,7 @@ event_t
   n = node_create();
   e = (event_t *)scalloc(sizeof(event_t), 1);
 
-  e->settime = time(NULL);
+  e->settime = CURRTIME;
   e->timeout = time_msec() + delay;
   e->delay = delay;
   e->func = func;
@@ -355,7 +355,6 @@ server_t *server_add(char *name, uint8_t hops, char *desc)
 {
   server_t *s;
   node_t *n = node_create();
-  time_t now = time(NULL);
 
   slog(0, LG_DEBUG, "server_add(): %s", name);
 
@@ -369,7 +368,7 @@ server_t *server_add(char *name, uint8_t hops, char *desc)
   s->desc = sstrdup(desc);
   s->hops = hops;
 
-  s->connected_since = now;
+  s->connected_since = CURRTIME;
 
   cnt.server++;
 
@@ -714,7 +713,7 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
     if ((mc = mychan_find(chan->name)))
     {
       join(chan->name, svs.nick);
-      mc->used = time(NULL);
+      mc->used = CURRTIME;
     }
   }
 
@@ -732,6 +731,29 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
       cu->modes |= CMODE_VOICE;
     }
     if (should_op(mc, u->myuser))
+    {
+      cmode(svs.nick, chan->name, "+o", u->nick);
+      cu->modes |= CMODE_OP;
+    }
+  }
+  else if ((mc = mychan_find(chan->name)) && (!u->myuser))
+  {
+    char hostbuf[BUFSIZE];
+
+    hostbuf[0] = '\0';
+
+    strlcat(hostbuf, u->nick, BUFSIZE);
+    strlcat(hostbuf, "!", BUFSIZE);
+    strlcat(hostbuf, u->user, BUFSIZE);
+    strlcat(hostbuf, "@", BUFSIZE);
+    strlcat(hostbuf, u->host, BUFSIZE);
+
+    if (should_voice_host(mc, hostbuf))  
+    {
+      cmode(svs.nick, chan->name, "+v", u->nick);
+      cu->modes |= CMODE_VOICE;
+    }
+    if (should_op_host(mc, hostbuf))
     {
       cmode(svs.nick, chan->name, "+o", u->nick);
       cu->modes |= CMODE_OP;
@@ -827,7 +849,7 @@ myuser_t *myuser_add(char *name, char *pass, char *email)
   mu->name = sstrdup(name);
   mu->pass = sstrdup(pass);
   mu->email = sstrdup(email);
-  mu->registered = time(NULL);
+  mu->registered = CURRTIME;
   mu->hash = MUHASH((unsigned char *)name);
 
   node_add(mu, n, &mulist[mu->hash]);
@@ -921,7 +943,7 @@ mychan_t *mychan_add(char *name, char *pass)
 
   mc->name = sstrdup(name);
   mc->pass = sstrdup(pass);
-  mc->registered = time(NULL);
+  mc->registered = CURRTIME;
   mc->chan = channel_find(name);
   mc->hash = MCHASH((unsigned char *)name);
 
@@ -1021,6 +1043,35 @@ chanacs_t *chanacs_add(mychan_t *mychan, myuser_t *myuser, uint8_t level)
   return ca;
 }
 
+chanacs_t *chanacs_add_host(mychan_t *mychan, char *host, uint8_t level)
+{
+  chanacs_t *ca;
+  node_t *n;
+
+  if (*mychan->name != '#')
+  {
+    slog(0, LG_ERR, "chanacs_add_host(): got non #channel: %s", mychan->name);
+    return NULL;
+  }
+
+  slog(0, LG_DEBUG, "chanacs_add_host(): %s -> %s", mychan->name, host);
+
+  n = node_create();
+
+  ca = scalloc(sizeof(chanacs_t), 1);
+
+  ca->mychan = mychan;
+  ca->myuser = NULL;
+  ca->host = sstrdup(host);
+  ca->level |= level;
+
+  node_add(ca, n, &mychan->chanacs);
+
+  cnt.chanacs++;
+
+  return ca;
+}
+
 void chanacs_delete(mychan_t *mychan, myuser_t *myuser, uint8_t level)
 {
   chanacs_t *ca;
@@ -1048,6 +1099,31 @@ void chanacs_delete(mychan_t *mychan, myuser_t *myuser, uint8_t level)
   }
 }
 
+void chanacs_delete_host(mychan_t *mychan, char *host, uint8_t level)
+{
+  chanacs_t *ca;
+  node_t *n;
+
+  LIST_FOREACH(n, mychan->chanacs.head)
+  {
+    ca = (chanacs_t *)n->data;
+
+    if ((ca->host) && (!irccasecmp(host, ca->host)) && (ca->level == level))
+    {
+      slog(0, LG_DEBUG, "chanacs_delete_host(): %s -> %s", ca->mychan->name,
+           ca->host);
+
+      free(ca->host);
+      node_del(n, &mychan->chanacs);
+      node_free(n);
+
+      cnt.chanacs--;
+
+      return;
+    }
+  }
+}
+
 chanacs_t *chanacs_find(mychan_t *mychan, myuser_t *myuser, uint8_t level)
 {
   node_t *n;
@@ -1061,6 +1137,25 @@ chanacs_t *chanacs_find(mychan_t *mychan, myuser_t *myuser, uint8_t level)
     ca = (chanacs_t *)n->data;
 
     if ((ca->myuser == myuser) && (ca->level & level))
+      return ca;
+  }
+
+  return NULL;
+}
+
+chanacs_t *chanacs_find_host(mychan_t *mychan, char *host, uint8_t level)
+{
+  node_t *n;
+  chanacs_t *ca;
+
+  if ((!mychan) || (!host))
+    return NULL;
+
+  LIST_FOREACH(n, mychan->chanacs.head)
+  {
+    ca = (chanacs_t *)n->data;
+
+    if ((ca->host) && (!match(ca->host, host)) && (ca->level & level))
       return ca;
   }
 

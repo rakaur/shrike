@@ -470,7 +470,7 @@ boolean_t conf_rehash(void)
   {
     user_t *u;
 
-    sts(":%s NICK %s :%ld", hold_svs->nick, svs.nick, time(NULL));
+    sts(":%s NICK %s :%ld", hold_svs->nick, svs.nick, CURRTIME);
 
     u = user_find(hold_svs->nick);
 
