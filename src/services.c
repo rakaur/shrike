@@ -1434,35 +1434,6 @@ static void do_update(char *origin)
   db_save();
 }
 
-static void do_status(char *origin)
-{
-  user_t *u = user_find(origin);
-
-  if (!u->myuser)
-  {
-    notice(origin, "You are not logged in.");
-    return;
-  }
-  else
-    notice(origin, "You are logged in as \2%s\2.", u->myuser->name);
-
-  if (is_sra(u->myuser))
-    notice(origin, "You are a services root administrator.");
-
-  if (is_admin(u))
-    notice(origin, "You are a server administrator.");
-
-  if (is_ircop(u))
-    notice(origin, "You are an IRC operator.");
-}
-
-static void do_raw(char *origin)
-{
-  char *s;
-  s = strtok(NULL, "");
-  sts("%s", s);
-}
-
 /* REHASH */
 static void do_rehash(char *origin)
 {
@@ -1482,6 +1453,86 @@ static void do_rehash(char *origin)
   }
 }
 
+/* STATUS [#channel] */
+static void do_status(char *origin)
+{
+  user_t *u = user_find(origin);
+  char *chan = strtok(NULL, " ");
+
+  if (!u->myuser)
+  {
+    notice(origin, "You are not logged in.");
+    return;
+  }
+
+  if (chan)
+  {
+    mychan_t *mc = mychan_find(chan);
+
+    if (!mc)
+    {
+      notice(origin, "No such channel: \2%s\2.", chan);
+      return;
+    }
+
+    if (is_founder(mc, u->myuser))
+    {
+      notice(origin, "You are founder on \2%s\2.", mc->name);
+      return;
+    }
+
+    if (is_xop(mc, u->myuser, CA_VOP))
+    {
+      notice(origin, "You are VOP on \2%s\2.", mc->name);
+      return;
+    }
+
+    if (is_xop(mc, u->myuser, CA_AOP))
+    {
+      notice(origin, "You are AOP on \2%s\2.", mc->name);
+      return;
+    }
+
+    if (is_xop(mc, u->myuser, CA_SOP))
+    {
+      notice(origin, "You are SOP on \2%s\2.", mc->name);
+      return;
+    }
+
+    notice(origin, "You are a normal user on \2%s\2.", mc->name);
+
+    return;
+  }
+
+  notice(origin, "You are logged in as \2%s\2.", u->myuser->name);
+
+  if (is_sra(u->myuser))
+    notice(origin, "You are a services root administrator.");
+
+  if (is_admin(u))
+    notice(origin, "You are a server administrator.");
+
+  if (is_ircop(u))
+    notice(origin, "You are an IRC operator.");
+}
+
+/* RAW <parameters> */
+static void do_raw(char *origin)
+{
+  char *s = strtok(NULL, "");
+
+  if (!s)
+  {
+    notice(origin, "Insufficient parameters for \2RAW\2.");
+    notice(origin, "Syntax: RAW <parameters>");
+    return;
+  }
+
+  snoop("RAW: \"%s\" by \2%s\2", s, origin);
+  sts("%s", s);
+}
+
+/* INJECT <parameters> */
 static void do_inject(char *origin)
 {
   char *inject;
@@ -1490,7 +1541,8 @@ static void do_inject(char *origin)
 
   if (!inject)
   {
-    notice(origin, "You must specify data to inject.");
+    notice(origin, "Insufficient parameters for \2INJECT\2.");
+    notice(origin, "Syntax: INJECT <parameters>");
     return;
   }
 
@@ -1502,9 +1554,8 @@ static void do_inject(char *origin)
     notice(origin, "You cannot inject an INJECT command.");
     return;
   }
-  injecting = TRUE;
 
-  /* parse the fake data */
+  injecting = TRUE;
   irc_parse(inject);
   injecting = FALSE;
 }
@@ -1528,9 +1579,9 @@ struct command_ commands[] = {
   { "REGISTER", AC_NONE, do_register },
   { "DROP",     AC_NONE, do_drop     },
   { "UPDATE",   AC_SRA,  do_update   },
+  { "REHASH",   AC_SRA,  do_rehash   },
   { "STATUS",   AC_NONE, do_status   },
   { "RAW",      AC_SRA,  do_raw      },
-  { "REHASH",   AC_SRA,  do_rehash   },
   { "INJECT",   AC_SRA,  do_inject   },
   { NULL }
 };

@@ -5,7 +5,11 @@ state as far as services is concerned.  If
 you're logged in, an IRC operator, an SRA, among
 other information.
 
-Syntax: STATUS
+If the last parameter is specified your status
+on the given channel is returned.
+
+Syntax: STATUS [#channel]
 
 Example:
     /msg S STATUS
+    /msg S STATUS #foo
