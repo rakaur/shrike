@@ -30,6 +30,7 @@ void do_help(char *origin)
     notice(origin, "\2LOGOUT\2        Logs you out of services.");
     notice(origin, "\2SET\2           Sets various control flags.");
     notice(origin, "\2STATUS\2        Displays your status in services.");
+    notice(origin, "\2INFO\2          Displays information on registrations.");
     notice(origin, " ");
     notice(origin, "The following additional commands are avaliable.");
     notice(origin, "\2SOP\2           Manipulates a channel's SOP list.");
@@ -37,6 +38,7 @@ void do_help(char *origin)
     notice(origin, "\2VOP\2           Manipulates a channel's VOP list.");
     notice(origin, "\2OP|DEOP\2       Manipulates ops on a channel.");
     notice(origin, "\2VOICE|DEVOICE\2 Manipulates voices on a channel.");
+    notice(origin, "\2INVITE\2        Invites a nickname to a channel.");
     notice(origin, " ");
 
     if (is_sra(u->myuser))
@@ -136,6 +138,8 @@ struct help_command_ help_commands[] = {
   { "DEOP",     AC_NONE, "help/op_voice" },
   { "VOICE",    AC_NONE, "help/op_voice" },
   { "DEVOICE",  AC_NONE, "help/op_voice" },
+  { "INVITE",   AC_NONE, "help/invite"   },
+  { "INFO",     AC_NONE, "help/info"     },
   { "REGISTER", AC_NONE, "help/register" },
   { "DROP",     AC_NONE, "help/drop"     },
   { "UPDATE",   AC_SRA,  "help/update"   },

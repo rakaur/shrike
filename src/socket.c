@@ -118,6 +118,8 @@ static uint8_t server_login(void)
   if (ret == 1)
     return 1;
 
+  me.bursting = TRUE;
+
   sts("CAPAB :QS EOB");
   sts("SERVER %s 1 :%s", me.name, me.desc);
   sts("SVINFO 5 3 0 :%ld", time(NULL));

@@ -120,6 +120,7 @@ struct me
   uint32_t maxfd;               /* how many fds do we have?           */
   time_t start;                 /* starting time                      */
   server_t *me;                 /* pointer to our server struct       */
+  boolean_t bursting;           /* are we bursting?                   */
 
   time_t uplinkpong;            /* when the uplink last sent a PONG   */
 } me;

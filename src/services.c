@@ -108,6 +108,9 @@ void snoop(char *fmt, ...)
   va_list ap;
   char buf[BUFSIZE];
 
+  if (me.bursting)
+    return;
+
   va_start(ap, fmt);
   vsnprintf(buf, BUFSIZE, fmt, ap);
 
@@ -479,10 +482,10 @@ static void do_xop(char *origin, uint8_t level)
     notice(origin, "Insufficient parameters specificed for \2xOP\2.");
     notice(origin, "Syntax: SOP|AOP|VOP <#channel> ADD|DEL|LIST <username>");
     return;
-  } 
+  }
 
   if ((strcasecmp("LIST", cmd)) && (!uname))
-  {  
+  {
     notice(origin, "Insufficient parameters specificed for \2xOP\2.");
     notice(origin, "Syntax: SOP|AOP|VOP <#channel> ADD|DEL|LIST <username>");
     return;
@@ -809,8 +812,8 @@ static void do_xop(char *origin, uint8_t level)
   {
     node_t *n;
 
-    if ((!is_founder(mc, u->myuser)) && (!is_xop(mc, u->myuser, CA_VOP)) &&
-        (!is_xop(mc, u->myuser, CA_AOP)) && (!is_xop(mc, u->myuser, CA_SOP)))
+    if ((!is_founder(mc, u->myuser)) &&
+        (!is_xop(mc, u->myuser, (CA_VOP | CA_AOP | CA_SOP))))
     {
       notice(origin, "You are not authorized to perform this operation.");
       return;
@@ -852,7 +855,7 @@ static void do_xop(char *origin, uint8_t level)
       LIST_FOREACH(n, mc->chanacs.head)
       {
         ca = (chanacs_t *)n->data;
-        
+
         if (CA_AOP & ca->level)
         {
           if (ca->myuser->user)
@@ -863,7 +866,7 @@ static void do_xop(char *origin, uint8_t level)
                    ca->myuser->name);
         }
       }
-       
+
       notice(origin, "Total of \2%d\2 %s in \2%s\2's AOP list.",
              i, (i == 1) ? "entry" : "entries", mc->name);
     }
@@ -878,7 +881,7 @@ static void do_xop(char *origin, uint8_t level)
       LIST_FOREACH(n, mc->chanacs.head)
       {
         ca = (chanacs_t *)n->data;
-        
+
         if (CA_SOP & ca->level)
         {
           if (ca->myuser->user)
@@ -889,7 +892,7 @@ static void do_xop(char *origin, uint8_t level)
                    ca->myuser->name);
         }
       }
-       
+
       notice(origin, "Total of \2%d\2 %s in \2%s\2's SOP list.",
              i, (i == 1) ? "entry" : "entries", mc->name);
     }
@@ -922,7 +925,7 @@ static void do_op(char *origin)
   if (!chan)
   {
     notice(origin, "Insufficient parameters specificed for \2OP\2.");
-    notice(origin, "Syntax: OP <#channel> [nick]");
+    notice(origin, "Syntax: OP <#channel> [nickname]");
     return;
   }
 
@@ -940,8 +943,8 @@ static void do_op(char *origin)
     return;
   }
 
-  if ((!is_founder(mc, u->myuser)) && (!is_xop(mc, u->myuser, CA_SOP)) &&
-      (!is_xop(mc, u->myuser, CA_AOP)))
+  if ((!is_founder(mc, u->myuser)) &&
+      (!is_xop(mc, u->myuser, (CA_SOP | CA_VOP))))
   {
     notice(origin, "You are not authorized to perform this operation.");
     return;
@@ -963,8 +966,7 @@ static void do_op(char *origin)
     return;
   }
   else if ((MC_SECURE & mc->flags) && (!is_founder(mc, u->myuser)) &&
-           (!is_xop(mc, u->myuser, CA_SOP)) &&
-           (!is_xop(mc, u->myuser, CA_AOP)))
+           (!is_xop(mc, u->myuser, (CA_SOP | CA_AOP))))
   {
     notice(origin, "\2%s\2 could not be opped on \2%s\2.", u->nick, mc->name);
     return;
@@ -985,7 +987,7 @@ static void do_op(char *origin)
 
   cmode(svs.nick, chan, "+o", u->nick);
   cu->modes |= CMODE_OP;
-  notice(origin, "\2%s\2 was opped on \2%s\2.", u->nick, mc->name);
+  notice(origin, "\2%s\2 has been opped on \2%s\2.", u->nick, mc->name);
 }
 
 static void do_deop(char *origin)
@@ -999,7 +1001,7 @@ static void do_deop(char *origin)
   if (!chan)
   {
     notice(origin, "Insufficient parameters specificed for \2DEOP\2.");
-    notice(origin, "Syntax: DEOP <#channel> [nick]");
+    notice(origin, "Syntax: DEOP <#channel> [nickname]");
     return;
   }
 
@@ -1017,8 +1019,8 @@ static void do_deop(char *origin)
     return;
   }
 
-  if ((!is_founder(mc, u->myuser)) && (!is_xop(mc, u->myuser, CA_SOP)) &&
-      (!is_xop(mc, u->myuser, CA_AOP)))
+  if ((!is_founder(mc, u->myuser)) &&
+      (!is_xop(mc, u->myuser, (CA_AOP | CA_SOP))))
   {
     notice(origin, "You are not authorized to perform this operation.");
     return;
@@ -1049,7 +1051,7 @@ static void do_deop(char *origin)
 
   cmode(svs.nick, chan, "-o", u->nick);
   cu->modes &= ~CMODE_OP;
-  notice(origin, "\2%s\2 was deopped on \2%s\2.", u->nick, mc->name);
+  notice(origin, "\2%s\2 has been deopped on \2%s\2.", u->nick, mc->name);
 }
 
 static void do_voice(char *origin)
@@ -1063,7 +1065,7 @@ static void do_voice(char *origin)
   if (!chan)
   {
     notice(origin, "Insufficient parameters specificed for \2VOICE\2.");
-    notice(origin, "Syntax: VOICE <#channel> [nick]");
+    notice(origin, "Syntax: VOICE <#channel> [nickname]");
     return;
   }
 
@@ -1081,8 +1083,8 @@ static void do_voice(char *origin)
     return;
   }
 
-  if ((!is_founder(mc, u->myuser)) && (!is_xop(mc, u->myuser, CA_SOP)) &&
-      (!is_xop(mc, u->myuser, CA_AOP)))
+  if ((!is_founder(mc, u->myuser)) &&
+      (!is_xop(mc, u->myuser, (CA_AOP | CA_SOP))))
   {
     notice(origin, "You are not authorized to perform this operation.");
     return;
@@ -1113,7 +1115,7 @@ static void do_voice(char *origin)
 
   cmode(svs.nick, chan, "+v", u->nick);
   cu->modes |= CMODE_VOICE;
-  notice(origin, "\2%s\2 was voiced on \2%s\2.", u->nick, mc->name);
+  notice(origin, "\2%s\2 has been voiced on \2%s\2.", u->nick, mc->name);
 }
 
 static void do_devoice(char *origin)
@@ -1127,7 +1129,7 @@ static void do_devoice(char *origin)
   if (!chan)
   {
     notice(origin, "Insufficient parameters specificed for \2DEVOICE\2.");
-    notice(origin, "Syntax: DEVOICE <#channel> [nick]");
+    notice(origin, "Syntax: DEVOICE <#channel> [nickname]");
     return;
   }
 
@@ -1145,8 +1147,8 @@ static void do_devoice(char *origin)
     return;
   }
 
-  if ((!is_founder(mc, u->myuser)) && (!is_xop(mc, u->myuser, CA_SOP)) &&
-      (!is_xop(mc, u->myuser, CA_AOP)))
+  if ((!is_founder(mc, u->myuser)) &&
+      (!is_xop(mc, u->myuser, (CA_AOP | CA_SOP))))
   {
     notice(origin, "You are not authorized to perform this operation.");
     return;
@@ -1177,7 +1179,65 @@ static void do_devoice(char *origin)
 
   cmode(svs.nick, chan, "-v", u->nick);
   cu->modes &= ~CMODE_VOICE;
-  notice(origin, "\2%s\2 was devoiced on \2%s\2.", u->nick, mc->name);
+  notice(origin, "\2%s\2 has been devoiced on \2%s\2.", u->nick, mc->name);
+}
+
+/* INVITE <channel> [nickname] */
+static void do_invite(char *origin)
+{
+  char *chan = strtok(NULL, " ");
+  char *nick = strtok(NULL, " ");
+  mychan_t *mc;
+  user_t *u;
+  chanuser_t *cu;
+
+  if (!chan)
+  {
+    notice(origin, "Insufficient parameters specificed for \2INVITE\2.");
+    notice(origin, "Syntax: INVITE <#channel> [nickname]");
+    return;
+  }
+
+  mc = mychan_find(chan);
+  if (!mc)
+  {
+    notice(origin, "\2%s\2 is not registered.", chan);
+    return;
+  }
+
+  u = user_find(origin);
+  if (!u->myuser)
+  {
+    notice(origin, "You are not logged in.");
+    return;
+  }
+
+  if ((!is_founder(mc, u->myuser)) &&
+      (!is_xop(mc, u->myuser, (CA_SOP | CA_AOP | CA_VOP))))
+  {
+    notice(origin, "You are not authorized to perform this operation.");
+    return;
+  }
+
+  /* figure out who we're going to invite */
+  if (nick)
+  {
+    if (!(u = user_find(nick)))
+    {
+      notice(origin, "No such nickname: \2%s\2.", nick);
+      return;
+    }
+  }
+
+  cu = chanuser_find(mc->chan, u);
+  if (cu)
+  {
+    notice(origin, "\2%s\2 is already on \2%s\2.", u->nick, mc->name);
+    return;
+  }
+
+  sts(":%s INVITE %s :%s", svs.nick, u->nick, chan);
+  notice(origin, "\2%s\2 has been invited to \2%s\2.", u->nick, mc->name);
 }
 
 /* INFO <username|#channel> */
@@ -1218,7 +1278,7 @@ static void do_info(char *origin)
       notice(origin, "Founder    : %s (not logged in)");
 
     notice(origin, "Registered : %s (%s ago)", strfbuf,
-          time_ago(mc->registered));
+           time_ago(mc->registered));
 
     if (mc->mlock_on || mc->mlock_off)
     {
@@ -1234,7 +1294,7 @@ static void do_info(char *origin)
 
         /* add these in manually */
         if (mc->mlock_limit)
-        {   
+        {
           strcat(buf, "l");
           strcat(params, " ");
           strcat(params, itoa(mc->mlock_limit));
@@ -1245,7 +1305,7 @@ static void do_info(char *origin)
       }
 
       if (mc->mlock_off)
-      {   
+      {
         strcat(buf, "-");
         strcat(buf, flags_to_string(mc->mlock_off));
       }
@@ -1282,7 +1342,7 @@ static void do_info(char *origin)
     }
 
     if (*buf)
-        notice(origin, "Flags      : %s", buf);
+      notice(origin, "Flags      : %s", buf);
   }
   else
   {
@@ -1296,11 +1356,11 @@ static void do_info(char *origin)
 
     tm = *localtime(&mu->registered);
     strftime(strfbuf, sizeof(strfbuf) - 1, "%b %d %H:%M:%S %Y", &tm);
-     
+
     notice(origin, "Information on \2%s\2", mu->name);
-     
+
     notice(origin, "Registered : %s (%s ago)", strfbuf,
-          time_ago(mu->registered));
+           time_ago(mu->registered));
 
     notice(origin, "Email      : %s", mu->email);
 
@@ -1325,8 +1385,8 @@ static void do_info(char *origin)
     }
 
     if (*buf)
-        notice(origin, "Flags      : %s", buf);
-  }  
+      notice(origin, "Flags      : %s", buf);
+  }
 }
 
 /* REGISTER <username|#channel> <password> [email] */
@@ -1731,6 +1791,7 @@ struct command_ commands[] = {
   { "DEOP",     AC_NONE, do_deop     },
   { "VOICE",    AC_NONE, do_voice    },
   { "DEVOICE",  AC_NONE, do_devoice  },
+  { "INVITE",   AC_NONE, do_invite   },
   { "INFO",     AC_NONE, do_info     },
   { "REGISTER", AC_NONE, do_register },
   { "DROP",     AC_NONE, do_drop     },

@@ -1104,7 +1104,7 @@ chanacs_t *chanacs_find(mychan_t *mychan, myuser_t *myuser, uint8_t level)
   {
     ca = (chanacs_t *)n->data;
 
-    if ((ca->myuser == myuser) && (ca->level == level))
+    if ((ca->myuser == myuser) && (ca->level & level))
       return ca;
   }
 

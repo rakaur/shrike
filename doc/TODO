@@ -51,21 +51,24 @@ MUST BE IN shrike-1.0b2
 [ ] - registration authorization
 [ ]   . email
 [ ]   . oper
-[ ] - good conf sanity checking (maybe two-pass)
 [X] - help system
 [X] - work out specifics of REHASH (client nick, leave_chans, etc)
 [X] - clean compile on Solaris
 [X] - clean compile on glibc
 [X] - clean compile in 64bit
 [X] - dead server check (via PING)
-[ ] - utility commands
+[X] - utility commands
 [X]   . op/deop/voice/devoice
-[ ]   . invite
+[X]   . invite
 [X]   . info
 [X]   . status on channel
 [X]   . xOP:LIST
 [ ] - hostmasks on xOP lists
 [ ] - move joining channels to conf option
+[ ] - audit socket code so that it doesn't suck
+[ ]   . we don't need dcc, remove it
+[ ]   . we don't need connection list, remove it
+[ ]   . we don't need multiple connections, remove it
 
 MAY BE IN shrike-1.0b2
 [X] - settings mirroring before rehash

@@ -29,6 +29,8 @@ shrike-1.0 - Matt Lanigan <rintaun@projectxero.net>
   + Added doc/COMMANDS.
 
 shrike-1.0 - E. Will <rakaur@malkier.net>
+  + Added help files for INVITE and INFO.
+  + Added INVITE.
   + Added INFO for usernames and channel names.
   + You can now request STATUS on a channel (your access level).
   ~ Fixed a bug where server modes wouldn't play nicely with hyb6 servers on

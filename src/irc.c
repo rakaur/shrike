@@ -554,6 +554,8 @@ static void m_eob(char *origin, uint8_t parc, char *parv[])
   slog(0, LG_INFO, "m_eob(): finished synching with uplink");
   wallops("Finished synching to network.");
 #endif
+
+  me.bursting = FALSE;
 }
 
 static void m_error(char *origin, uint8_t parc, char *parv[])
