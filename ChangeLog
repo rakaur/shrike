@@ -1,4 +1,31 @@
 ------------------------------------------------------------------------
+r55 | rakaur | 2004-04-05 11:16:02 -0500 (Mon, 05 Apr 2004) | 2 lines
+Changed paths:
+   A /branches/release-1.0b4 (from /trunk:54)
+
+Branching off 1.0b4.
+
+------------------------------------------------------------------------
+r54 | rakaur | 2004-04-04 23:58:34 -0500 (Sun, 04 Apr 2004) | 6 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/INSTALL
+   M /trunk/README
+   D /trunk/doc/AUTHORS
+   M /trunk/doc/FAQ
+   M /trunk/doc/RELEASE
+   M /trunk/src/conf.c
+   M /trunk/src/irc.c
+   M /trunk/src/services.c
+   M /trunk/src/version.sh
+
+me.mta is no longer fatal.
+sycobuny optimized the rehashing routines.
+Fixed a problem with the KLINE DEL range parsing.
+Updated infotext[].
+Rewrote README, INSTALL, doc/FAQ, and killed doc/AUTHORS.
+
+------------------------------------------------------------------------
 r53 | rakaur | 2004-04-04 13:28:37 -0500 (Sun, 04 Apr 2004) | 6 lines
 Changed paths:
    M /trunk/ChangeLog
