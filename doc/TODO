@@ -80,6 +80,7 @@ MUST BE IN shrike-1.0b3
 [X] - hidden server tracking
 [ ] - SET:FOUNDER
 [ ] - SET:SUCCESSOR
+[X] - deal with JOIN 0
 
 MAY BE IN shrike-1.0
 [X] - settings mirroring before rehash

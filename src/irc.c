@@ -529,6 +529,26 @@ static void m_info(char *origin, uint8_t parc, char *parv[])
   sts(":%s 374 %s :End of /INFO list", me.name, origin);
 }
 
+static void m_join(char *origin, uint8_t parc, char *parv[])
+{
+  user_t *u = user_find(origin);
+  chanuser_t *cu;
+  node_t *n;
+
+  if (!u)
+    return;
+
+  /* JOIN 0 is really a part from all channels */
+  if (parv[0][0] == '0')
+  {
+    LIST_FOREACH(n, u->channels.head)
+    {
+      cu = (chanuser_t *)n->data;
+      chanuser_delete(cu->chan, u);
+    }
+  }
+}
+
 static void m_pass(char *origin, uint8_t parc, char *parv[])
 {
   if (strcmp(me.pass, parv[0]))
@@ -584,6 +604,7 @@ struct message_ messages[] = {
   { "ADMIN",   m_admin   },
   { "VERSION", m_version },
   { "INFO",    m_info    },
+  { "JOIN",    m_join    },
   { "PASS",    m_pass    },
   { "EOB",     m_eob     },
   { "ERROR",   m_error   },
