@@ -1,0 +1,200 @@
+/*
+ * Copyright (c) 2003-2004 E. Will et al.
+ * Rights to this code are documented in doc/LICENSE.
+ *
+ * This file contains a log of changes to the program.
+ *
+ * $$Id$
+ */
+
+Key:
+  +  Addition
+  -  Subtraction
+  ~  Changed/fixed
+  ^  Random stuff
+  *  Release
+
+shrike-1.0 - Stephen Belcher <sycobuny@malkier.net>
+  + Completed do_op() started by Matt
+  ~ Fixed settings mirror for rehashing, logical/compiler errors
+  ~ Changed all instances of join_channel() to join()
+  + Added settings mirror for rehashing
+  + Added REHASH.
+
+shrike-1.0 - Matt Lanigan <rintaun@projectxero.net>
+  + Added commands that were not in COMMANDS file
+  + Added m_info() and m_admin().
+  + Added doc/COMMANDS.
+
+shrike-1.0 - E. Will <rakaur@malkier.net>
+  ^ Moved shrike repository from CVS to SVN.
+  + Added SECURE to default mychan flags.
+  + Finished OP/DEOP/VOICE/DEVOICE.
+  + Added SET:MLOCK.
+  + Added help files for remaining SETs.
+  + Reintroduced the client if it's KILL'd (suggested by rintaun).
+  + Made it track TS changes.
+  + Added SET:VERBOSE.
+  + Added SET:SECURE.
+  + Added SET:NOOP.
+  ~ Fixed a bug where do_register() didn't check to see if it already was.
+  ~ Fixed a bug where myuser's user pointer was not reset (thanks sycobuny).
+  + Fixed a bug where svs.nick forgot it was opped.
+  ~ Fixed CTCP VERSION reply.
+  + Made svs.nick reop itself if deopped.
+  ~ Fixed a bug where the uplink ping event got set over and over.
+  + Added mode stacking.
+  + Added admin tracking.
+  + Added a help system using files.
+  ~ Changed do_set() into much better set.c with token table.
+  ~ Fixed a core where db_save() left out a space in myuser flags.
+  + Added SET:HOLD (settable by SRA).
+  + Added Matt Lanigan back to commiters.
+  ~ Jazzed up SRA's a bit.
+  + Added IRCop tracking.
+  + Added SRA's.
+  + Made REHASH honor leave_chans.
+  + Made REHASH work with svs.nick.
+  + Added SET:NEVEROP for channels.
+  + Added SET:NEVEROP for usernames.
+  + Added SET:EMAIL for usernames.
+  + Made myuser_delete() and mychan_delete() clear chanacs lists.
+  ~ Fixed a bug when a user changed nicknames the user_t wasn't rehashed.
+  ~ Fixed a bug where two people logged into the same username messed some
+    stuff up (thanks sycobuny).
+  + Added a check for dead servers after it stayed on the dead testnet for days.
+  + Added checks for uint stuff so that Linux doesn't break.
+  + Added a LDLIBS to Makefile.in.inc (thanks W. Campbell).
+  ^ Should now compile on Solaris.
+  + Added a fix for timersub() for Solaris (thanks W. Campbell).
+  + Added a fix to Makefile.inc.in to make libs work in Solaris (thanks
+    W. Campbell).
+  ~ Fixed boolean_t so that it uses mine instead of the system's in
+    Solaris (thanks W. Campbell).
+  ~ Changed all u_int to uint which is C99/POSIX (thanks larne).
+  - Removed -ansi from ``developer'' CFLAGS since it breaks glibc (surprise).
+  ~ Fixed a bug when svs.chan is added twice if it's a mychan (thanks rintaun).
+  + Finished access lists (except for LIST).
+  ~ Cleaned up the xOP stuff and added some more.
+  ~ Put -g back into ``non-developer'' CFLAGS (suggested by W. Campbell).
+  + Made chanacs save in the DB.
+  + Added channel access stuff; halfway added VOP.
+  ~ Removed -g from ``non-developer'' CFLAGS and added -ansi to ``developer.''
+  ~ Fixed checking expires every minute instead of every hour.
+  ~ Fixed using a 0 instead of a \0 for terminator in socket.c (thanks nenolod).
+  ~ Redid TODO.
+  ~ Changed initial version from 0.1 to 1.0.
+  ~ Cleaned up some docs and code.
+  ^ Rolled back a lot of work done by nenolod. He lost interest in the project
+    and I have no idea what he did, so it's gone.
+  + Added `expire' option to config.
+  + Added username/channel expiring.
+  ~ Changed reconn() to remove only servers, since that works faster.
+  ^ Forgot to remove commented out code.
+  ^ If only svs.nick is in a channel, leave if svs.leave_chans is TRUE.
+  + Added `leave_chans' to conf.
+  ~ Fixed parting the svs.chan.
+  + Added DROP command.
+  + Actually reconnects to the uplink when disconnected (me.recontime).
+  ~ Changed some instances of %i to %d... I don't know why I used %i.
+  + Added SET:PASSWORD for channels.
+  + Added basic channel registration and database saving; not complete.
+  ~ Cleaned up notice()'s.
+  + Added SET:PASSWORD for usernames.
+  + Implemented ``invalid login'' tracking.
+  * Released 0.1-ALPHA2. 
+  + Added LOGOUT command.
+  + Added LOGIN command.
+  ~ Changed a time_t printf() to %ld (thanks W. Campbell).
+  ~ Changed a NULL comparison to ! since Linux is stupid.
+  ~ Fixed the bug with m_nick() again, hopefully for real.
+  ~ Fixed chanuser_delete() only removing from channel's userlist.
+  ~ Fixed a gaping hole in m_nick() where nickname changes lost sync with stuff.
+  + Updated database file format for the invalid login tracking.
+  + Added ``invalid login'' tracking (suggested by sycobuny).
+  ~ user_delete() updates `identified'.
+  + Added an `identified' boolean to myuser.
+  ~ Fixed a core in do_register() (thanks nenolod).
+  + Added redundant db saving, just in case.
+  + Added a bit more verbosity on the status of the uplink connection.
+  + Added config file sanity testing.
+  ~ Hopefully fixed the read/write handler problem (thanks nenolod).
+  - Matt Lanigan is no longer a commiter.
+  ~ Changed \002 to just \2, which seems to work fine and saves space.
+  ~ Replaced sts() WALLOPS and PRIVMSG calls with wallops() and msg().
+  ~ Replaced sts() NOTICE calls with notice().
+  + Hacked in an event system; I'll try to replace this later.
+  + Added myuser saving/loading to database.
+  + Added database writing/reading.
+  + Added doc/TODO.
+  ~ Username registration semi-done.
+  + Added VERSION reply flags as found in doc/FAQ.
+  ~ Corrected some docs.
+  + Made the client rejoin when kicked.
+  + Added `chanacs' (channel access) struct for handling access lists.
+  + Added `userinfo' and `chaninfo' structs for registration.
+  ~ Changed strcasestr() to strcasecmp() since Linux is stupid.
+  ~ Changed a few initializations from NULL to 0 since Linux is stupid.
+  ~ Fixed post-io_loop() removal of shrike.log instead of shrike.pid.
+  ~ Fixed io_loop() to exit when RF_RESTART or RF_SHUTDOWN is set.
+  + Added signal handling.
+  ~ Fixed an integer being too small in sjtoken().
+  + Added Barry Boyce to the donators in infotext[].
+  + Added CTCP VERSION response.
+  ~ Cleaned up logging a bit.
+  ~ Did a quick run through of the code and cleaned up some stuff.
+  ~ Changed most of the text stuff so that it's actually proper English.
+  * Released 0.1-ALPHA.
+  ~ Fixed it for real this time.
+  ~ Fixed user deletion upon servers leaving.
+  + Added a ton of stuff in shrike.c.
+  + Added CMODE synching.
+  + Added some counting stuff.
+  ~ Changed optimize flag to -O2 instead of -O3 because it breaks things.
+  + Added channel tracking (sort of).
+  + Added user tracking.
+  + Added a bursting timer.
+  ~ EOB is now used properly.
+  + Server synching works now.
+  ~ Updated irc.c and services.c so gindent doesn't mess them up.
+  + Added CAPAB :EOB.
+  + Added a bunch of documentation.
+  + Added a simple setup script.
+  ~ Changed stuff in the Makefiles to use the install script among other things.
+  + Added a GNU autoconf script; you know you want it.
+  ^ Got my arm shocked off by ``testing'' a stupid dog mat.
+  + Added some linked list stuff... getting ready to handle bursts.
+  + Added hashing routines thanks to W. Campbell.
+  + Added PRIVMSG parsing and command parsing and the like.
+  + Added infotext to version.sh.
+  + Added CAPAB :QS.
+  ~ Changed all the file headers because I'm cool like that.
+  ~ Changed integer use to int_t's.
+  ~ Changed log() to slog() for gcc3/Linux (math.h?).
+  + Added a default channel mode of +nt for SJOIN's.
+  + Added routines for services client.
+  + Added clientinfo{} block to config.
+  + Server reading/parsing routines added.
+  ^ W. Campbell says read/write handlers are buggy... I'll leave them for now.
+  + Added socket routines.
+  ^ Clean compile under -pedantic -Wno-long-long.
+  ^ Clean compile under -Wall -Wshadow -Wmissing-prototypes.
+  + Added connection list stuff for socket code.
+  ~ Fixed no-tabs problem in config file.
+  ~ Fixed the build numbers starting at 2.
+  ^ This is a dummy message to make sure write restrictions work for cvs.
+  ~ Cleaned up logging routines.
+  + Added more conf stuff.
+  + Added config file routines.
+  + Added linked list routines.
+  ^ Starting using gindent with .indent.pro to format source files.
+  + Added strlcat()/strlcpy() for Linux.
+  ~ Fixed install script.
+  + Added some logging routines.
+  + Added a bunch of include files.
+  + Added shrike.c.
+  + Added shrike.h.
+  ~ Other slight changes to configure.
+  + Added configure.
+  + Added Makefiles.
+  + Added version.sh.

@@ -1,0 +1,15 @@
+Help for OP|DEOP|VOICE|DEVOICE:
+
+These commands perform general status mode changes for
+a channel.  If you don't know what these do, it
+will take a lot more than this help file to
+explain them to you.
+
+If the last parameter is omitted the action is performed
+on the person requesting the command.
+
+Syntax: OP|DEOP|VOICE|DEVOICE <#channel> <nickname>
+
+Examples:
+    /msg S OP #foo bar
+    /msg S DEVOICE #foo

@@ -1,0 +1,8 @@
+$$Id$
+
+shrike-1.0b1 release notes
+
+- db format has changed (and probably will again); old dbs will not work
+- channel registration and management has been completed in this release
+- username registration and mangement has been completed in this release
+- most core functions have been completed in this release

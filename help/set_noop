@@ -1,0 +1,11 @@
+Help for SET NOOP:
+
+SET NOOP prevents a username from being added
+to channel access lists.  This is useful if
+a user does not wish to be added to other channel's
+access lists.
+
+Syntax: SET <username> NOOP ON|OFF
+
+Example:
+    /msg S SET foo NOOP ON

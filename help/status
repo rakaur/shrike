@@ -1,0 +1,11 @@
+Help for STATUS:
+
+STATUS returns information about your current
+state as far as services is concerned.  If
+you're logged in, an IRC operator, an SRA, among
+other information.
+
+Syntax: STATUS
+
+Example:
+    /msg S STATUS

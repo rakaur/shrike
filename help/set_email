@@ -1,0 +1,9 @@
+Help for SET EMAIL:
+
+SET EMAIL allows you to change the email
+address associated with a username.
+
+Syntax: SET <username> EMAIL <email>
+
+Example:
+    /msg S SET EMAIL foo foo@bar.com

@@ -1,0 +1,81 @@
+/*
+ * Copyright (c) 2003-2004 E. Will et al.
+ * Rights to this code are documented in doc/LICENSE.
+ *
+ * Installation documentation.
+ *
+ * $$Id$
+ */
+
+This document will guide you through the process of installing Shrike.  For
+general information about this program, see the README file.
+
+If you have any problems with the installation procedure, or need help with
+the general operation of this program, ask in #shrike on irc.malkier.net.
+
+Shrike should compile and run on most POSIX compliant systems.  The list of
+platforms that Shrike has been tested on includes:
+
+  * FreeBSD 4.[89]/5.[012] - Compiles and runs with no issues
+
+  * Linux (glibc) 2.4.x(*) - Compiles and runs with no issues
+
+  * Solaris 8(*)           - Compiles and runs with no issues 
+
+  * Other BSD-based systems will probably work.  Other SysV based systems
+    MAY work, provided they support BSD sockets and POSIX function calls.  If
+    there are any problems, patches, bug reports, or sucess stories, please
+    let us know.
+
+  * Items marked with (*) are known to compile in 64bit mode and work fine.
+
+Shrike does not currently support IPv6.
+
+Installation is relatively simple.
+
+Here's the easy way: run the setup script. This does it all for you:
+
+  $ ./setup
+
+Follow the instructions and you're good to go.
+
+Here's the slightly less easy but more traditional way:
+
+Run the configure script.  In most cases you can run it with a command like:
+
+  $ ./configure
+
+If this fails, try:
+
+  $ sh configure
+
+After a few questions, the configure script will run several tests, write
+several files, and exit.  Once this is done you will want to compile Shrike.
+To do this, simply type:
+
+  $ make
+
+The program will compile.  When it's done, type:
+
+  $ make install
+
+The newly-compiled binary and several supporting files will be copied to the
+directory you specified in the configure script.
+
+Next, you'll want to go to the directory you told Shrike to install to and
+edit etc/shrike.conf.  Read this file.  Yes!  Everyone!  This means you!
+All of it!  Make us proud!
+
+Once it's all set up, you can run Shrike with:
+
+  $ ./bin/shrike
+
+If you wish to prevent it from forking into the background, run it with:
+
+  $ ./bin/shrike -n
+
+To see other command-line options:
+
+  $ ./bin/shrike -h
+
+For more information see the README file.

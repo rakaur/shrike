@@ -1,0 +1,59 @@
+/*
+ * Copyright (c) 2003-2004 E. Will et al.
+ * Rights to this code are documented in doc/LICENSE.
+ *
+ * Frequently asked questions.
+ *
+ * $$Id$
+ */
+
+Contents:
+
+ Q: What are those numbers when it replies to a CTCP CLIENTINFO?
+ Q: What the hell is up with the VERSION reply?
+ Q: Why isn't there an include/config.h?
+ Q: How does Shrike treat `[', `]', and `\'?
+ Q: Does Shrike check for buffer overflows?
+
+Questions/answers:
+
+Q: What are those numbers when it replies to a CTCP CLIENTINFO?
+A: It's an easter egg; you'll have to figure it out by yourself.  I'll give
+   you a hint though:  ASCII.
+
+Q: What the hell is up with the VERSION reply?
+A: Lots of things.  First, it says "shrike-," followed by the version and
+   build number, then it gives the name of its server, then it gives
+   a bunch of letters:
+
+     * d - Debug mode is on
+
+     * n - Running live (nofork)
+
+Q: Why isn't there an include/config.h?
+A: For one, it'd be inc/config.h.  For two, it's pointless.  It's for
+   compile-time options, and Shrike has none.  Shrike's options are all
+   run-time as of now.  Besides, I hate having to read sixty files to learn
+   how to install a program, and then have to go through a 2000 line config.h
+   before I compile.
+
+Q: How does Shrike treat `[', `]', and `\'?
+Q: From the IRC protocol specification:
+
+     Because of IRC's scandanavian origin, the characters {}| are
+     considered to be the lower case equivalents of the characters []\,
+     respectively. This is a critical issue when determining the
+     equivalence of two nicknames.
+
+   Shrike respects this because it was designed for an IRCd that also
+   respects this. This is why using Shrike on non-RFC1459 casemapping IRCd's
+   is a bad thing.
+
+Q: Does Shrike check for buffer overflows?
+A: I try.  I didn't start checking buffers until well into writing it, so I'm
+   sure at least a few issues are there.  I try to use strlcat()/strlcpy() to
+   be safe, and when reading incoming data it does check that buffer so I don't
+   see any remote exploits happening... I could be wrong, of course.  It checks
+   it when the raw data is incoming to make sure it doesn't exceed 512 bytes
+   (512 is the number specified in the protocol specification), but I'm not
+   sure whether all of the parsing routines check properly.

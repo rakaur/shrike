@@ -1,0 +1,24 @@
+#
+# Copyright (c) 2003-2004 E. Will et al.
+# Rights to this code are documented in doc/LICENSE.
+#
+# This file contains build instructions.
+#
+# $$Id$
+#
+
+CC=@CC@
+RM=@RM@
+MV=@MV@
+CP=@CP@
+INSTALL=@INSTALL@
+PREFIX=@prefix@
+CFLAGS=@CFLAGS@ @ASSERT@ -O2 -g -Wall -DPREFIX=\"${PREFIX}\"
+BIN=shrike@EXEEXT@
+MKPASSWD=mkpasswd@EXEEXT@
+LIBS=@LIBS@
+LDFLAGS=@LDFLAGS@
+
+# Debuggers need special flags - Note that a debugger will know
+# how to modify these to get what he/she needs
+CFLAGS=-O2 -g -ggdb -pedantic -Wno-long-long -Wall -Wshadow -Wmissing-prototypes -DPREFIX=\"${PREFIX}\"

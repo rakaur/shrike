@@ -1,0 +1,10 @@
+Help for HELP:
+
+HELP displays help information on all
+commands in services.
+
+Syntax: HELP <command> [parameters]
+
+Examples:
+    /msg S HELP REGISTER
+    /msg S HELP SET PASSWORD

@@ -1,0 +1,58 @@
+/*
+ * Copyright (c) 2003-2004 E. Will et al.
+ * Rights to this code are documented in doc/LICENSE.
+ *
+ * Contains author/credit information.
+ *
+ * $$Id$
+ */
+
+Shrike is a team effort by the following people:
+
+  * Stephen Belcher <sycobuny@malkier.net>
+  * Matt Lanigan    <rintaun@projectxero.net>
+  * E. Will         <rakaur@malkier.net>
+
+Thanks to the following people for their bug reports, testing, etc:
+
+  * Mike Campbell   <madragoran@avendesora.net>
+  * W. Campbell     <wcampbel@botbay.net>
+  * William Pitcock <nenolod@nenolod.net>
+  * Adam Walls      <naki@coreag.net>
+
+Roles of the above:
+
+  * Stephen Belcher - Supporting developer, supporting programmer
+  * Matt Lanigan    - Supporting developer, supporting programmer
+  * E. Will         - Lead developer, head programmer
+
+Shrike is competely written from the ground up.  When I say this I mean I
+opened a blank file in vi and started coding it.
+
+The original Makefile is by Darcy Grexton.
+Some of the basic functions in function.c are also stolen from him.
+
+The socket code, although modified, is based on W. Campbell's.
+A lot of information has come from W. Campbell.  He has helped me in more ways
+than I can thank him for.  Shrike wouldn't be where it is without his continued
+patience and understanding.
+
+The idea for the generic linked list (node.c) was stolen from ircd-hybrid's
+dlink.c library.  I wrote mine from scratch, though.
+
+The concept for the config-file was thrown in by Steve.  He also provided
+original Perl code to parse the file, which I later ported to C.
+
+Barry Boyce coded the original Shrike Website.
+
+steve: hi
+emw: i'm bored
+emw: i'll work on shrike if you come and talk to me on the testnet
+steve: k
+steve: even though you're like
+steve: "brb coding a small function"
+steve: *3 hours pass*
+steve: *** S (shrike@shrike.malkier.net) has joined #shrike
+emw: that's because i can't code
+steve: seem to be doing fine so far
+emw: that's only because it hasn't caused a nuclear meltdown yet

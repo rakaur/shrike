@@ -1,0 +1,74 @@
+/*
+ * Copyright (c) 2003-2004 E. Will et al.
+ * Rights to this code are documented in doc/LICENSE.
+ *
+ * Contains task list information.
+ *
+ * $$Id$
+ */
+
+shrike-1.0:
+
+NOTE: Things in this are not gauranteed to come about in Shrike. They're just
+random thoughts that may or may not be coded.
+
+X = completed
+/ = may or may not be coded (needs discussion)
+
+MUST BE IN shrike-1.0b1
+[X] - username stuff
+[X]   . registration
+[X]   . management
+[X]     . SET:PASSWORD
+[X]     . SET:EMAIL
+[X]     . SET:NEVEROP
+[X]     . SET:NOOP
+[X] - channel stuff
+[X]   . registration
+[X]   . management
+[X]     . SET:PASSWORD
+[X]     . SET:NEVEROP
+[X]     . SET:VERBOSE
+[X]     . SET:SECURE
+[X]     . SET:MLOCK
+[X]     . SET:HOLD (SRA)
+[X]     . access lists
+[X]       . sop
+[X]       . aop
+[X]       . vop
+[X]       . save in db
+[X] - rehash
+[X] - working SRA's
+[X] - working IRCop tracking
+[X] - working admin tracking
+[X] - handle channel ts changes
+[X] - a token table based SET, do_set() is horrible
+
+MUST BE IN shrike-1.0b2
+[ ] - registration limitations
+[ ]   . limit email addresses
+[ ]   . limit channels per username
+[ ] - registration authorization
+[ ]   . email
+[ ]   . oper
+[ ] - good conf sanity checking (maybe two-pass)
+[X] - help system
+[X] - work out specifics of REHASH (client nick, leave_chans, etc)
+[X] - clean compile on Solaris
+[X] - clean compile on glibc
+[X] - clean compile in 64bit
+[X] - dead server check (via PING)
+[ ] - utility commands
+[X]   . op/deop/voice/devoice
+[ ]   . invite
+
+MAY BE IN shrike-1.0b2
+[X] - settings mirroring before rehash
+[ ] - global notice that "learns" the tld's of the network
+[X] - mode stacking
+[ ] - channel successors
+
+WON'T BE IN shrike-1.0
+[ ] - gline control functionality (a la DALnet AKILL)
+[ ] - event system that doesn't suck
+[/] - "tagging" users (suspected abusers)

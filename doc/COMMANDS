@@ -1,0 +1,232 @@
+/*
+ * Copyright (c) 2003-2004 E. Will et al.
+ * Rights to this code are documented in doc/LICENSE.
+ *
+ * This file contains a command list.
+ *
+ * $$Id$
+ */
+
+------------------------------------------------------------------------------
++      REGISTER <username|#channel> <password> [email]
+         
+         Arguments:
+            First:  The username or channel name to be registered.
+            Second: The password for the username or channel.
+            Third:  The email reference for the username or channel.
+            
+         Discussion:
+            This command is the command which registers the channel with 
+            the services.
+            
+         Example:
+            U: REGISTER #example eXaMPlE eXaMPlE
+            S: #example has been registered with the password 'eXaMPlE'. 
+               Please remember this for later use.
+------------------------------------------------------------------------------
++     DROP <username|#channel> <password>
+         
+         Arguments:
+            First:  The username or channel name.
+            Second: The specified username or channel's password.
+            
+         Discussion:
+            This removes the channel from the services' database.
+            
+         Example:
+            S: DROP #example eXaMPlE
+            U: #example has been dropped.
+------------------------------------------------------------------------------
+-     INFO <username|#channel>
+            
+         Arguments:
+            The username or channel.
+            
+         Discussion:
+            This command gives information about a channel, such as the 
+            owner, registration date, URL, etc.
+                        
+         Example:
+           U: INFO #example
+           S: Info for #example:
+           S: Founded by: ExampleUser on Jan 01 00:00:00, 2004
+           S: URL: http://www.example.com/
+           S: End of #example info
+------------------------------------------------------------------------------
++     SET <username|#channel> <option> <value>
+            
+         Arguments:
+            First:  The username or channel.
+            Second: The variable to be changed.
+            Third:  The value to be assigned to the specified variable.
+            
+         Discussion:
+            This command is very straightforward. It sets the value of the 
+            variable specified in the <option> parameter to that of the 
+            value in the <value> parameter.
+
+         Example:
+            U: SET #example example-var this is an example
+            S: #example: example-var SET to "this is an example"
+------------------------------------------------------------------------------
++     LOGIN <username> <password>
+         
+         Arguments:
+            First:  The username to login to.
+            Second: The password for the specified username.
+            
+         Discussion:
+            This command logs you in to services.
+            
+         Example:
+            U: IDENTIFY #example eXaMPlE
+            S: You are now identified on #example.
+------------------------------------------------------------------------------
+-     LEVELS <#channel> <LIST | SET <option> <value> | DISABLE <option> | RESET>
+         
+         Arguments:
+            First:  The channel name.
+            Second: Either SET, LIST, DISABLE, or RESET, followed, in some 
+                    cases, by additional parameters. See Discussion for more 
+                    infomation.
+            
+         Discussion:
+            This command manages the access levels for various commands on 
+            a channel. The available access levels are FOUNDER, SOP,
+            AOP, and VOP. This command functions differently depending on
+            what is specified as the second parameter. Following is a list
+            of the available parameters and a short description of their usage.
+             
+             LIST - lists all current levels for a channel
+             
+             SET <option> <value> - changes the level of a feature.
+              <option> - the feature whose level is to be changed.
+              <value>  - the level to change it to.
+             
+             DISABLE <option> - disables an automatic feature, such as 
+                                AUTO-OP.
+              <option> - the feature which is to be disabled.
+             
+             RESET - resets all levels for <#channel> to their default 
+                     states.
+             
+         Example:
+            U: LEVELS #example AUTO-OP VOP
+            S: AUTO-OP level on #example has been changed to VOP.
+------------------------------------------------------------------------------
+-     OP <#channel> [nick]
+         
+         Arguments:
+            First: The channel name.
+            Second: (optional) The nickname to be opped. If this is not 
+                    set, it defaults to the user who sent the command.
+            
+         Discussion:
+            This command ops [nick] on <#channel>.
+            
+         Example:
+            U: OP #example BoB
+            *** Services sets mode on #example: +o BoB
+            S: BoB has been opped on #example.
+------------------------------------------------------------------------------
+-     DEOP <#channel> [nick]
+         
+         Arguments:
+            First: The channel name.
+            Second: (optional) The nickname to be deopped. If this is not 
+                    set, it defaults to the user who sent the command.
+            
+         Discussion:
+            This command deops [nick] on <#channel>.
+            
+         Example:
+            U: DEOP #example BoB
+            *** Services sets mode on #example: -o BoB
+            S: BoB has been deopped on #example.
+------------------------------------------------------------------------------
+-     VOICE <#channel> [nick]
+         
+         Arguments:
+            First: The channel name.
+            Second: (optional) The nickname to be voiced. If this is not 
+                    set, it defaults to the user who sent the command.
+            
+         Discussion:
+            This command voices [nick] on <#channel>.
+            
+         Example:
+            U: VOICE #example BoB
+            *** Services sets mode on #example: +v BoB
+            S: BoB has been voiced on #example.
+------------------------------------------------------------------------------
+-     DEVOICE <#channel> [nick]
+         
+         Arguments:
+            First: The channel name.
+            Second: (optional) The nickname to be devoiced. If this is not 
+                    set, it defaults to the user who sent the command.
+            
+         Discussion:
+            This command devoices [nick] on <#channel>.
+            
+         Example:
+            U: DEVOICE #example BoB
+            *** Services sets mode on #example: -v BoB
+            S: BoB has been devoiced on #example.
+------------------------------------------------------------------------------
+-     INVITE <#channel> [nick]
+         
+         Arguments:
+            First: The channel name.
+            Second: (optional) The nickname to be invited to the channel. 
+                    If this is not set, it defaults to the user who sent the
+                    command.
+            
+         Discussion:
+            This command invites [nick] to <#channel>.
+            
+         Example:
+            U: INVITE #example BoB
+            *** Services has invited Bob to #example
+            S: BoB has been invited to #example.
+------------------------------------------------------------------------------
+-     BAN <#channel> <nick | hostname> [duration[s | m | h | d]]
+            
+         Arguments:
+            First: The channel name.
+            Second: The nick or hostname which is to be banned.
+            Third: (optional) The duration of the ban. The default is in 
+                   seconds, but this can set explicitly to seconds, 
+                   minutes, hours, or days by specifying s, m, h, or 
+                   d, respectively, at the end of the argument.
+            
+         Discussion:
+            This bans a user or hostname on the specified channel either 
+            until it is removed manually, via the UNBAN command or MODE -b,
+            or for the specified amount of time.
+            
+         Example:
+            U: BAN #example example-user 30s
+            S: example-user has been banned on #example for 30 seconds.
+------------------------------------------------------------------------------
++     LOGOUT
+
+         Arguments:
+            None.
+            
+         Discussion:
+            This command logs you out of services.
+            
+         Example:
+            U: LOGOUT
+            S: You are no longer logged in.
+------------------------------------------------------------------------------
++     HELP [command]
+         
+         Arguments:
+            First: optional, the command which you would like help with.
+            
+         Discussion:
+            This command, if there is no parameter, gives you information on 
+            how to use services, as well as lists the commands. If there is a 
+            parameter, it displays help on the specified command.

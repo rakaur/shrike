@@ -1,0 +1,14 @@
+#!/bin/sh
+#
+# Copyright (c) 2003-2004 E. Will et al.
+# Rights to this code are documented in doc/LICENSE.
+#
+# This file indents all of the source code using gindent.
+#
+# $$Id$
+#
+
+cd inc; gindent *.h; rm *~; cd ..
+cd src; gindent *.c; rm *~; cd ..
+
+exit 0

@@ -1,0 +1,89 @@
+#!/bin/sh
+#
+# Copyright (c) 2003-2004 E. Will et al.
+# Rights to this code are documented in doc/LICENSE.
+#
+# This file is a simple setup script.
+#
+# $$Id$
+
+PREFIX="$HOME/shrike"
+
+export ok INPUT
+
+echo "----------------------------------------------------------------"
+echo ">>> Shrike setup started on `date`"
+echo "----------------------------------------------------------------"
+
+if [ -f doc/RELEASE ] ; then
+  ok=0
+  echo "Would you like to read the release notes (recommended)?"
+  while [ $ok -eq 0 ] ; do
+    echo -n "[Yes] "
+    if read INPUT ; then : ; else echo "" ; exit 1 ; fi
+      if [ ! "$INPUT" ] ; then
+        echo ""
+        more doc/RELEASE
+        echo ""
+        echo "-----"
+        ok=1
+      fi
+      case $INPUT in
+        [Yy]*)
+          echo ""
+          more doc/RELEASE
+          ok=1
+          ;;
+        [Nn]*)
+          ok=1
+          ;;
+      esac
+  done
+  echo ""
+fi
+
+ok=0
+echo "Where do you want Shrike to be installed?"
+echo "Press enter for the default, or type a new destination."
+while [ $ok -eq 0 ] ; do
+  echo -n "[$PREFIX] "
+  if read INPUT ; then : ; else echo "" ; exit 1 ; fi
+  if [ ! "$INPUT" ] ; then
+    INPUT=$PREFIX
+    ok=1
+  else
+    ok=1
+  fi
+done
+PREFIX=$INPUT
+
+echo ""
+echo "Press enter to begin configuration."
+echo -n ""
+if read INPUT ; then : ; else echo "" ; exit 1 ; fi
+
+if [ ! $PREFIX ] ; then
+  sh configure
+else
+  sh configure --prefix=$PREFIX
+fi
+
+echo ""
+echo "Press enter to begin compilation."
+echo -n ""
+if read INPUT ; then : ; else echo "" ; exit 1 ; fi
+
+make
+
+echo ""
+echo "Press enter to begin installation."
+echo -n ""
+if read INPUT ; then : ; else echo "" ; exit 1 ; fi
+
+make install
+
+echo "----------------------------------------------------------------"
+echo ">>> Shrike setup completed on `date`"
+echo "----------------------------------------------------------------"
+
+exit 0

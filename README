@@ -1,0 +1,99 @@
+/*
+ * Copyright (c) 2003-2004 E. Will et al.
+ * Rights to this code are documented in doc/LICENSE.
+ *
+ * `README' file.
+ *
+ * $$Id$
+ */
+
+Welcome to Shrike.  This document is indended to familiarize new users with
+Shrike.  For installation help, see the INSTALL file.
+
+If you have any questions about this program not covered in any of the
+documentation, or need help with the general operation of this program, ask
+in #shrike on irc.malkier.net.
+
+Shrike is a program designed for use on an IRC network.  It provides the
+network with useful commands and most importantly IRC channel mangement.
+
+Although Shrike isn't directly based on any other program, it borrows a
+decent amount of code from Darcy Grexton's Cygnus IRC Services.  Credit is
+given. The socket code is mostly from W. Campbell's Sentinel stats program.
+
+To find out more about credit to given people, see the AUTHORS file.
+
+Please check the CHANGES file to see all the features/changes done.
+
+Shrike supports the following command-line options:
+
+  * -c </path/to/file> - Specify the configuration file
+
+  * -d                 - Start in debugging mode
+
+  * -h                 - Print the help message and exit
+
+  * -n                 - Run live (do not fork), used for debuggers
+
+  * -v                 - Print the version information and exit
+
+Shrike handles the following signals:
+
+  * -HUP  - Force a REHASH
+
+  * -TERM - Force a SHUTDOWN
+
+  * -USR2 - Force a RESTART
+
+Most of the commands are documented in COMMANDS and in HELP on IRC.
+
+Shrike is known to work on the following IRCd's:
+
+  * ratbox-1.3    (EFnet) - Shrike was designed and coded on this IRCd.
+
+  * hybrid-7      (EFnet) - Shrike is known to work without issue on this IRCd.
+
+Shrike is known NOT to work on the following IRCd's:
+
+  * bahamut-1.4.x (DALnet) - This IRCd is not currently supported.
+
+Shrike has only been tested with these IRCd's.  Shrike should work fine with
+any hybrid-7/ratbox-1.3 or TSora based IRCd.  The IRCd must understand at
+least version 3 of the TS protocol and the QS and EOB CAPAB's.
+
+Okay, here's the deal.  We enjoy coding this program, and we do it for free.
+You didn't pay anything for this, did you?  No.  Our time and effort went into
+making this program, and now you want us to help you set it up, too.
+
+Well, that's fine, but do us a favor:  READ THE DOCS.  Unlike many other
+programs we've included some fairly extensive documentation.  The config file
+itself has a description of every option, as well as examples of how it's
+used, what it does, and what happens if you turn it on or off (see CONFIG).
+PLEASE don't waste our time by asking asinine quesitons which are clearly
+answered in the documentation.  You'll just annoy us and make us regret
+making this program so easy to use that it requires zero intelligence.
+
+That said, if you've skimmed the docs and can't find your answer, feel free
+to ask.  I've been unable to find the answer I was looking for in many
+programs myself, so I don't mind.  Just don't ask us to set it up for you.
+It's amazingly easy.
+
+We welcome (most) comments on this program.  Feel free to suggest changes or
+new features.
+
+You can contact us via any of these methods (preferred order):
+
+  * Mailing list - shrike@lists.malkier.net (shrike-subscribe@lists.malkier.net)
+
+  * Tracker - http://sourceforge.net/tracker/?group_id=95176
+
+  * IRC   - irc://irc.malkier.net/shrike (#shrike on irc.malkier.net)
+    E. Will         - rakaur or emw
+    Stephen Belcher - sycobuny or HarpyDragon
+
+  * Email -
+    E. Will        <rakaur@malkier.net>
+    Sephen Belcher <sycobuny@malkier.net>
+
+If you've read this far, congratulations.  You are one of the few elite people
+that actually read documentation.

@@ -1,0 +1,13 @@
+Help for SET MLOCK:
+
+MLOCK (or "mode lock") allows you to enforce a set
+of modes on a channel.  This can prevent abuse in cases
+such as +kil.
+
+Syntax: SET <#channel> MLOCK <modes>
+
+Examples:
+    /msg S SET #foo MLOCK +nt-ilpksm
+    /msg S SET #foo MLOCK +nt
+    /msg S SET #foo MLOCK -kil
+    /msg S SET #foo MLOCK OFF

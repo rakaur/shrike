@@ -1,0 +1,10 @@
+Help for SET HOLD:
+
+SET HOLD prevents services from ever
+expiring a username or channel.
+
+Syntax: SET <username|#channel> HOLD ON|OFF
+
+Examples:
+    /msg S SET foo HOLD ON
+    /msg S SET #foo HOLD OFF
