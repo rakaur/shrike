@@ -632,6 +632,9 @@ void sendemail(char *what, const char *param, int type)
 /* various access level checkers */
 boolean_t is_founder(mychan_t *mychan, myuser_t *myuser)
 {
+  if (!myuser)
+    return FALSE;
+
   if (mychan->founder == myuser)
     return TRUE;
 
@@ -643,6 +646,9 @@ boolean_t is_founder(mychan_t *mychan, myuser_t *myuser)
 
 boolean_t is_successor(mychan_t *mychan, myuser_t *myuser)
 {
+  if (!myuser)
+    return FALSE;
+
   if (mychan->successor == myuser)
     return TRUE;
 
@@ -655,6 +661,9 @@ boolean_t is_successor(mychan_t *mychan, myuser_t *myuser)
 boolean_t is_xop(mychan_t *mychan, myuser_t *myuser, uint8_t level)
 {
   chanacs_t *ca;
+
+  if (!myuser)
+    return FALSE;
 
   if ((ca = chanacs_find(mychan, myuser, level)))
     return TRUE;

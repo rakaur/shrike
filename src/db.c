@@ -277,7 +277,10 @@ void db_load(void)
         mc->mlock_limit = atoi(strtok(NULL, " "));
 
         if ((s = strtok(NULL, " ")))
+        {
+          strip(s);
           mc->mlock_key = sstrdup(s);
+        }
       }
     }
 
