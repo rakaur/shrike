@@ -1,4 +1,14 @@
 ------------------------------------------------------------------------
+r64 | rakaur | 2004-04-11 18:55:13 -0500 (Sun, 11 Apr 2004) | 3 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/src/node.c
+   M /trunk/src/services.c
+
+Fixed a core where channels with hostmask access entries failed to expire.
+Fixed chanuser_add() returning NULL when a user is already in the channel (thanks Jeremy).
+
+------------------------------------------------------------------------
 r63 | rakaur | 2004-04-11 16:32:16 -0500 (Sun, 11 Apr 2004) | 3 lines
 Changed paths:
    M /trunk/ChangeLog

@@ -787,7 +787,7 @@ static void m_join(char *origin, uint8_t parc, char *parv[])
 {
   user_t *u = user_find(origin);
   chanuser_t *cu;
-  node_t *n;
+  node_t *n, *tn;
 
   if (!u)
     return;
@@ -795,7 +795,7 @@ static void m_join(char *origin, uint8_t parc, char *parv[])
   /* JOIN 0 is really a part from all channels */
   if (parv[0][0] == '0')
   {
-    LIST_FOREACH(n, u->channels.head)
+    LIST_FOREACH_SAFE(n, tn, u->channels.head)
     {
       cu = (chanuser_t *)n->data;
       chanuser_delete(cu->chan, u);
