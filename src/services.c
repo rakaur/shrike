@@ -539,14 +539,14 @@ static void do_xop(char *origin, uint8_t level)
 
   if (!cmd || !chan)
   {
-    notice(origin, "Insufficient parameters specificed for \2xOP\2.");
+    notice(origin, "Insufficient parameters specified for \2xOP\2.");
     notice(origin, "Syntax: SOP|AOP|VOP <#channel> ADD|DEL|LIST <username>");
     return;
   }
 
   if ((strcasecmp("LIST", cmd)) && (!uname))
   {
-    notice(origin, "Insufficient parameters specificed for \2xOP\2.");
+    notice(origin, "Insufficient parameters specified for \2xOP\2.");
     notice(origin, "Syntax: SOP|AOP|VOP <#channel> ADD|DEL|LIST <username>");
     return;
   }
@@ -1128,7 +1128,7 @@ static void do_op(char *origin)
 
   if (!chan)
   {
-    notice(origin, "Insufficient parameters specificed for \2OP\2.");
+    notice(origin, "Insufficient parameters specified for \2OP\2.");
     notice(origin, "Syntax: OP <#channel> [nickname]");
     return;
   }
@@ -1217,7 +1217,7 @@ static void do_deop(char *origin)
 
   if (!chan)
   {
-    notice(origin, "Insufficient parameters specificed for \2DEOP\2.");
+    notice(origin, "Insufficient parameters specified for \2DEOP\2.");
     notice(origin, "Syntax: DEOP <#channel> [nickname]");
     return;
   }
@@ -1281,7 +1281,7 @@ static void do_voice(char *origin)
 
   if (!chan)
   {
-    notice(origin, "Insufficient parameters specificed for \2VOICE\2.");
+    notice(origin, "Insufficient parameters specified for \2VOICE\2.");
     notice(origin, "Syntax: VOICE <#channel> [nickname]");
     return;
   }
@@ -1345,7 +1345,7 @@ static void do_devoice(char *origin)
 
   if (!chan)
   {
-    notice(origin, "Insufficient parameters specificed for \2DEVOICE\2.");
+    notice(origin, "Insufficient parameters specified for \2DEVOICE\2.");
     notice(origin, "Syntax: DEVOICE <#channel> [nickname]");
     return;
   }
@@ -1410,7 +1410,7 @@ static void do_invite(char *origin)
 
   if (!chan)
   {
-    notice(origin, "Insufficient parameters specificed for \2INVITE\2.");
+    notice(origin, "Insufficient parameters specified for \2INVITE\2.");
     notice(origin, "Syntax: INVITE <#channel> [nickname]");
     return;
   }
@@ -1469,7 +1469,7 @@ static void do_info(char *origin)
 
   if (!name)
   {
-    notice(origin, "Insufficient parameters specificed for \2INFO\2.");
+    notice(origin, "Insufficient parameters specified for \2INFO\2.");
     notice(origin, "Syntax: INFO <username|#channel>");
     return;
   }
@@ -1625,6 +1625,79 @@ static void do_info(char *origin)
   }
 }
 
+/* RECOVER <#channel> */
+static void do_recover(char *origin)
+{
+  user_t *u = user_find(origin);
+  chanuser_t *cu;
+  mychan_t *mc;
+  node_t *n;
+  char *name = strtok(NULL, " ");
+  char hostbuf[BUFSIZE];
+
+  if (!name)
+  {
+    notice(origin, "Insufficient parameters specified for \2RECOVER\2.");
+    notice(origin, "Syntax: RECOVER <#channel>");
+    return;
+  }
+
+  if (!u->myuser)
+  {
+    notice(origin, "You are not logged in.");
+    return;
+  }
+
+  if (!(mc = mychan_find(name)))
+  {
+    notice(origin, "No such channel: \2%s\2.", name);
+    return;
+  }
+
+  if ((!is_founder(mc, u->myuser)) && (!is_xop(mc, u->myuser, CA_SOP)))
+  {
+    notice(origin, "You are not authorized to perform this operation.");
+    return;
+  }
+
+  verbose(mc, "\2%s\2 used RECOVER.", origin);
+
+  /* deop everyone */
+  LIST_FOREACH(n, mc->chan->members.head)
+  {
+    cu = (chanuser_t *)n->data;
+
+    if ((CMODE_OP & cu->modes) && (irccasecmp(svs.nick, cu->user->nick)))
+      cmode(svs.nick, mc->chan->name, "-o", cu->user->nick);
+  }
+
+  /* remove modes that keep people out */
+  if (CMODE_LIMIT & mc->chan->modes)
+    cmode(svs.nick, mc->chan->name, "-l", NULL);
+
+  if (CMODE_INVITE & mc->chan->modes)
+    cmode(svs.nick, mc->chan->name, "-i", NULL);
+
+  if (CMODE_KEY & mc->chan->modes)
+    cmode(svs.nick, mc->chan->name, "-k", mc->chan->key);
+
+  /* set an exempt on the user calling this */
+  hostbuf[0] = '\0';
+
+  strlcat(hostbuf, u->nick, BUFSIZE);
+  strlcat(hostbuf, "!", BUFSIZE);
+  strlcat(hostbuf, u->user, BUFSIZE);
+  strlcat(hostbuf, "@", BUFSIZE);
+  strlcat(hostbuf, u->host, BUFSIZE);
+
+  sts(":%s MODE %s +e %s", svs.nick, mc->chan->name, hostbuf);
+
+  /* invite them back. */
+  sts(":%s INVITE %s %s", svs.nick, u->nick, mc->chan->name);
+
+  notice(origin, "Recover complete for \2%s\2.", mc->chan->name);
+}
+
 /* REGISTER <username|#channel> <password> [email] */
 static void do_register(char *origin)
 {
@@ -1640,7 +1713,7 @@ static void do_register(char *origin)
 
   if (!name)
   {
-    notice(origin, "Insufficient parameters specificed for \2REGISTER\2.");
+    notice(origin, "Insufficient parameters specified for \2REGISTER\2.");
     notice(origin, "Syntax: REGISTER <username|#channel> <password> [email]");
     return;
   }
@@ -2625,6 +2698,7 @@ struct command_ commands[] = {
   { "DEVOICE",  AC_NONE,  do_devoice  },
   { "INVITE",   AC_NONE,  do_invite   },
   { "INFO",     AC_NONE,  do_info     },
+  { "RECOVER",  AC_NONE,  do_recover  },
   { "REGISTER", AC_NONE,  do_register },
   { "DROP",     AC_NONE,  do_drop     },
   { "KLINE",    AC_IRCOP, do_kline    },

@@ -1,4 +1,13 @@
 ------------------------------------------------------------------------
+r81 | rakaur | 2004-05-02 14:23:18 -0500 (Sun, 02 May 2004) | 2 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/inc/shrike.h
+   M /trunk/src/shrike.c
+
+Fixed a problem with systems that need getopt.h (thanks Rob_X).
+
+------------------------------------------------------------------------
 r77 | rakaur | 2004-04-29 07:24:24 -0500 (Thu, 29 Apr 2004) | 2 lines
 Changed paths:
    M /trunk/ChangeLog

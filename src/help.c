@@ -37,6 +37,7 @@ void do_help(char *origin)
     notice(origin, "\2OP|DEOP\2       Manipulates ops on a channel.");
     notice(origin, "\2VOICE|DEVOICE\2 Manipulates voices on a channel.");
     notice(origin, "\2INVITE\2        Invites a nickname to a channel.");
+    notice(origin, "\2RECOVER\2       Regain control of your channel.");
     notice(origin, " ");
 
     if (is_sra(u->myuser))
@@ -158,6 +159,7 @@ struct help_command_ help_commands[] = {
   { "DEVOICE",  AC_NONE,  "help/op_voice" },
   { "INVITE",   AC_NONE,  "help/invite"   },
   { "INFO",     AC_NONE,  "help/info"     },
+  { "RECOVER",  AC_NONE,  "help/recover"  },
   { "REGISTER", AC_NONE,  "help/register" },
   { "DROP",     AC_NONE,  "help/drop"     },
   { "KLINE",    AC_IRCOP, "help/kline"    },
