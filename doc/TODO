@@ -61,7 +61,7 @@ MUST BE IN shrike-1.0b2
 [ ] - utility commands
 [X]   . op/deop/voice/devoice
 [ ]   . invite
-[ ]   . info
+[X]   . info
 [X]   . status on channel
 [X]   . xOP:LIST
 [ ] - hostmasks on xOP lists

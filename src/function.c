@@ -353,6 +353,75 @@ int32_t mode_to_flag(char c)
   return cmodes[i].flag;
 }
 
+/* return the time elapsed since an event */
+char *time_ago (time_t event)
+{
+    static char ret[128];
+    int years, weeks, days, hours, minutes, seconds;
+
+    event = time(NULL) - event;
+    years = weeks = days = hours = minutes = seconds = 0;
+
+    while (event >= 60 * 60 * 24 * 365)
+    {
+        event -= 60 * 60 * 24 * 365;
+        years++;
+    }
+    while (event >= 60 * 60 * 24 * 7)
+    {   
+        event -= 60 * 60 * 24 * 7;
+        weeks++;
+    }
+    while (event >= 60 * 60 * 24)
+    {   
+        event -= 60 * 60 * 24;
+        days++;
+    }
+    while (event >= 60 * 60)
+    {   
+        event -= 60 * 60;
+        hours++;
+    }
+    while (event >= 60)
+    {   
+        event -= 60;
+        minutes++;
+    }
+
+    seconds = event;
+
+    if (years)
+        snprintf (ret, sizeof (ret),
+                "%d year%s, %d week%s, %d day%s, %02d:%02d:%02d",
+                years, years == 1 ? "" : "s",
+                weeks, weeks == 1 ? "" : "s",
+                days, days == 1 ? "" : "s",
+                hours, minutes, seconds);
+    else if (weeks)
+        snprintf (ret, sizeof (ret), "%d week%s, %d day%s, %02d:%02d:%02d",
+                weeks, weeks == 1 ? "" : "s",
+                days, days == 1 ? "" : "s",
+                hours, minutes, seconds);
+    else if (days)
+        snprintf (ret, sizeof (ret), "%d day%s, %02d:%02d:%02d",
+                days, days == 1 ? "" : "s",
+                hours, minutes, seconds);
+    else if (hours)
+        snprintf (ret, sizeof (ret), "%d hour%s, %d minute%s, %d second%s",
+                hours, hours == 1 ? "" : "s",
+                minutes, minutes == 1 ? "" : "s",
+                seconds, seconds == 1 ? "" : "s");
+    else if (minutes)
+        snprintf (ret, sizeof (ret), "%d minute%s, %d second%s",
+                minutes, minutes == 1 ? "" : "s",
+                seconds, seconds == 1 ? "" : "s");
+    else
+        snprintf (ret, sizeof (ret), "%d second%s",
+                seconds, seconds == 1 ? "" : "s");
+
+    return ret;
+}
+
 /* various access level checkers */
 boolean_t is_founder(mychan_t *mychan, myuser_t *myuser)
 {

@@ -62,6 +62,7 @@ E uint32_t shash(const unsigned char *text);
 E char *itoa(int num);
 E char *flags_to_string(int32_t flags);
 E int32_t mode_to_flag(char c);
+E char *time_ago(time_t event);
 
 E boolean_t is_founder(mychan_t *mychan, myuser_t *myuser);
 E boolean_t is_xop(mychan_t *mychan, myuser_t *myuser, uint8_t level);

@@ -64,7 +64,7 @@ static void do_set_email(char *origin, char *name, char *params)
     return;
   }
 
-  snoop("SET:EMAIL \2%s\2 (\2%s\2 -> \2%s\2)", mu->name, mu->email, params);
+  snoop("SET:EMAIL: \2%s\2 (\2%s\2 -> \2%s\2)", mu->name, mu->email, params);
 
   free(mu->email);
   mu->email = sstrdup(params);
@@ -95,7 +95,7 @@ static void do_set_hold(char *origin, char *name, char *params)
         return;
       }
 
-      snoop("SET:HOLD:ON for \2%s\2 by \2%s\2", mc->name, origin);
+      snoop("SET:HOLD:ON: for \2%s\2 by \2%s\2", mc->name, origin);
 
       mc->flags |= MC_HOLD;
 
@@ -112,7 +112,7 @@ static void do_set_hold(char *origin, char *name, char *params)
         return;
       }
 
-      snoop("SET:HOLD:OFF for \2%s\2 by \2%s\2", mc->name, origin);
+      snoop("SET:HOLD:OFF: for \2%s\2 by \2%s\2", mc->name, origin);
 
       mc->flags &= ~MC_HOLD;
 
@@ -146,7 +146,7 @@ static void do_set_hold(char *origin, char *name, char *params)
         return;
       }
 
-      snoop("SET:HOLD:ON for \2%s\2 by \2%s\2", mu->name, origin);
+      snoop("SET:HOLD:ON: for \2%s\2 by \2%s\2", mu->name, origin);
 
       mu->flags |= MU_HOLD;
 
@@ -163,7 +163,7 @@ static void do_set_hold(char *origin, char *name, char *params)
         return;
       }
 
-      snoop("SET:HOLD:OFF for \2%s\2 by \2%s\2", mu->name, origin);
+      snoop("SET:HOLD:OFF: for \2%s\2 by \2%s\2", mu->name, origin);
 
       mu->flags &= ~MU_HOLD;
 
@@ -321,12 +321,12 @@ static void do_set_mlock(char *origin, char *name, char *params)
   {
     notice(origin, "The MLOCK for \2%s\2 has been set to \2%s\2.",
            mc->name, modebuf);
-    snoop("SET:MLOCK \2%s\2 to \2%s\2 by \2%s\2", mc->name, modebuf, origin);
+    snoop("SET:MLOCK: \2%s\2 to \2%s\2 by \2%s\2", mc->name, modebuf, origin);
   }
   else
   {
     notice(origin, "The MLOCK for \2%s\2 has been removed.", mc->name);
-    snoop("SET:MLOCK:OFF \2%s\2 by \2%s\2", mc->name, origin);
+    snoop("SET:MLOCK:OFF: \2%s\2 by \2%s\2", mc->name, origin);
   }
 
   check_modes(mc);
@@ -363,7 +363,7 @@ static void do_set_neverop(char *origin, char *name, char *params)
         return;
       }
 
-      snoop("SET:NEVEROP:ON for \2%s\2 by \2%s\2", mc->name, origin);
+      snoop("SET:NEVEROP:ON: for \2%s\2 by \2%s\2", mc->name, origin);
 
       mc->flags |= MC_NEVEROP;
 
@@ -382,7 +382,7 @@ static void do_set_neverop(char *origin, char *name, char *params)
         return;
       }
 
-      snoop("SET:NEVEROP:OFF for \2%s\2 by \2%s\2", mc->name, origin);
+      snoop("SET:NEVEROP:OFF: for \2%s\2 by \2%s\2", mc->name, origin);
 
       mc->flags &= ~MC_NEVEROP;
 
@@ -422,7 +422,7 @@ static void do_set_neverop(char *origin, char *name, char *params)
         return;
       }
 
-      snoop("SET:NEVEROP:ON for \2%s\2 by \2%s\2", mu->name, origin);
+      snoop("SET:NEVEROP:ON: for \2%s\2 by \2%s\2", mu->name, origin);
 
       mu->flags |= MU_NEVEROP;
 
@@ -441,7 +441,7 @@ static void do_set_neverop(char *origin, char *name, char *params)
         return;
       }
 
-      snoop("SET:NEVEROP:OFF for \2%s\2 by \2%s\2", mu->name, origin);
+      snoop("SET:NEVEROP:OFF: for \2%s\2 by \2%s\2", mu->name, origin);
 
       mu->flags &= ~MU_NEVEROP;
 
@@ -491,7 +491,7 @@ static void do_set_noop(char *origin, char *name, char *params)
       return;
     }
 
-    snoop("SET:NOOP:ON for \2%s\2", mu->name);
+    snoop("SET:NOOP:ON: for \2%s\2", mu->name);
 
     mu->flags |= MU_NOOP;
 
@@ -508,7 +508,7 @@ static void do_set_noop(char *origin, char *name, char *params)
       return;
     }
 
-    snoop("SET:NOOP:OFF for \2%s\2", mu->name);
+    snoop("SET:NOOP:OFF: for \2%s\2", mu->name);
 
     mu->flags &= ~MU_NOOP;
 
@@ -544,7 +544,7 @@ static void do_set_password(char *origin, char *name, char *params)
       return;
     }
 
-    snoop("SET:PASSWORD \2%s\2 as \2%s\2 for \2%s\2", u->nick,
+    snoop("SET:PASSWORD: \2%s\2 as \2%s\2 for \2%s\2", u->nick,
           u->myuser->name, mc->name);
 
     free(mc->pass);
@@ -570,7 +570,7 @@ static void do_set_password(char *origin, char *name, char *params)
       return;
     }
 
-    snoop("SET:PASSWORD \2%s\2 as \2%s\2 for \2%s\2", u->nick,
+    snoop("SET:PASSWORD: \2%s\2 as \2%s\2 for \2%s\2", u->nick,
           mu->name, mu->name);
 
     free(mu->pass);
@@ -615,7 +615,7 @@ static void do_set_secure(char *origin, char *name, char *params)
       return;
     }
 
-    snoop("SET:SECURE:ON for \2%s\2 by \2%s\2", mc->name, origin);
+    snoop("SET:SECURE:ON: for \2%s\2 by \2%s\2", mc->name, origin);
 
     mc->flags |= MC_SECURE;
 
@@ -632,7 +632,7 @@ static void do_set_secure(char *origin, char *name, char *params)
       return;
     }
 
-    snoop("SET:SECURE:OFF for \2%s\2 by \2%s\2", mc->name, origin);
+    snoop("SET:SECURE:OFF: for \2%s\2 by \2%s\2", mc->name, origin);
 
     mc->flags &= ~MC_SECURE;
 
@@ -681,7 +681,7 @@ static void do_set_verbose(char *origin, char *name, char *params)
       return;
     }
 
-    snoop("SET:VERBOSE:ON for \2%s\2", mc->name);
+    snoop("SET:VERBOSE:ON: for \2%s\2", mc->name);
 
     mc->flags |= MC_VERBOSE;
 
@@ -698,7 +698,7 @@ static void do_set_verbose(char *origin, char *name, char *params)
       return;
     }
 
-    snoop("SET:VERBOSE:OFF for \2%s\2", mc->name);
+    snoop("SET:VERBOSE:OFF: for \2%s\2", mc->name);
 
     mc->flags &= ~MC_VERBOSE;
 

@@ -1180,6 +1180,155 @@ static void do_devoice(char *origin)
   notice(origin, "\2%s\2 was devoiced on \2%s\2.", u->nick, mc->name);
 }
 
+/* INFO <username|#channel> */
+static void do_info(char *origin)
+{
+  myuser_t *mu;
+  mychan_t *mc;
+  char *name = strtok(NULL, " ");
+  char buf[BUFSIZE], strfbuf[32];
+  struct tm tm;
+
+  if (!name)
+  {
+    notice(origin, "Insufficient parameters specificed for \2INFO\2.");
+    notice(origin, "Syntax: INFO <username|#channel>");
+    return;
+  }
+
+  if (*name == '#')
+  {
+    if (!(mc = mychan_find(name)))
+    {
+      notice(origin, "No such channel: \2%s\2.", name);
+      return;
+    }
+
+    snoop("INFO: \2%s\2 by \2%s\2", name, origin);
+
+    tm = *localtime(&mc->registered);
+    strftime(strfbuf, sizeof(strfbuf) - 1, "%b %d %H:%M:%S %Y", &tm);
+
+    notice(origin, "Information on \2%s\2", mc->name);
+
+    if (mc->founder->user)
+      notice(origin, "Founder    : %s (logged in from \2%s\2)",
+             mc->founder->name, mc->founder->user->nick);
+    else
+      notice(origin, "Founder    : %s (not logged in)");
+
+    notice(origin, "Registered : %s (%s ago)", strfbuf,
+          time_ago(mc->registered));
+
+    if (mc->mlock_on || mc->mlock_off)
+    {
+      char params[BUFSIZE];
+
+      *buf = 0;
+      *params = 0;
+
+      if (mc->mlock_on)
+      {
+        strcat(buf, "+");
+        strcat(buf, flags_to_string(mc->mlock_on));
+
+        /* add these in manually */
+        if (mc->mlock_limit)
+        {   
+          strcat(buf, "l");
+          strcat(params, " ");
+          strcat(params, itoa(mc->mlock_limit));
+        }
+
+        if (mc->mlock_key)
+          strcat(buf, "k");
+      }
+
+      if (mc->mlock_off)
+      {   
+        strcat(buf, "-");
+        strcat(buf, flags_to_string(mc->mlock_off));
+      }
+
+      if (*buf)
+        notice(origin, "Mode lock  : %s %s", buf, (params) ? params : "");
+    }
+
+    *buf = '\0';
+
+    if (MC_HOLD & mc->flags)
+      strcat(buf, "HOLD");
+
+    if (MC_NEVEROP & mc->flags)
+    {
+      if (*buf)
+        strcat(buf, " ");
+
+      strcat(buf, "NEVEROP");
+    }
+    if (MC_SECURE & mc->flags)
+    {
+      if (*buf)
+        strcat(buf, " ");
+
+      strcat(buf, "SECURE");
+    }
+    if (MC_VERBOSE & mc->flags)
+    {
+      if (*buf)
+        strcat(buf, " ");
+
+      strcat(buf, "VERBOSE");
+    }
+
+    if (*buf)
+        notice(origin, "Flags      : %s", buf);
+  }
+  else
+  {
+    if (!(mu = myuser_find(name)))
+    {
+      notice(origin, "No such username: \2%s\2.", name);
+      return;
+    }
+
+    snoop("INFO: \2%s\2 by \2%s\2", name, origin);
+
+    tm = *localtime(&mu->registered);
+    strftime(strfbuf, sizeof(strfbuf) - 1, "%b %d %H:%M:%S %Y", &tm);
+     
+    notice(origin, "Information on \2%s\2", mu->name);
+     
+    notice(origin, "Registered : %s (%s ago)", strfbuf,
+          time_ago(mu->registered));
+
+    notice(origin, "Email      : %s", mu->email);
+
+    *buf = '\0';
+
+    if (MU_HOLD & mu->flags)
+      strcat(buf, "HOLD");
+
+    if (MU_NEVEROP & mu->flags)
+    {
+      if (*buf)
+        strcat(buf, " ");
+
+      strcat(buf, "NEVEROP");
+    }
+    if (MU_NOOP & mu->flags)
+    {
+      if (*buf)
+        strcat(buf, " ");
+
+      strcat(buf, "NOOP");
+    }
+
+    if (*buf)
+        notice(origin, "Flags      : %s", buf);
+  }  
+}
+
 /* REGISTER <username|#channel> <password> [email] */
 static void do_register(char *origin)
 {
@@ -1469,6 +1618,12 @@ static void do_status(char *origin)
   {
     mychan_t *mc = mychan_find(chan);
 
+    if (*chan != '#')
+    {
+      notice(origin, "Invalid parameters specified for \2STATUS\2.");
+      return;
+    }
+
     if (!mc)
     {
       notice(origin, "No such channel: \2%s\2.", chan);
@@ -1576,6 +1731,7 @@ struct command_ commands[] = {
   { "DEOP",     AC_NONE, do_deop     },
   { "VOICE",    AC_NONE, do_voice    },
   { "DEVOICE",  AC_NONE, do_devoice  },
+  { "INFO",     AC_NONE, do_info     },
   { "REGISTER", AC_NONE, do_register },
   { "DROP",     AC_NONE, do_drop     },
   { "UPDATE",   AC_SRA,  do_update   },
