@@ -88,34 +88,36 @@ E struct message_ *msg_find(const char *name);
 #define MATCH_RFC1459   0
 #define MATCH_ASCII     1
 
+E int match_mapping;
+
 #define IsLower(c)  ((unsigned char)(c) > 0x5f)
 #define IsUpper(c)  ((unsigned char)(c) < 0x60)
 
 #define C_ALPHA 0x00000001
 #define C_DIGIT 0x00000002
 
-extern const unsigned int charattrs[];
+E const unsigned int charattrs[];
 
 #define IsAlpha(c)      (charattrs[(unsigned char) (c)] & C_ALPHA)
 #define IsDigit(c)      (charattrs[(unsigned char) (c)] & C_DIGIT)
 #define IsAlphaNum(c)   (IsAlpha((c)) || IsDigit((c)))
 #define IsNon(c)        (!IsAlphaNum((c)))
 
-extern const unsigned char ToLowerTab[];
-extern const unsigned char ToUpperTab[];
+E const unsigned char ToLowerTab[];
+E const unsigned char ToUpperTab[];
 
 void set_match_mapping(int);
 
-int ToLower(int);
-int ToUpper(int);
+E int ToLower(int);
+E int ToUpper(int);
 
-int irccmp(char *, char *);
-int irccasecmp(char *, char *);
-int ircncmp(char *, char *, int);
-int ircncasecmp(char *, char *, int);
+E int irccmp(char *, char *);
+E int irccasecmp(char *, char *);
+E int ircncmp(char *, char *, int);
+E int ircncasecmp(char *, char *, int);
 
-int match(char *, char *);
-char *collapse(char *);
+E int match(char *, char *);
+E char *collapse(char *);
 
 /* node.c */
 E list_t connlist;

@@ -26,9 +26,13 @@ A: Lots of things.  First, it says "shrike-," followed by the version and
    build number, then it gives the name of its server, then it gives
    a bunch of letters:
 
-     * d - Debug mode is on
+     * A - using ASCII casemapping
 
-     * n - Running live (nofork)
+     * d - debug mode is on
+
+     * n - running live (nofork)
+
+     * R - using rfc1459 casemapping
 
 Q: Why isn't there an include/config.h?
 A: For one, it'd be inc/config.h.  For two, it's pointless.  It's for
@@ -46,8 +50,8 @@ Q: From the IRC protocol specification:
      equivalence of two nicknames.
 
    Shrike respects this because it was designed for an IRCd that also
-   respects this. This is why using Shrike on non-RFC1459 casemapping IRCd's
-   is a bad thing.
+   respects this. There is a configuration option to specify which casemapping
+   to use.
 
 Q: Does Shrike check for buffer overflows?
 A: I try.  I didn't start checking buffers until well into writing it, so I'm

@@ -29,6 +29,7 @@ shrike-1.0 - Matt Lanigan <rintaun@projectxero.net>
   + Added doc/COMMANDS.
 
 shrike-1.0 - E. Will <rakaur@malkier.net>
+  + Updated version flags and such.
   + Added conf option `casemapping' for `rfc1459' and `ascii'.
   + Added support for CASEMAPPING=rfc1459.
   ~ Fixed multiple typos.

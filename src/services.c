@@ -241,8 +241,10 @@ void services(char *origin, uint8_t parc, char *parv[])
   else if (!strcmp(cmd, "\001VERSION\001"))
   {
     notice(origin,
-           "\001VERSION shrike-%s.%s. %s %s%s %s\001",
-           version, build, me.name,
+           "\001VERSION shrike-%s. %s %s%s%s%s %s\001",
+           version, me.name,
+           (match_mapping) ? "A" : "",
+           (!match_mapping) ? "R" : "",
            (me.loglevel & LG_DEBUG) ? "d" : "",
            (runflags & RF_LIVE) ? "n" : "", version);
 

@@ -511,8 +511,10 @@ static void m_admin(char *origin, uint8_t parc, char *parv[])
 
 static void m_version(char *origin, uint8_t parc, char *parv[])
 {
-  sts(":%s 351 %s :shrike-%s.%s. %s %s%s %s",
-      me.name, origin, version, build, me.name,
+  sts(":%s 351 %s :shrike-%s. %s %s%s%s%s %s",
+      me.name, origin, version, me.name,
+      (match_mapping) ? "A" : "",
+      (!match_mapping) ? "R" : "",
       (me.loglevel & LG_DEBUG) ? "d" : "",
       (runflags & RF_LIVE) ? "n" : "", version);
 }
