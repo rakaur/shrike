@@ -275,6 +275,7 @@ int main(int argc, char *argv[])
        me.uplink, me.port, me.name);
 
   servsock = conn(me.uplink, me.port);
+  me.connected = FALSE;
 
   /* main loop */
   io_loop();

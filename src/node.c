@@ -174,28 +174,32 @@ void event_check(void)
     e = te;
   }
 
-  /* check to see if our uplink is dead */
-  diff = now - me.uplinkpong;
-
-  if (diff > 300)
+  if (me.connected)
   {
-    slog(0, LG_INFO, "check_events(): no response from server in %d seconds; "
-         "disconnecting", diff);
+    /* check to see if our uplink is dead
+    diff = now - me.uplinkpong;
 
-    close(servsock);
-    servsock = -1;
-    me.connected = FALSE;
-
-    LIST_FOREACH(n, eventlist.head)
+    if (diff > 300)
     {
-      e = (event_t *)n->data;
+      slog(0, LG_INFO,
+           "check_events(): no response from server in %d seconds; "
+           "disconnecting", diff);
 
-      if (!strcasecmp("Uplink ping", e->name))
+      close(servsock);
+      servsock = -1;
+      me.connected = FALSE;
+
+      LIST_FOREACH(n, eventlist.head)
       {
-        event_del(e);
-        return;
+        e = (event_t *)n->data;
+
+        if (!strcasecmp("Uplink ping", e->name))
+        {
+          event_del(e);
+          return;
+        }
       }
-    }
+    }*/
   }
 
   check_events = FALSE;

@@ -153,6 +153,8 @@ static int8_t irc_estab(void)
   /* ping our uplink every 5 minutes */
   event_add("Uplink ping", 300, (void *)ping_uplink, TRUE);
 
+  me.uplinkpong = time(NULL);
+
   return 1;
 }
 

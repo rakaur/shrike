@@ -29,6 +29,8 @@ shrike-1.0 - Matt Lanigan <rintaun@projectxero.net>
   + Added doc/COMMANDS.
 
 shrike-1.0 - E. Will <rakaur@malkier.net>
+  ~ Fixed expiring for unverified usernames.
+  ~ Fixed a bug where it tried to reconnect forever with no success.
   + Added email verification via conf option `auth'.
   + Added email support via conf option `mta'.
   + Added registration limiting via conf options `maxusers' and `maxchans'.

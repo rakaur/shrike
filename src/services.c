@@ -154,8 +154,7 @@ void expire_check(event_t *e)
         continue;
 
       if (((time(NULL) - mu->lastlogin) >= me.expire) ||
-          ((mu->flags & MU_WAITAUTH)
-           && ((time(NULL) - mu->registered) >= 86400)))
+          ((mu->flags & MU_WAITAUTH) && (time(NULL) - mu->registered >= 86400)))
       {
         /* kill all their channels */
         for (j = 0; j < HASHSIZE; j++)
@@ -1593,6 +1592,9 @@ static void do_register(char *origin)
 
     mu = myuser_add(name, pass, email);
     u = user_find(origin);
+
+    if (u->myuser)
+      u->myuser->user = NULL;
 
     u->myuser = mu;
     mu->user = u;
