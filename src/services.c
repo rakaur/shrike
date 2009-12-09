@@ -2108,6 +2108,17 @@ static void do_kline(char *origin)
       char *tmphost;
       int i = 0;
 
+      /* make sure hostbuf tokenized into something!
+       * bug fix via irc.malkier.net on 2009-12-09
+       * first time i've edited this code in five years...
+       *     -- rakaur
+       */
+      if (!hostbuf)
+      {
+          notice(origin, "Malformed hostname for \2KLINE\2.");
+          return;
+      }
+
       /* make sure there's at least 5 non-wildcards */
       for (tmphost = hostbuf; *tmphost; tmphost++)
       {
