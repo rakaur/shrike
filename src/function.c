@@ -179,16 +179,6 @@ void strip(char *line)
   }
 }
 
-/* opens shrike.log */
-void log_open(void)
-{
-  if (log_file)
-    return;
-
-  if (!(log_file = fopen("var/shrike.log", "a")))
-    exit(EXIT_FAILURE);
-}
-
 /* creates a hostmask based on params */
 char *make_hostmask(char *nick, char *user, char *host)
 {
@@ -207,40 +197,40 @@ char *make_hostmask(char *nick, char *user, char *host)
 /* logs something to shrike.log */
 void slog(uint32_t level, const char *fmt, ...)
 {
-  va_list args;
   time_t t;
   struct tm tm;
-  char buf[32];
+
+  if (!level || fmt == NULL)
+    return;
 
   if (level > me.loglevel)
     return;
 
+  va_list args;
+  char timebuf[64];
+  char buf[BUFSIZE];
   va_start(args, fmt);
+  vsnprintf(buf, BUFSIZE, fmt, args);
+  va_end(args);
 
   time(&t);
   tm = *localtime(&t);
-  strftime(buf, sizeof(buf) - 1, "[%d/%m %H:%M:%S] ", &tm);
+  strftime(timebuf, sizeof(timebuf) - 1, "[%d/%m %H:%M:%S] ", &tm);
 
   if (!log_file)
-    log_open();
-
-  if (log_file)
   {
-    fputs(buf, log_file);
+    FILE *f = fopen("var/shrike.log", "a");
 
-    vfprintf(log_file, fmt, args);
+    if (f == NULL)
+      exit(EXIT_FAILURE);
 
-    fputc('\n', log_file);
-
-    fflush(log_file);
+    log_file = f;
   }
+  fprintf(log_file, "%s %s", timebuf, buf);
+  fflush(log_file);
 
   if ((runflags & (RF_LIVE | RF_STARTING)))
-  {
-    vfprintf(stderr, fmt, args);
-
-    fputc('\n', stderr);
-  }
+      printf("%s %s\n", timebuf, buf);
 }
 
 /* return the current time in milliseconds */

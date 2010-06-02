@@ -190,9 +190,6 @@ int main(int argc, char *argv[])
   signal(SIGTSTP, SIG_IGN);
   signal(SIGUSR1, sighandler);
 
-  /* open log */
-  log_open();
-
   /* since me.loglevel isn't there until after the
    * config routines run, we set the default here
    */
