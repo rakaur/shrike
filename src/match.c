@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2004 E. Will et al.
+ * Copyright (c) 2003-2010 Eric Will et al.
  * Rights to this code are documented in doc/LICENSE.
  *
  * This file contains customized casemapping functions.

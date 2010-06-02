@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2004 E. Will et al.
+ * Copyright (c) 2003-2010 Eric Will et al.
  * Rights to this code are documented in doc/LICENSE.
  *
  * General documentation.
@@ -33,11 +33,12 @@ Information about Cygnus can be found at http://www.habber.net/services/.
 Information about Sentinel can be found at http://ircd.botbay.net/sentinel/.
 
 Currently Shrike consists of the following developers:
-  rakaur, E. Will <rakaur@malkier.net>
-  sycobuny, Stephen Belcher <sycobuny@malkier.net>
-  rintaun, Matt Lanigan <rintaun@projectxero.net>
+  rakaur, Eric Will <rakaur@malkier.net>
+  dKingston, Michael Rodriguez <dkingston02@gmail.com>
 
 Thanks to testers, contributors, etc:
+  sycobuny, Stephen Belcher <sycobuny@malkier.net>
+  rintaun, Matt Lanigan <rintaun@projectxero.net>
   Hwy, W. Campbell <wcampbel@botbay.net>
   naki, Adam Walls <naki@coreag.net>
   Rob_X, Mikael <mickek15@hotmail.com>

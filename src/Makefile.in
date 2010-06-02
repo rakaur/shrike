@@ -1,4 +1,4 @@
-# Copyright (c) 2003-2004 E. Will et al.
+# Copyright (c) 2003-2010 Eric Will et al.
 # Rights to this code are documented in doc/LICENSE.
 #
 # This file contains build instructions.
@@ -16,14 +16,14 @@ BIN		= shrike@EXEEXT@
 MKDEP		= @MKDEP@ -DPREFIX=\"@prefix@\"
 
 # Default CFLAGS
-#CFLAGS		= -g -O2 -Wall
+CFLAGS		= -g -O2
 
 # Developer CFLAGS
-CFLAGS		= -g -O2 -Wunused -Wall -ggdb -pedantic -Wshadow -Wmissing-declarations -Wno-long-long
+#CFLAGS		= -g -O2 -Wunused -Wall -ggdb -pedantic -Wshadow -Wmissing-declarations -Wno-long-long
 
 CFLAGS		+= -DPREFIX=\"@prefix@\"
 
-VERSION		= devel
+VERSION		= 1.1
 
 LIBS		= @LIBS@
 LDFLAGS		= @LDFLAGS@

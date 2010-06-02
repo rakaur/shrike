@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2004 E. Will et al.
+ * Copyright (c) 2003-2010 Eric Will et al.
  * Rights to this code are documented in doc/LICENSE.
  *
  * This file contains misc routines.
@@ -199,6 +199,9 @@ void slog(uint32_t level, const char *fmt, ...)
 {
   time_t t;
   struct tm tm;
+  va_list args;
+  char timebuf[64];
+  char buf[BUFSIZE];
 
   if (!level || fmt == NULL)
     return;
@@ -206,9 +209,6 @@ void slog(uint32_t level, const char *fmt, ...)
   if (level > me.loglevel)
     return;
 
-  va_list args;
-  char timebuf[64];
-  char buf[BUFSIZE];
   va_start(args, fmt);
   vsnprintf(buf, BUFSIZE, fmt, args);
   va_end(args);
@@ -226,7 +226,7 @@ void slog(uint32_t level, const char *fmt, ...)
 
     log_file = f;
   }
-  fprintf(log_file, "%s %s", timebuf, buf);
+  fprintf(log_file, "%s %s\n", timebuf, buf);
   fflush(log_file);
 
   if ((runflags & (RF_LIVE | RF_STARTING)))

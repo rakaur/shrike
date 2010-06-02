@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2003-2004 E. Will et al.
+# Copyright (c) 2003-2010 Eric Will et al.
 # Rights to this code are documented in doc/LICENSE.
 #
 # This file generates version.c.
@@ -34,7 +34,7 @@ else \
 
 $spitshell >version.c <<!SUB!THIS!
 /*
- * Copyright (c) 2003-2004 E. Will et al.
+ * Copyright (c) 2003-2010 Eric Will et al.
  * Rights to this code are documented in doc/LICENSE.
  *
  * This file contains version information.
@@ -50,7 +50,7 @@ const char *version = "$1";
 const char *infotext[] =
 {
   "Shrike IRC Services --",
-  "Copyright (c) 2003-2004 E. Will et al.",
+  "Copyright (c) 2003-2010 Eric Will et al.",
   " ",
   "All rights reserved.",
   " ",
@@ -80,11 +80,12 @@ const char *infotext[] =
   "SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.",
   " ",
   "Currently Shrike consists of the following developers:",
-  "  rakaur, E. Will <rakaur@malkier.net>",
-  "  sycobuny, Stephen Belcher <sycobuny@malkier.net>",
-  "  rintaun, Matt Lanigan <rintaun@projectxero.net>",
+  "  rakaur, Eric Will <rakaur@malkier.net>",
+  "  dKingston, Michael Rodriguez <dkingston02@gmail.com>",
   " ",
   "Thanks to testers, contributors, etc:",
+  "  sycobuny, Stephen Belcher <sycobuny@malkier.net>",
+  "  rintaun, Matt Lanigan <rintaun@projectxero.net>",
   "  Hwy, W. Campbell <wcampbel@botbay.net>",
   "  naki, Adam Walls <naki@coreag.net>",
   "  Rob_X, Mikael <mickek15@hotmail.com>",
