@@ -16,14 +16,14 @@ BIN		= shrike@EXEEXT@
 MKDEP		= @MKDEP@ -DPREFIX=\"@prefix@\"
 
 # Default CFLAGS
-CFLAGS		= -g -O2
+#CFLAGS		= -g -O2
 
 # Developer CFLAGS
-#CFLAGS		= -g -O2 -Wunused -Wall -ggdb -pedantic -Wshadow -Wmissing-declarations -Wno-long-long
+CFLAGS		= -g -O2 -Wunused -Wall -ggdb -pedantic -Wshadow -Wmissing-declarations -Wno-long-long
 
 CFLAGS		+= -DPREFIX=\"@prefix@\"
 
-VERSION		= 1.1
+VERSION		= devel
 
 LIBS		= @LIBS@
 LDFLAGS		= @LDFLAGS@
