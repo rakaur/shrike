@@ -46,14 +46,13 @@ static void sighandler(int signum)
 
     wallops("Got SIGHUP; reloading \2%s\2.", config_file);
 
-    snoop("UPDATE: \2%s\2", "system console");
-    wallops("Updating database by request of \2%s\2.", "system console");
+    snoop("UPDATE: \2system console\2");
+    wallops("Updating database by request of \2system console\2.");
     expire_check(NULL);
     db_save(NULL);
 
-    snoop("REHASH: \2%s\2", "system console");
-    wallops("Rehashing \2%s\2 by request of \2%s\2.", config_file,
-            "system console");
+    snoop("REHASH: \2system console\2");
+    wallops("Rehashing \2%s\2 by request of \2system console\2.", config_file);
 
     if (!conf_rehash())
       wallops("REHASH of \2%s\2 failed. Please corrrect any errors in the "
@@ -90,14 +89,13 @@ static void sighandler(int signum)
   {
     wallops("Got SIGUSER2; restarting in \2%d\2 seconds.", me.restarttime);
 
-    snoop("UPDATE: \2%s\2", "system console");
-    wallops("Updating database by request of \2%s\2.", "system console");
+    snoop("UPDATE: \2system console\2");
+    wallops("Updating database by request of \2system console\2.");
     expire_check(NULL);
     db_save(NULL);
 
-    snoop("RESTART: \2%s\2", "system console");
-    wallops("Restarting in \2%d\2 seconds by request of \2%s\2.",
-            me.restarttime, "system console");
+    snoop("RESTART: \2system console\2");
+    wallops("Restarting in \2%d\2 seconds by request of \2system console\2.", me.restarttime);
 
     slog(LG_INFO, "sighandler(): restarting...");
     runflags |= RF_RESTART;

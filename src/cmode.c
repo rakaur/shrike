@@ -196,13 +196,8 @@ void channel_mode(channel_t *chan, uint8_t parc, char *parv[])
 
             if ((MC_SECURE & mc->flags) && (status_mode_list[i].mode == 'o'))
             {
-              char hostbuf[BUFSIZE];
-
-              strlcpy(hostbuf, cu->user->nick, BUFSIZE);
-              strlcat(hostbuf, "!", BUFSIZE);
-              strlcat(hostbuf, cu->user->user, BUFSIZE);
-              strlcat(hostbuf, "@", BUFSIZE);
-              strlcat(hostbuf, cu->user->host, BUFSIZE);
+              hostbuf = make_hostmask(cu->user->nick, cu->user->user,
+                                      cu->user->host);
 
               if ((!is_founder(mc, mu)) && (cu->user != svs.svs) &&
                   (!is_xop(mc, mu, (CA_AOP | CA_SOP))) &&

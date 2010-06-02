@@ -79,12 +79,12 @@ E int32_t tv2ms(struct timeval *tv);
 E void tb2sp(char *line);
 
 E char *strscpy(char *d, const char *s, size_t len);
-E void *smalloc(long size);
+E void *smalloc(size_t size);
 E void *scalloc(long elsize, long els);
 E void *srealloc(void *oldptr, long newsize);
 E char *sstrdup(const char *s);
 E void strip(char *line);
-
+E char *make_hostmask(char *nick, char *user, char *host);
 E void log_open(void);
 E void slog(uint32_t level, const char *fmt, ...);
 E uint32_t time_msec(void);

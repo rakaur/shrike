@@ -124,13 +124,13 @@ char *strscpy(char *d, const char *s, size_t len)
 }
 
 /* does malloc()'s job and dies if malloc() fails */
-void *smalloc(long size)
+void *smalloc(size_t size)
 {
-  void *buf;
+  void *buf = malloc(size);
 
-  buf = malloc(size);
   if (!buf)
     raise(SIGUSR1);
+
   return buf;
 }
 
@@ -187,6 +187,21 @@ void log_open(void)
 
   if (!(log_file = fopen("var/shrike.log", "a")))
     exit(EXIT_FAILURE);
+}
+
+/* creates a hostmask based on params */
+char *make_hostmask(char *nick, char *user, char *host)
+{
+    char buf[BUFSIZE];
+    buf[0] = '\0';
+
+    strlcat(buf, nick, BUFSIZE);
+    strlcat(buf, "!", BUFSIZE);
+    strlcat(buf, user, BUFSIZE);
+    strlcat(buf, "@", BUFSIZE);
+    strlcat(buf, host, BUFSIZE);
+
+    return buf;
 }
 
 /* logs something to shrike.log */
@@ -662,11 +677,19 @@ boolean_t is_successor(mychan_t *mychan, myuser_t *myuser)
 boolean_t is_xop(mychan_t *mychan, myuser_t *myuser, uint8_t level)
 {
   chanacs_t *ca;
+  char hostbuf[BUFSIZE];
 
   if (!myuser)
     return FALSE;
 
+  hostbuf = make_hostmask(myuser->user->nick, myuser->user->user,
+                          myuser->user->host);
+
   if ((ca = chanacs_find(mychan, myuser, level)))
+    return TRUE;
+
+
+  if ((ca = chanacs_find_host(mychan, hostbuf, level)))
     return TRUE;
 
   return FALSE;
@@ -713,13 +736,7 @@ boolean_t should_op_host(mychan_t *mychan, char *host)
   chanacs_t *ca;
   char hostbuf[BUFSIZE];
 
-  hostbuf[0] = '\0';
-
-  strlcat(hostbuf, svs.nick, BUFSIZE);
-  strlcat(hostbuf, "!", BUFSIZE);
-  strlcat(hostbuf, svs.user, BUFSIZE);
-  strlcat(hostbuf, "@", BUFSIZE);
-  strlcat(hostbuf, svs.host, BUFSIZE);
+  hostbuf = make_hostmask(svs.nick, svs.user, svs.host);
 
   if (!match(host, hostbuf))
     return FALSE;
@@ -758,13 +775,7 @@ boolean_t should_voice_host(mychan_t *mychan, char *host)
   chanacs_t *ca;
   char hostbuf[BUFSIZE];
 
-  hostbuf[0] = '\0';
-
-  strlcat(hostbuf, svs.nick, BUFSIZE);
-  strlcat(hostbuf, "!", BUFSIZE);
-  strlcat(hostbuf, svs.user, BUFSIZE);
-  strlcat(hostbuf, "@", BUFSIZE);
-  strlcat(hostbuf, svs.host, BUFSIZE);
+  hostbuf = make_hostmask(svs.nick, svs.user, svs.host);
 
   if (!match(host, hostbuf))
     return FALSE;

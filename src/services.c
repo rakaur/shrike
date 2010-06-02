@@ -615,13 +615,8 @@ static void do_xop(char *origin, uint8_t level)
           if (cu->modes & CMODE_VOICE)
             return;
 
-          hostbuf[0] = '\0';
-
-          strlcat(hostbuf, cu->user->nick, BUFSIZE);
-          strlcat(hostbuf, "!", BUFSIZE);
-          strlcat(hostbuf, cu->user->user, BUFSIZE);
-          strlcat(hostbuf, "@", BUFSIZE);
-          strlcat(hostbuf, cu->user->host, BUFSIZE);
+          hostbuf = make_hostmask(cu->user->nick, cu->user->user,
+                                  cu->user->host);
 
           if (should_voice_host(mc, hostbuf))
           {
@@ -729,13 +724,8 @@ static void do_xop(char *origin, uint8_t level)
           if (cu->modes & CMODE_OP)
             return;
 
-          hostbuf[0] = '\0';
-
-          strlcat(hostbuf, cu->user->nick, BUFSIZE);
-          strlcat(hostbuf, "!", BUFSIZE);
-          strlcat(hostbuf, cu->user->user, BUFSIZE);
-          strlcat(hostbuf, "@", BUFSIZE);
-          strlcat(hostbuf, cu->user->host, BUFSIZE);
+          hostbuf = make_hostmask(cu->user->nick, cu->user->user,
+                                  cu->user->host);
 
           if (should_op_host(mc, hostbuf))
           {
@@ -1154,23 +1144,18 @@ static void do_op(char *origin)
     return;
   }
 
+  /* assume they want to be op'd */
+  if (!nick)
+    nick = origin;
+
   /* figure out who we're going to op */
-  if (nick)
+  if (!(u = user_find(nick)))
   {
-    if (!(u = user_find(nick)))
-    {
-      notice(origin, "No such nickname: \2%s\2.", nick);
-      return;
-    }
+    notice(origin, "No such nickname: \2%s\2.", nick);
+    return;
   }
 
-  hostbuf[0] = '\0';
-
-  strlcat(hostbuf, u->nick, BUFSIZE);
-  strlcat(hostbuf, "!", BUFSIZE);
-  strlcat(hostbuf, u->user, BUFSIZE);
-  strlcat(hostbuf, "@", BUFSIZE);
-  strlcat(hostbuf, u->host, BUFSIZE);
+  hostbuf = make_hostmask(u->nick, u->user, u->host);
 
   if (!chanacs_find_host(mc, hostbuf, CA_AOP))
   {
@@ -1243,14 +1228,15 @@ static void do_deop(char *origin)
     return;
   }
 
+  /* assume they want to be opped */
+  if (!nick)
+    nick = origin;
+
   /* figure out who we're going to deop */
-  if (nick)
+  if (!(u = user_find(nick)))
   {
-    if (!(u = user_find(nick)))
-    {
-      notice(origin, "No such nickname: \2%s\2.", nick);
-      return;
-    }
+    notice(origin, "No such nickname: \2%s\2.", nick);
+    return;
   }
 
   cu = chanuser_find(mc->chan, u);
@@ -1436,14 +1422,15 @@ static void do_invite(char *origin)
     return;
   }
 
+  /* assume they wanna be invited */
+  if (!nick)
+    nick = origin;
+
   /* figure out who we're going to invite */
-  if (nick)
+  if (!(u = user_find(nick)))
   {
-    if (!(u = user_find(nick)))
-    {
-      notice(origin, "No such nickname: \2%s\2.", nick);
-      return;
-    }
+    notice(origin, "No such nickname: \2%s\2.", nick);
+    return;
   }
 
   cu = chanuser_find(mc->chan, u);
@@ -1682,13 +1669,7 @@ static void do_recover(char *origin)
     cmode(svs.nick, mc->chan->name, "-k", mc->chan->key);
 
   /* set an exempt on the user calling this */
-  hostbuf[0] = '\0';
-
-  strlcat(hostbuf, u->nick, BUFSIZE);
-  strlcat(hostbuf, "!", BUFSIZE);
-  strlcat(hostbuf, u->user, BUFSIZE);
-  strlcat(hostbuf, "@", BUFSIZE);
-  strlcat(hostbuf, u->host, BUFSIZE);
+  hostbuf = make_hostmask(u->nick, u->user, u->host);
 
   sts(":%s MODE %s +e %s", svs.nick, mc->chan->name, hostbuf);
 
