@@ -742,6 +742,7 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
   chanuser_t *cu, *tcu;
   mychan_t *mc;
   uint32_t flags = 0;
+  char *hostbuf;
 
   if (*chan->name != '#')
   {
@@ -761,15 +762,17 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
       else
         u = user_find(nick);
 
-      char *hostbuf = make_hostmask(u->nick, u->user, u->host);
+      hostbuf = make_hostmask(u->nick, u->user, u->host);
 
       /* see if we need to deop them */
       if ((mc = mychan_find(chan->name)))
       {
         if (MC_SECURE & mc->flags)
         {
-          if ((!u->myuser) || (!is_founder(mc, u->myuser) && (u != svs.svs) &&
-                               !is_xop(mc, u->myuser, (CA_AOP | CA_SOP)) || !should_op_host(mc, hostbuf)))
+          /* a very ugly check that makes sure they shouldn't be an op */
+          if (!u->myuser || (!is_founder(mc, u->myuser) && u != svs.svs &&
+             !is_xop(mc, u->myuser, (CA_AOP | CA_SOP) ||
+             !should_op_host(mc, hostbuf))))
           {
             cmode(svs.nick, mc->name, "-o", u->nick);
             flags &= ~CMODE_OP;
@@ -851,7 +854,7 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
 
   if (mc)
   {
-    char *hostbuf = make_hostmask(u->nick, u->user, u->host);
+    hostbuf = make_hostmask(u->nick, u->user, u->host);
 
     if (should_voice_host(mc, hostbuf))
     {

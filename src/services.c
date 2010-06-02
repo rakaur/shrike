@@ -535,7 +535,7 @@ static void do_xop(char *origin, uint8_t level)
   char *chan = strtok(NULL, " ");
   char *cmd = strtok(NULL, " ");
   char *uname = strtok(NULL, " ");
-  char hostbuf[BUFSIZE];
+  char *hostbuf;
 
   if (!cmd || !chan)
   {
@@ -1114,7 +1114,7 @@ static void do_op(char *origin)
   mychan_t *mc;
   user_t *u;
   chanuser_t *cu;
-  char hostbuf[BUFSIZE];
+  char *hostbuf;
 
   if (!chan)
   {
@@ -1620,7 +1620,7 @@ static void do_recover(char *origin)
   mychan_t *mc;
   node_t *n;
   char *name = strtok(NULL, " ");
-  char hostbuf[BUFSIZE];
+  char *hostbuf;
 
   if (!name)
   {

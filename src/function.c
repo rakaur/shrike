@@ -677,7 +677,7 @@ boolean_t is_successor(mychan_t *mychan, myuser_t *myuser)
 boolean_t is_xop(mychan_t *mychan, myuser_t *myuser, uint8_t level)
 {
   chanacs_t *ca;
-  char hostbuf[BUFSIZE];
+  char *hostbuf;
 
   if (!myuser)
     return FALSE;
@@ -734,9 +734,7 @@ boolean_t should_op(mychan_t *mychan, myuser_t *myuser)
 boolean_t should_op_host(mychan_t *mychan, char *host)
 {
   chanacs_t *ca;
-  char hostbuf[BUFSIZE];
-
-  hostbuf = make_hostmask(svs.nick, svs.user, svs.host);
+  char *hostbuf = make_hostmask(svs.nick, svs.user, svs.host);
 
   if (!match(host, hostbuf))
     return FALSE;
@@ -773,9 +771,7 @@ boolean_t should_voice(mychan_t *mychan, myuser_t *myuser)
 boolean_t should_voice_host(mychan_t *mychan, char *host)
 {
   chanacs_t *ca;
-  char hostbuf[BUFSIZE];
-
-  hostbuf = make_hostmask(svs.nick, svs.user, svs.host);
+  char *hostbuf = make_hostmask(svs.nick, svs.user, svs.host);
 
   if (!match(host, hostbuf))
     return FALSE;
