@@ -192,7 +192,7 @@ void log_open(void)
 /* creates a hostmask based on params */
 char *make_hostmask(char *nick, char *user, char *host)
 {
-    char buf[BUFSIZE];
+    static char buf[BUFSIZE];
     buf[0] = '\0';
 
     strlcat(buf, nick, BUFSIZE);
