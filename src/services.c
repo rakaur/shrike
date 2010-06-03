@@ -1293,14 +1293,15 @@ static void do_voice(char *origin)
     return;
   }
 
+  /* assume they want to be voiced */
+  if (!nick)
+    nick = origin;
+
   /* figure out who we're going to voice */
-  if (nick)
+  if (!(u = user_find(nick)))
   {
-    if (!(u = user_find(nick)))
-    {
-      notice(origin, "No such nickname: \2%s\2.", nick);
-      return;
-    }
+    notice(origin, "No such nickname: \2%s\2.", nick);
+    return;
   }
 
   cu = chanuser_find(mc->chan, u);
@@ -1357,10 +1358,12 @@ static void do_devoice(char *origin)
     return;
   }
 
+  /* assume they want to be devoiced */
+  if (!nick)
+    nick = origin;
+
   /* figure out who we're going to devoice */
-  if (nick)
-  {
-    if (!(u = user_find(nick)))
+  if (!(u = user_find(nick)))
     {
       notice(origin, "No such nickname: \2%s\2.", nick);
       return;
@@ -1422,7 +1425,7 @@ static void do_invite(char *origin)
     return;
   }
 
-  /* assume they wanna be invited */
+  /* assume they want to be invited */
   if (!nick)
     nick = origin;
 
@@ -2032,7 +2035,7 @@ static void do_kline(char *origin)
 
     if (!target || !token)
     {
-      notice(origin, "Insuccicient parameters for \2KLINE ADD\2.");
+      notice(origin, "Insufficient parameters for \2KLINE ADD\2.");
       notice(origin, "Syntax: KLINE ADD <nick|hostmask> [!P|!T <minutes>] "
              "<reason>");
       return;
