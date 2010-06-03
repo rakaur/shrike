@@ -230,7 +230,7 @@ void slog(uint32_t level, const char *fmt, ...)
   fflush(log_file);
 
   if ((runflags & (RF_LIVE | RF_STARTING)))
-      printf("%s %s\n", timebuf, buf);
+    printf("%s %s\n", timebuf, buf);
 }
 
 /* return the current time in milliseconds */

@@ -1364,10 +1364,9 @@ static void do_devoice(char *origin)
 
   /* figure out who we're going to devoice */
   if (!(u = user_find(nick)))
-    {
-      notice(origin, "No such nickname: \2%s\2.", nick);
-      return;
-    }
+  {
+    notice(origin, "No such nickname: \2%s\2.", nick);
+    return;
   }
 
   cu = chanuser_find(mc->chan, u);
@@ -1528,7 +1527,7 @@ static void do_info(char *origin)
       }
 
       if (*buf)
-        notice(origin, "Mode lock  : %s %s", buf, (params) ? params : "");
+        notice(origin, "Mode lock  : %s %s", buf, params != NULL ? params : "");
     }
 
     *buf = '\0';

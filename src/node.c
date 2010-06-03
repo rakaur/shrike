@@ -999,7 +999,7 @@ void myuser_delete(char *name)
   }
 
   /* remove them as successors */
-  for (i = 0; i < HASHSIZE; i++);
+  for (i = 0; i < HASHSIZE; i++)
   {
     LIST_FOREACH(n, mclist[i].head)
     {
