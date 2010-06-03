@@ -860,8 +860,11 @@ static void do_set_successor(char *origin, char *name, char *params)
 
     notice(origin, "\2%s\2 is no longer the successor of \2%s\2.",
            mc->successor->name, mc->name);
-    notice(mc->successor->user->nick,
-           "You are no longer the successor of \2%s\2.", mc->name);
+
+    /* if they're online, let them know about it */
+    if (mc->successor->user != NULL)
+      notice(mc->successor->user->nick,
+             "You are no longer the successor of \2%s\2.", mc->name);
 
     mc->successor = NULL;
 
@@ -871,6 +874,12 @@ static void do_set_successor(char *origin, char *name, char *params)
   if (!(mu = myuser_find(params)))
   {
     notice(origin, "No such username: \2%s\2.", params);
+    return;
+  }
+
+  if (is_founder(mc, u->myuser) && !strcasecmp(u->nick, params))
+  {
+    notice(origin, "You cannot be the successor if you are also the founder.");
     return;
   }
 
@@ -886,6 +895,21 @@ static void do_set_successor(char *origin, char *name, char *params)
     notice(origin, "\2%s\2 is already the successor of \2%s\2.", mu->name,
            mc->name);
     return;
+  }
+
+  /* Is there a different successor? */
+  if (mc->successor)
+  {
+    /* Let them know they've been replaced if they're online. */
+    notice(origin, "\2%s\2 is no longer the successor of \2%s\2.",
+           mc->successor->name, mc->name);
+
+    if (mc->successor->user != NULL)
+      notice(mc->successor->user->nick,
+             "You are no longer the successor of \2%s\2.", mc->name);
+
+    chanacs_delete(mc, mc->successor, CA_SUCCESSOR);
+    mc->successor = NULL;
   }
 
   chanacs_delete(mc, mu, CA_VOP);
