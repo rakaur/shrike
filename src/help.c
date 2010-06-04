@@ -99,7 +99,7 @@ void do_help(char *origin)
     if (is_sra(u->myuser))
     {
       notice(origin, "The following SRA commands are available.");
-      notice(origin, "HOLD            Prevents services from expiring a "
+      notice(origin, "\2HOLD\2        Prevents services from expiring a "
              "username or channel.");
       notice(origin, " ");
     }
