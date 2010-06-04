@@ -416,6 +416,7 @@ static void do_login(char *origin)
 
       u->myuser->failnum = 0;
       free(u->myuser->lastfail);
+      u->myuser->lastfail = NULL;
     }
 
     mu->lastlogin = CURRTIME;
@@ -451,7 +452,10 @@ static void do_login(char *origin)
 
   /* record the failed attempts */
   if (mu->lastfail)
+  {
     free(mu->lastfail);
+    mu->lastfail = NULL;
+  }
 
   strlcpy(buf, u->nick, BUFSIZE);
   strlcat(buf, "!", BUFSIZE);
