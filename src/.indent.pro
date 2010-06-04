@@ -1,5 +1,3 @@
-/* $$Id$ */
-
 /* copy this file to the source dir then run indent file.c */
 
 --gnu-style

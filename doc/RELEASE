@@ -1,5 +1,3 @@
-$Id$
-
 shrike-1.1 release notes
 
 - fixed a bug with hostmask access lists (again)

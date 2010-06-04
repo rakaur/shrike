@@ -3,8 +3,6 @@
 #
 # This file contains build instructions.
 #
-# $Id$
-#
 
 CC		= @CC@
 RM		= @RM@

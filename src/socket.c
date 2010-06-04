@@ -4,8 +4,6 @@
  *
  * This file contains socket routines.
  * Based off of W. Campbell's code.
- *
- * $Id$
  */
 
 #include "../inc/shrike.h"

@@ -4,8 +4,6 @@
  *
  * This file contains linked list functions.
  * Idea from ircd-hybrid.
- *
- * $Id$
  */
 
 #include "../inc/shrike.h"

@@ -3,8 +3,6 @@
  * Rights to this code are documented in doc/LICENSE.
  *
  * This file contains IRC interaction routines.
- *
- * $Id$
  */
 
 #include "../inc/shrike.h"

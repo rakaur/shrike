@@ -3,7 +3,6 @@ dnl Rights to this code are documented in doc/LICENSE.
 dnl
 dnl This file is the autoconf stub.
 dnl
-dnl $Id$
 
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT

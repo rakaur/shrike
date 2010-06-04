@@ -2,8 +2,6 @@
 #
 # crontab script for shrike
 #
-# $Id$
-#
 
 # Change this to the directory where you installed it
 cd ~/shrike/

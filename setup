@@ -5,7 +5,6 @@
 #
 # This file is a simple setup script.
 #
-# $Id$
 
 PREFIX="$HOME/shrike"
 LARGENET="no"

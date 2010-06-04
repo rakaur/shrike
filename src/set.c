@@ -3,8 +3,6 @@
  * Rights to this code are documented in doc/LICENSE.
  *
  * This file contains routines to handle the SET command.
- *
- * $Id$
  */
 
 #include "../inc/shrike.h"

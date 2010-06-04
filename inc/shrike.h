@@ -3,8 +3,6 @@
  * Rights to this code are documented in doc/LICENSE.
  *
  * This is the main header file, usually the only one #include'd
- *
- * $Id$
  */
 
 #ifndef SHRIKE_H

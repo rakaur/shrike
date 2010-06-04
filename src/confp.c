@@ -4,8 +4,6 @@
  *
  * This file contains config file parsing routines.
  * This code was taken from Sentinel: copyright W. Campbell.
- *
- * $Id$
  */
 
 #include "../inc/shrike.h"

@@ -3,8 +3,6 @@
  * Rights to this code are documented in doc/LICENSE.
  *
  * This file contains the routines that deal with the configuration.
- *
- * $Id$
  */
 
 #include "../inc/shrike.h"

@@ -5,8 +5,6 @@
 #
 # This file indents all of the source code using gindent.
 #
-# $Id$
-#
 
 cd inc; gindent *.h; rm *~; cd ..
 cd src; gindent *.c; rm *~; cd ..

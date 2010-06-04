@@ -3,8 +3,6 @@
  * Rights to this code are documented in doc/LICENSE.
  *
  * This file contains channel mode tracking routines.
- *
- * $Id$
  */
 
 #include "../inc/shrike.h"

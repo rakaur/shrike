@@ -3,8 +3,6 @@
  * Rights to this code are documented in doc/LICENSE.
  *
  * Installation documentation.
- *
- * $Id$
  */
 
 Shrike -- a set of services for TSora networks
@@ -33,11 +31,10 @@ root. Use an unprivileged user account.
 
 Shrike should compile and run on most POSIX compliant systems.  The list of
 platforms that Shrike has been tested on includes:
-  FreeBSD 4.[89]
-  FreeBSD 5.[012]
+  FreeBSD 4.x - 8.x
   Linux (glibc) 2.4.x
   Solaris 8
-  MacOS 10.3.3
+  Mac OS X 10.3.3 - 10.6.x
 
 Other BSD-based systems will probably work. Other SysV-based systems *might*
 work provided they support BSD sockets and POSIX function calls.

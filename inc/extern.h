@@ -3,8 +3,6 @@
  * Rights to this code are documented in doc/LICENSE.
  *
  * This header file contains all of the extern's needed.
- *
- * $Id$
  */
 
 #ifndef EXTERN_H

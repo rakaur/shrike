@@ -6,8 +6,6 @@
 # This file generates version.c.
 # Stolen from ircd-ratbox.
 #
-# $Id$
-#
 
 spitshell=cat
 package=shrike

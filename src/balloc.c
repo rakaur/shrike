@@ -4,8 +4,6 @@
  *
  * This file contains the block allocator.
  * This file was lifted from ircd-ratbox.
- *
- * $Id$
  */
 
 #include "../inc/shrike.h"
