@@ -1,3 +1,66 @@
+commit b702d24fd9038f3bbdb74ec17977eb8f9439fbd7
+Author: Eric Will <rakaur@malkier.net>
+Date:   Fri Jun 4 12:53:07 2010 -0400
+
+    Fix a core in KLINE ADD (thanks JStoker).
+
+ src/services.c |   18 ++++++++++++++++++
+ 1 files changed, 18 insertions(+), 0 deletions(-)
+
+commit 63fdb7a96296b5b39aa8b4070dbf72a7a5a2292c
+Author: Eric Will <rakaur@malkier.net>
+Date:   Fri Jun 4 07:56:18 2010 -0400
+
+    Fix a lack of bold formatting in HELP SET.
+
+ src/help.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 305b17d3080971f4b56c528f966f972a66de812b
+Author: Eric Will <rakaur@malkier.net>
+Date:   Fri Jun 4 07:37:35 2010 -0400
+
+    Change ChangeLog to `git log --stats=80` and remove svn keywords.
+
+ ChangeLog             | 2232 +++++++++++++++++++++++++++----------------------
+ INSTALL               |    7 +-
+ Makefile.in           |    2 -
+ README                |    2 -
+ autoconf/configure.in |    1 -
+ autoconf/install-sh   |    2 -
+ dist/shrike.chk       |    2 -
+ dist/shrike.conf      |    2 -
+ doc/COMMANDS          |    2 -
+ doc/FAQ               |    2 -
+ doc/LICENSE           |    2 -
+ doc/RELEASE           |    2 -
+ doc/RFC1459           |    2 -
+ doc/TODO              |    2 -
+ inc/.indent.pro       |    2 -
+ inc/extern.h          |    2 -
+ inc/shrike.h          |    2 -
+ indent                |    2 -
+ setup                 |    1 -
+ src/.indent.pro       |    2 -
+ src/Makefile.in       |    2 -
+ src/balloc.c          |    2 -
+ src/cmode.c           |    2 -
+ src/conf.c            |    2 -
+ src/confp.c           |    2 -
+ src/db.c              |    2 -
+ src/event.c           |    2 -
+ src/function.c        |    2 -
+ src/help.c            |    2 -
+ src/irc.c             |    2 -
+ src/match.c           |    2 -
+ src/node.c            |    2 -
+ src/services.c        |    2 -
+ src/set.c             |    2 -
+ src/shrike.c          |    2 -
+ src/socket.c          |    2 -
+ src/version.sh        |    2 -
+ 37 files changed, 1220 insertions(+), 1087 deletions(-)
+
 commit be44fa8c2a643ad6b508c9112d02132dc26f2323
 Author: Eric Will <rakaur@malkier.net>
 Date:   Thu Jun 3 21:01:26 2010 -0400

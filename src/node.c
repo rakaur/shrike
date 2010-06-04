@@ -368,6 +368,8 @@ void kline_delete(char *user, char *host)
 
   slog(LG_DEBUG, "kline_delete(): %s@%s -> %s", k->user, k->host, k->reason);
 
+  unkline_sts("*", k->user, k->host);
+
   n = node_find(k, &klnlist);
   node_del(n, &klnlist);
   node_free(n);
@@ -378,8 +380,6 @@ void kline_delete(char *user, char *host)
   free(k->setby);
 
   BlockHeapFree(kline_heap, k);
-
-  unkline_sts("*", user, host);
 
   cnt.kline--;
 }

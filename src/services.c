@@ -2125,7 +2125,7 @@ static void do_kline(char *origin)
       /* make sure there's at least 5 non-wildcards */
       for (tmphost = hostbuf; *tmphost; tmphost++)
       {
-        if (*tmphost != '*' || *tmphost != '?')
+        if (*tmphost != '*' && *tmphost != '?' && *tmphost != '.')
           i++;
       }
 
