@@ -11,7 +11,8 @@ Shrike -- a set of services for TSora networks
 This program is free but copyrighted software; see the LICENSE file for
 details.
 
-Information about Shrike may be found at http://shrike.malkier.net/.
+Information about Shrike may be found at http://shrike.malkier.net/. Development
+information and repositories can be found at http://github.com/rakaur/shrike/.
 
 TABLE OF CONTENTS
 -----------------
@@ -19,7 +20,7 @@ TABLE OF CONTENTS
   2. Presentation
   3. Installation
   4. Command line options
-  5. Contact and mailing list
+  5. Contact and support
 
 1. CREDITS
 ----------
@@ -41,7 +42,6 @@ Thanks to testers, contributors, etc:
   naki, Adam Walls <naki@coreag.net>
   Rob_X, Mikael <mickek15@hotmail.com>
   madragoran, Mike Campbell <madragoran@avendesora.net>
-  nenolod, William Pitcock <nenolod@nenolod.net>
 
 Special thanks to:
   Hwy, for your continued patience while I badger you endlessly.
@@ -99,8 +99,8 @@ and (assuming -n is not specified) detach into the background.  If Shrike
 encounters an error while parsing the configuration or database files it will
 terminate immediately. Otherwise, it will run until killed or otherwise stopped.
 
-5. CONTACT AND MAILING LIST
----------------------------
+5. CONTACT AND SUPPORT
+----------------------
 
 Okay, here's the deal. We enjoy coding this program, and we do it for free. You
 didn't pay anything for this, did you? No. Our time and our effort went into
@@ -117,11 +117,8 @@ That said, if you've skimmed the docs and can't find your answer feel free to
 ask. I've been unable to find the answer I was looking for in many programs
 myself so I don't mind. Just don't ask us to set it up for you. It's too easy.
 
-For announcements and discussions about Shrike, subscribe to the mailing list
-by sending a blank email to shrike-subscribe@lists.malkier.net.
-
-For bug reports, please use these forums:
-http://shrike.malkier.net/modules.php?name=Forums&file=viewforum&f=3.
+For bug reports, please use this reporting mechanism:
+http://github.com/rakaur/shrike/issues
 
 If you're reporting a bug, here's some advice. Be sure to include information
 on how to reproduce the problem. If you can't reproduce it, you're likely out
@@ -132,18 +129,10 @@ the lines of "gdb bin/shrike shrike.core" and typing "bt" at the "(gdb)"
 prompt. If you do all of these things and still manage to keep your report
 short and concise you will be loved.
 
-For patches/modifications to the source code that you would like to share or
-otherwise comment on, please use these forums:
-http://shrike.malkier.net/modules.php?name=Forums&file=viewforum&f=2.
-
-For general discussion and/or support, please use these forums:
-http://shrike.malkier.net/modules.php?name=Forums&file=viewforum&f=1.
-
 If your problem requires extensive debugging in a real-time situation we may
 ask that you find us on IRC:
-  rakaur @ #shrike on irc.malkier.net
-  sycobuny @ #shrike on irc.malkier.net
-  rintaun @ #shrike on irc.malkier.net
+  rakaur @ irc.malkier.net
+  dKingston @ irc.malkier.net
 
 If you've read this far, congratulations. You are among the few elite people
 that actually read documentation. Thank you.

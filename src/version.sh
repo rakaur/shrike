@@ -88,7 +88,6 @@ const char *infotext[] =
   "  naki, Adam Walls <naki@coreag.net>",
   "  Rob_X, Mikael <mickek15@hotmail.com>",
   "  madragoran, Mike Campbell <madragoran@avendesora.net>",
-  "  nenolod, William Pitcock <nenolod@nenolod.net>",
   " ",
   "Special thanks to:",
   "  Hwy, for your continued patience while I badger you endlessly.",
