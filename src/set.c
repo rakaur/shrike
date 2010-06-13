@@ -755,7 +755,7 @@ static void do_set_secure(char *origin, char *name, char *params)
 
   if (*name != '#')
   {
-    notice(origin, "Invalid parameters specified for \2NEVEROP\2.");
+    notice(origin, "Invalid parameters specified for \2SECURE\2.");
     return;
   }
 

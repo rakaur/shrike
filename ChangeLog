@@ -1,3 +1,27 @@
+commit 9008085938de72479ae31337215c3c8ae2e8a866
+Author: Eric Will <rakaur@malkier.net>
+Date:   Fri Jun 4 15:23:05 2010 -0400
+
+    Update README a bit.
+
+ README         |   29 +++++++++--------------------
+ src/version.sh |    1 -
+ 2 files changed, 9 insertions(+), 21 deletions(-)
+
+commit 42623ddc0793fc883d7729debd61a9e1814381de
+Author: Eric Will <rakaur@malkier.net>
+Date:   Fri Jun 4 15:12:43 2010 -0400
+
+    Fix more problems with klines (thanks again, JStoker).
+    
+    Fix unkline_sts() trying to send free()'d strings.
+    Fix wildcard detection in do_kline().
+
+ ChangeLog      |   63 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ src/node.c     |    4 +-
+ src/services.c |    2 +-
+ 3 files changed, 66 insertions(+), 3 deletions(-)
+
 commit b702d24fd9038f3bbdb74ec17977eb8f9439fbd7
 Author: Eric Will <rakaur@malkier.net>
 Date:   Fri Jun 4 12:53:07 2010 -0400
