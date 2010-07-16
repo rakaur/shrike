@@ -852,9 +852,18 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
 
   if (mc)
   {
-    hostbuf = make_hostmask(u->nick, u->user, u->host);
+    /* XXX - for some reason make_hostmask doesn't work here */
+    char newhostbuf[BUFSIZE];
 
-    if (should_voice_host(mc, hostbuf))
+    newhostbuf[0] = '\0';
+
+    strlcat(newhostbuf, u->nick, BUFSIZE);
+    strlcat(newhostbuf, "!", BUFSIZE);
+    strlcat(newhostbuf, u->user, BUFSIZE);
+    strlcat(newhostbuf, "@", BUFSIZE);
+    strlcat(newhostbuf, u->host, BUFSIZE);
+
+    if (should_voice_host(mc, newhostbuf))
     {
       if (!(cu->modes & CMODE_VOICE))
       {
@@ -862,7 +871,7 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
         cu->modes |= CMODE_VOICE;
       }
     }
-    if (should_op_host(mc, hostbuf))
+    if (should_op_host(mc, newhostbuf))
     {
       if (!(cu->modes & CMODE_OP))
       {

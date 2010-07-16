@@ -749,8 +749,9 @@ static void m_stats(char *origin, uint8_t parc, char *parv[])
       sts(":%s 249 %s :server     %7d", me.name, u->nick, cnt.server);
       sts(":%s 249 %s :user       %7d", me.name, u->nick, cnt.user);
       sts(":%s 249 %s :chan       %7d", me.name, u->nick, cnt.chan);
-      sts(":%s 249 %s :chanuser   %7d", me.name, u->nick, cnt.myuser);
+      sts(":%s 249 %s :myuser     %7d", me.name, u->nick, cnt.myuser);
       sts(":%s 249 %s :mychan     %7d", me.name, u->nick, cnt.mychan);
+      sts(":%s 249 %s :chanuser   %7d", me.name, u->nick, cnt.chanuser);
       sts(":%s 249 %s :chanacs    %7d", me.name, u->nick, cnt.chanacs);
       sts(":%s 249 %s :node       %7d", me.name, u->nick, cnt.node);
 
