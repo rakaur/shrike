@@ -268,8 +268,7 @@ uint8_t regex_match(regex_t * preg, char *pattern, char *string,
   if (regexec(preg, string, 5, pmatch, 0) != 0)
     return 1;
 
-  else
-    return 0;
+  return 0;
 }
 
 /* generates a hash value */
@@ -327,7 +326,8 @@ char *replace(char *s, int32_t size, const char *old, const char *new)
 char *itoa(int num)
 {
   static char ret[32];
-  sprintf(ret, "%d", num);
+
+  snprintf(ret, 32, "%d", num);
   return ret;
 }
 
