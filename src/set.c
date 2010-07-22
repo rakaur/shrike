@@ -400,8 +400,8 @@ static void do_set_mlock(char *origin, char *name, char *params)
             return;
           }
 
-          if (newlock_key);
-          free(newlock_key);
+          if (newlock_key)
+            free(newlock_key);
 
           newlock_key = sstrdup(s);
           newlock_off &= ~CMODE_KEY;
