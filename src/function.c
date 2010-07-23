@@ -133,7 +133,7 @@ void *smalloc(size_t size)
 }
 
 /* does calloc()'s job and dies if calloc() fails */
-void *scalloc(long elsize, long els)
+void *scalloc(size_t elsize, size_t els)
 {
   void *buf = calloc(elsize, els);
 
@@ -143,7 +143,7 @@ void *scalloc(long elsize, long els)
 }
 
 /* does realloc()'s job and dies if realloc() fails */
-void *srealloc(void *oldptr, long newsize)
+void *srealloc(void *oldptr, size_t newsize)
 {
   void *buf = realloc(oldptr, newsize);
 
