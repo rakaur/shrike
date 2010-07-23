@@ -583,8 +583,8 @@ void sendemail(char *what, const char *param, int type)
 
   date = timebuf;
 
-  sprintf(from, "%s <%s@%s>", svs.nick, svs.user, svs.host);
-  sprintf(to, "%s <%s>", mu->name, email);
+  sprintf(from, 128, "%s <%s@%s>", svs.nick, svs.user, svs.host);
+  sprintf(to, 128, "%s <%s>", mu->name, email);
 
   if (type == 1)
     strlcpy(subject, "Username Registration", 128);
@@ -594,7 +594,7 @@ void sendemail(char *what, const char *param, int type)
     strlcpy(subject, "Change Email Confirmation", 128);
 
   /* now set up the email */
-  sprintf(cmdbuf, "%s %s", me.mta, email);
+  sprintf(cmdbuf, 512, "%s %s", me.mta, email);
   out = popen(cmdbuf, "w");
 
   fprintf(out, "From: %s\n", from);
