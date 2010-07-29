@@ -495,6 +495,14 @@ int validemail(char *email)
 {
   int i, valid = 1, chars = 0;
 
+  /* if it starts with a dash it'll mess up the MTA
+   * i have no idea if emails are otherwise allowed to
+   * start with dashes, but if they are they'd better not
+   * use one to register with shrike :(
+   */
+  if (*email == '-')
+    valid = 0;
+
   /* make sure it has @ and . */
   if (!strchr(email, '@') || !strchr(email, '.'))
     valid = 0;

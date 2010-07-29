@@ -115,7 +115,7 @@ static int8_t tokenize(char *message, char **parv)
     if (count == 19)
     {
       /* we've reached one less than our max limit
-       * to handle the parameter we alreayd ripped off
+       * to handle the parameter we already ripped off
        */
       slog(LG_DEBUG, "tokenize(): reached para limit");
       return count;
