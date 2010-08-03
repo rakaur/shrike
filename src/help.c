@@ -80,7 +80,7 @@ void do_help(char *origin)
     notice(origin, "The following commands are available.");
     notice(origin, "\2EMAIL\2         Changes the email address associated "
            "with a username.");
-    notice(origin, "\2FOUNDER\2       Sets you founder of a channel.");
+    notice(origin, "\2FOUNDER\2       Sets you as founder of a channel.");
     notice(origin, "\2HIDEMAIL\2      Hides a username's email address");
     notice(origin, "\2MLOCK\2         Sets channel mode lock.");
     notice(origin, "\2NEVEROP\2       Prevents services from automatically "
