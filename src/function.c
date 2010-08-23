@@ -252,7 +252,7 @@ uint8_t regex_match(regex_t * preg, char *pattern, char *string,
   int errnum;
 
   /* compile regex */
-  preg = (regex_t *) malloc(sizeof(*preg));
+  preg = (regex_t *) smalloc(sizeof(*preg));
 
   errnum = regcomp(preg, pattern, REG_ICASE | REG_EXTENDED);
   if (errnum != 0)
