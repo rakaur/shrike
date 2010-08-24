@@ -765,6 +765,8 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
       /* see if we need to deop them */
       if ((mc = mychan_find(chan->name)))
       {
+        mc->used = CURRTIME; /* without this channels randomly expire :( */
+
         if (MC_SECURE & mc->flags)
         {
           /* a very ugly check that makes sure they shouldn't be an op */
