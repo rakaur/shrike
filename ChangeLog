@@ -1,3 +1,141 @@
+commit 3ad4460e4a9f6c68857aa6823ab1a206f2042301
+Author: Eric Will <rakaur@malkier.net>
+Date:   Tue Aug 24 09:36:02 2010 -0400
+
+    Fix a bug where channels randomly expire. This sucks.
+    
+    Apparently this whole time I was never updating mc->used when users join. Oops.
+
+ src/node.c |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+commit 5f2f28fc8d420ca1c3d65d4010e1fec842349668
+Author: Eric Will <rakaur@malkier.net>
+Date:   Mon Aug 23 13:41:46 2010 -0400
+
+    Small typo.
+
+ doc/FAQ |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 2a24828dfdbed432b9b7dbdb25255206884ac6db
+Author: Michael Rodriguez <dkingston@dkingston.net>
+Date:   Mon Aug 23 09:45:48 2010 -0400
+
+    Make regex_match() use smalloc().
+
+ src/function.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 7971965e428a0e146e4090705155bf4b2ad1c903
+Author: Michael Rodriguez <dkingston@dkingston.net>
+Date:   Sun Aug 22 14:55:19 2010 -0400
+
+    Fix compile.
+
+ inc/extern.h |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit de233b3542eb8c0b573b175a705e3165d5081c89
+Author: Eric Will <rakaur@malkier.net>
+Date:   Tue Aug 3 09:04:42 2010 -0400
+
+    Fix grammatical error in HELP (thanks a lot, sycobuny. dick.)
+
+ src/help.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 98249415690f0ef7bd4b29a842106d0578273363
+Author: Eric Will <rakaur@malkier.net>
+Date:   Thu Jul 29 10:55:08 2010 -0400
+
+    Reject email addresses that begin with '-'
+    
+    This was "brought to my attention" by atheme developers when they gave me a
+    patch named "shrike-dont-invoke-system-shell-when-sending-emails" which
+    doesn't fix it. Furthermore, shrike doesn't invoke a system shell in the first
+    place. Their email code is totally different (and potheaded) than shrike's, and
+    the numerous patches they proposed all broke it even worse. The only valid
+    point they raised was about addresses starting with dashes, which is the only
+    thing they didn't "fix." What winners.
+    
+    Also, typo in tokenize(). Might want to look into this, atheme guys.
+
+ src/function.c |    8 ++++++++
+ src/irc.c      |    2 +-
+ 2 files changed, 9 insertions(+), 1 deletions(-)
+
+commit da34474b624d09fa0f0a43df75a2782c894ee65a
+Author: Michael Rodriguez <dkingston@dkingston.net>
+Date:   Fri Jul 23 16:15:39 2010 -0700
+
+    Make scalloc() and srealloc()'s size parameters use 'size_t' instead of 'long'.
+
+ src/function.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 006a400a06965cd6b57a3f2123f9855f6b809bc2
+Author: Michael Rodriguez <dkingston@dkingston.net>
+Date:   Fri Jul 23 16:32:48 2010 -0400
+
+    Er, whoops. Add snprintf() instead of sprintf().
+
+ src/function.c |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit 17dd788bf6a9ee5a6a13ecaf0d6551296a321956
+Author: Michael Rodriguez <dkingston@dkingston.net>
+Date:   Fri Jul 23 16:31:00 2010 -0400
+
+    Remove all traces of sprintf().
+    
+    sprintf() can cause buffer overflows. Although we are the only caller, we'll probably forget sometime about the limit set.
+
+ src/function.c |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit 82f3d03b0d32950176a0e89ae11a27f12338ff2b
+Author: Eric Will <rakaur@malkier.net>
+Date:   Thu Jul 22 17:12:16 2010 -0400
+
+    Fix minor memory leak due to a semi-colon after an 'if' (go clang!)
+
+ src/set.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit c47bf1d67656632c1d4a3f6e38048d9b97649162
+Author: Michael Rodriguez <dkingston@dkingston.net>
+Date:   Mon Jul 19 08:43:47 2010 -0400
+
+    remove superflous else statement, plus clean up the usage of sprintf() in itoa()
+
+ src/function.c |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit 58442f32b1f0a5f0dce0923b5b9de1c3f30ebeb6
+Author: Eric Will <rakaur@malkier.net>
+Date:   Fri Jul 16 12:13:06 2010 -0400
+
+    Fix a couple bugs: one in STATS:t, one in auto modes.
+    
+    Fix a bug where make_hostmask() fails in chanuser_add() and hostmasks aren't auto'd.
+    Fix a bug in m_stats() where STATS:t was displaying "myuser" count for "chanusers."
+    Add a count in STATS:t for "chanusers" for real.
+
+ src/irc.c  |    3 ++-
+ src/node.c |   15 ++++++++++++---
+ 2 files changed, 14 insertions(+), 4 deletions(-)
+
+commit e579d7780a1f61d3cd77bc87365f9508795ebd6b
+Author: Eric Will <rakaur@malkier.net>
+Date:   Sun Jun 13 16:00:11 2010 -0400
+
+    Fix a typo in do_set_secure() (thanks SergentSiler).
+
+ ChangeLog |   24 ++++++++++++++++++++++++
+ src/set.c |    2 +-
+ 2 files changed, 25 insertions(+), 1 deletions(-)
+
 commit 9008085938de72479ae31337215c3c8ae2e8a866
 Author: Eric Will <rakaur@malkier.net>
 Date:   Fri Jun 4 15:23:05 2010 -0400
