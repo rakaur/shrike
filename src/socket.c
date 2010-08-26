@@ -304,7 +304,7 @@ void reconn(void *arg)
      * it deletes its users, which removes them from the channels, which
      * deletes the channels.
      */
-    for (i = 0; i < HASHSIZE; i++)
+    for (i = 0; i < SERVER_HASH_SIZE; i++)
     {
       LIST_FOREACH_SAFE(n, tn, servlist[i].head)
       {

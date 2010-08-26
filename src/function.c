@@ -271,24 +271,6 @@ uint8_t regex_match(regex_t * preg, char *pattern, char *string,
   return 0;
 }
 
-/* generates a hash value */
-uint32_t shash(const unsigned char *text)
-{
-  unsigned long h = 0, g;
-
-  while (*text)
-  {
-    h = (h << 4) + tolower(*text++);
-
-    if ((g = (h & 0xF0000000)))
-      h ^= g >> 24;
-
-    h &= ~g;
-  }
-
-  return h; /* the macros do the modulo */
-}
-
 /* replace all occurances of 'old' with 'new' */
 char *replace(char *s, int32_t size, const char *old, const char *new)
 {

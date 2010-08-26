@@ -533,7 +533,7 @@ static void m_nick(char *origin, uint8_t parc, char *parv[])
 
     /* readd with new nick (so the hash works) */
     n = node_create();
-    u->hash = UHASH((unsigned char *)u->nick);
+    u->hash = hash_nick(u->nick);
     node_add(u, n, &userlist[u->hash]);
   }
   else
@@ -626,7 +626,7 @@ static void m_kill(char *origin, uint8_t parc, char *parv[])
     if (svs.chan)
       join(svs.chan, svs.nick);
 
-    for (i = 0; i < HASHSIZE; i++)
+    for (i = 0; i < CHANNEL_HASH_SIZE; i++)
     {
       LIST_FOREACH(n, mclist[i].head)
       {

@@ -57,13 +57,20 @@
 #endif
 
 #ifdef LARGE_NETWORK
-#define HASHSIZE        65535
 #define HEAP_CHANNEL    1024
 #define HEAP_CHANUSER   1024
 #define HEAP_USER       1024
 #define HEAP_SERVER     16
 #define HEAP_NODE       1024
 #define HEAP_CHANACS    1024
+
+#define SERVER_HASH_SIZE   32
+#define SERVER_HASH_BITS   (32-5)
+#define USER_HASH_SIZE     32768
+#define USER_HASH_BITS     (32-15)
+#define CHANNEL_HASH_SIZE  16384
+#define CHANNEL_HASH_BITS  (32-14)
+#define CMD_HASH_SIZE      387
 #else
 #define HASHSIZE        1024
 #define HEAP_CHANNEL    64
@@ -72,6 +79,14 @@
 #define HEAP_SERVER     8
 #define HEAP_NODE       128
 #define HEAP_CHANACS    128
+
+#define SERVER_HASH_SIZE   32
+#define SERVER_HASH_BITS   (32-5)
+#define USER_HASH_SIZE     4096
+#define USER_HASH_BITS     (32-12)
+#define CHANNEL_HASH_SIZE  1024
+#define CHANNEL_HASH_BITS  (32-10)
+#define CMD_HASH_SIZE      387
 #endif
 
 #define CACHEFILE_HEAP_SIZE     32
@@ -96,12 +111,12 @@
         } while (0)
 #endif
 
-/* hashing macros */
-#define SHASH(server) shash(server) % HASHSIZE
-#define UHASH(nick) shash(nick) % HASHSIZE
-#define CHASH(chan) shash(chan) % HASHSIZE
-#define MUHASH(myuser) shash(myuser) % HASHSIZE
-#define MCHASH(mychan) shash(mychan) % HASHSIZE
+/* NOTE: I don't really understand the following magic.  Most of these routines
+ * are based on ircd-ratbox's, so kudos to them.  Hopefully these should be
+ * supremely fast with low collision rates.
+ */
+
+#define FNV1_32_INIT 0x811c9dc5UL
 
 /* T Y P E D E F S */
 typedef enum { ERROR = -1, FALSE, TRUE } l_boolean_t;
@@ -355,7 +370,7 @@ struct server_
   time_t connected_since;
 
   uint32_t flags;
-  int32_t hash;
+  uint32_t hash;
 
   server_t *uplink;
 };
@@ -374,7 +389,7 @@ struct channel_
   uint32_t nummembers;
 
   uint32_t ts;
-  int32_t hash;
+  uint32_t hash;
 
   list_t members;
 };
@@ -396,7 +411,7 @@ struct user_
   time_t lastmsg;
 
   uint32_t flags;
-  int32_t hash;
+  uint32_t hash;
 };
 
 #define UF_ISOPER      0x00000001
@@ -452,7 +467,7 @@ struct myuser_
   char *temp;
 
   uint32_t flags;
-  int32_t hash;
+  uint32_t hash;
 };
 
 #define MU_HOLD        0x00000001
@@ -483,7 +498,7 @@ struct mychan_
   char *mlock_key;
 
   uint32_t flags;
-  int32_t hash; 
+  uint32_t hash; 
 };
 
 #define MC_HOLD        0x00000001

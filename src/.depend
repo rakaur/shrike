@@ -6,6 +6,7 @@ db.o: db.c ../inc/shrike.h ../inc/sysconf.h ../inc/extern.h
 event.o: event.c ../inc/shrike.h ../inc/sysconf.h ../inc/extern.h
 function.o: function.c ../inc/shrike.h ../inc/sysconf.h \
  ../inc/extern.h
+hash.o: hash.c ../inc/shrike.h ../inc/sysconf.h ../inc/extern.h
 help.o: help.c ../inc/shrike.h ../inc/sysconf.h ../inc/extern.h
 irc.o: irc.c ../inc/shrike.h ../inc/sysconf.h ../inc/extern.h
 match.o: match.c ../inc/shrike.h ../inc/sysconf.h ../inc/extern.h

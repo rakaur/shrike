@@ -36,7 +36,7 @@ void db_save(void *arg)
 
   slog(LG_DEBUG, "db_save(): saving myusers");
 
-  for (i = 0; i < HASHSIZE; i++)
+  for (i = 0; i < USER_HASH_SIZE; i++)
   {
     LIST_FOREACH(n, mulist[i].head)
     {
@@ -77,7 +77,7 @@ void db_save(void *arg)
 
   slog(LG_DEBUG, "db_save(): saving mychans");
 
-  for (i = 0; i < HASHSIZE; i++)
+  for (i = 0; i < CHANNEL_HASH_SIZE; i++)
   {
     LIST_FOREACH(n, mclist[i].head)
     {
@@ -120,7 +120,7 @@ void db_save(void *arg)
 
   slog(LG_DEBUG, "db_save(): saving chanacs");
 
-  for (i = 0; i < HASHSIZE; i++)
+  for (i = 0; i < USER_HASH_SIZE; i++)
   {
     LIST_FOREACH(n, mclist[i].head)
     {

@@ -87,7 +87,6 @@ E void slog(uint32_t level, const char *fmt, ...);
 E uint32_t time_msec(void);
 E uint8_t regex_match(regex_t * preg, char *pattern, char *string,
                       size_t nmatch, regmatch_t pmatch[], int eflags);
-E uint32_t shash(const unsigned char *text);
 E char *replace(char *s, int32_t size, const char *old, const char *new);
 E char *itoa(int num);
 E char *flags_to_string(int32_t flags);
@@ -114,6 +113,17 @@ E boolean_t is_admin(user_t *user);
 E int token_to_value(struct Token token_table[], char *token);
 E char *sbytes(float x);
 E float bytes(float x);
+
+/* hash.c */
+E uint32_t hash_upper(const char *, int);
+E uint32_t hash_upper_len(const char *, int, int);
+E uint32_t hash(const char *, int);
+E uint32_t hash_len(const char *, int, int);
+
+E uint32_t hash_server(const char *);
+E uint32_t hash_nick(const char *);
+E uint32_t hash_channel(const char *);
+E uint32_t hash_cmd(const char *);
 
 /* help.c */
 E void do_help(char *origin);
@@ -165,11 +175,11 @@ E char *collapse(char *);
 E list_t sralist;
 E list_t tldlist;
 E list_t klnlist;
-E list_t servlist[HASHSIZE];
-E list_t userlist[HASHSIZE];
-E list_t chanlist[HASHSIZE];
-E list_t mulist[HASHSIZE];
-E list_t mclist[HASHSIZE];
+E list_t servlist[SERVER_HASH_SIZE];
+E list_t userlist[USER_HASH_SIZE];
+E list_t chanlist[CHANNEL_HASH_SIZE];
+E list_t mulist[USER_HASH_SIZE];
+E list_t mclist[CHANNEL_HASH_SIZE];
 
 E list_t sendq;
 

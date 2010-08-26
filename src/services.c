@@ -181,7 +181,7 @@ void expire_check(void *arg)
   mychan_t *mc, *tmc;
   node_t *n1, *n2, *tn, *n3;
 
-  for (i = 0; i < HASHSIZE; i++)
+  for (i = 0; i < USER_HASH_SIZE; i++)
   {
     LIST_FOREACH(n1, mulist[i].head)
     {
@@ -194,7 +194,7 @@ void expire_check(void *arg)
           ((mu->flags & MU_WAITAUTH) && (CURRTIME - mu->registered >= 86400)))
       {
         /* kill all their channels */
-        for (j = 0; j < HASHSIZE; j++)
+        for (j = 0; j < CHANNEL_HASH_SIZE; j++)
         {
           LIST_FOREACH(tn, mclist[j].head)
           {
@@ -205,7 +205,7 @@ void expire_check(void *arg)
               if (mc->successor)
               {
                 /* make sure they're within limits */
-                for (w = 0, tcnt = 0; w < HASHSIZE; w++)
+                for (w = 0, tcnt = 0; w < CHANNEL_HASH_SIZE; w++)
                 {
                   LIST_FOREACH(n3, mclist[i].head)
                   {
@@ -248,7 +248,7 @@ void expire_check(void *arg)
     }
   }
 
-  for (i = 0; i < HASHSIZE; i++)
+  for (i = 0; i < CHANNEL_HASH_SIZE; i++)
   {
     LIST_FOREACH(n2, mclist[i].head)
     {
@@ -1758,7 +1758,7 @@ static void do_register(char *origin)
     }
 
     /* make sure they're within limits */
-    for (i = 0, tcnt = 0; i < HASHSIZE; i++)
+    for (i = 0, tcnt = 0; i < CHANNEL_HASH_SIZE; i++)
     {
       LIST_FOREACH(n, mclist[i].head)
       {
@@ -1865,7 +1865,7 @@ static void do_register(char *origin)
     }
 
     /* make sure they're within limits */
-    for (i = 0, tcnt = 0; i < HASHSIZE; i++)
+    for (i = 0, tcnt = 0; i < USER_HASH_SIZE; i++)
     {
       LIST_FOREACH(n, mulist[i].head)
       {
@@ -1985,7 +1985,7 @@ static void do_drop(char *origin)
     }
 
     /* find all channels that are theirs and drop them */
-    for (i = 1; i < HASHSIZE; i++)
+    for (i = 1; i < CHANNEL_HASH_SIZE; i++)
     {
       LIST_FOREACH(n, mclist[i].head)
       {

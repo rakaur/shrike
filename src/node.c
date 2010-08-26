@@ -11,11 +11,11 @@
 list_t sralist;
 list_t tldlist;
 list_t klnlist;
-list_t servlist[HASHSIZE];
-list_t userlist[HASHSIZE];
-list_t chanlist[HASHSIZE];
-list_t mulist[HASHSIZE];
-list_t mclist[HASHSIZE];
+list_t servlist[SERVER_HASH_SIZE];
+list_t userlist[USER_HASH_SIZE];
+list_t chanlist[CHANNEL_HASH_SIZE];
+list_t mulist[USER_HASH_SIZE];
+list_t mclist[CHANNEL_HASH_SIZE];
 
 list_t sendq;
 
@@ -452,7 +452,7 @@ server_t *server_add(char *name, uint8_t hops, char *desc)
 
   s = BlockHeapAlloc(serv_heap);
 
-  s->hash = SHASH((unsigned char *)name);
+  s->hash = hash_server(name);
 
   node_add(s, n, &servlist[s->hash]);
 
@@ -493,7 +493,7 @@ void server_delete(char *name)
   slog(LG_DEBUG, "server_delete(): %s", s->name);
 
   /* first go through it's users and kill all of them */
-  for (i = 0; i < HASHSIZE; i++)
+  for (i = 0; i < SERVER_HASH_SIZE; i++)
   {
     LIST_FOREACH_SAFE(n, tn, userlist[i].head)
     {
@@ -521,7 +521,7 @@ server_t *server_find(char *name)
   server_t *s;
   node_t *n;
 
-  LIST_FOREACH(n, servlist[SHASH((unsigned char *)name)].head)
+  LIST_FOREACH(n, servlist[hash_server(name)].head)
   {
     s = (server_t *)n->data;
 
@@ -546,7 +546,7 @@ user_t *user_add(char *nick, char *user, char *host, server_t *server)
 
   u = BlockHeapAlloc(user_heap);
 
-  u->hash = UHASH((unsigned char *)nick);
+  u->hash = hash_nick(nick);
 
   node_add(u, n, &userlist[u->hash]);
 
@@ -616,7 +616,7 @@ user_t *user_find(char *nick)
   user_t *u;
   node_t *n;
 
-  LIST_FOREACH(n, userlist[UHASH((unsigned char *)nick)].head)
+  LIST_FOREACH(n, userlist[hash_nick(nick)].head)
   {
     u = (user_t *)n->data;
 
@@ -659,7 +659,7 @@ channel_t *channel_add(char *name, uint32_t ts)
 
   c->name = sstrdup(name);
   c->ts = ts;
-  c->hash = CHASH((unsigned char *)name);
+  c->hash = hash_channel(name);
 
   if ((mc = mychan_find(c->name)))
     mc->chan = c;
@@ -709,7 +709,7 @@ channel_t *channel_find(char *name)
   channel_t *c;
   node_t *n;
 
-  LIST_FOREACH(n, chanlist[CHASH((unsigned char *)name)].head)
+  LIST_FOREACH(n, chanlist[hash_channel(name)].head)
   {
     c = (channel_t *)n->data;
 
@@ -971,7 +971,7 @@ myuser_t *myuser_add(char *name, char *pass, char *email)
   mu->pass = sstrdup(pass);
   mu->email = sstrdup(email);
   mu->registered = CURRTIME;
-  mu->hash = MUHASH((unsigned char *)name);
+  mu->hash = hash_nick(name);
 
   node_add(mu, n, &mulist[mu->hash]);
 
@@ -1006,7 +1006,7 @@ void myuser_delete(char *name)
   }
 
   /* remove them as successors */
-  for (i = 0; i < HASHSIZE; i++)
+  for (i = 0; i < CHANNEL_HASH_SIZE; i++)
   {
     LIST_FOREACH(n, mclist[i].head)
     {
@@ -1038,7 +1038,7 @@ myuser_t *myuser_find(char *name)
   myuser_t *mu;
   node_t *n;
 
-  LIST_FOREACH(n, mulist[MUHASH((unsigned char *)name)].head)
+  LIST_FOREACH(n, mulist[hash_nick(name)].head)
   {
     mu = (myuser_t *)n->data;
 
@@ -1077,7 +1077,7 @@ mychan_t *mychan_add(char *name, char *pass)
   mc->successor = NULL;
   mc->registered = CURRTIME;
   mc->chan = channel_find(name);
-  mc->hash = MCHASH((unsigned char *)name);
+  mc->hash = hash_channel(name);
 
   node_add(mc, n, &mclist[mc->hash]);
 
@@ -1127,7 +1127,7 @@ mychan_t *mychan_find(char *name)
   mychan_t *mc;
   node_t *n;
 
-  LIST_FOREACH(n, mclist[MCHASH((unsigned char *)name)].head)
+  LIST_FOREACH(n, mclist[hash_channel(name)].head)
   {
     mc = (mychan_t *)n->data;
 

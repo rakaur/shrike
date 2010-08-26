@@ -38,6 +38,7 @@ BASE_SRCS =			\
   event.c			\
   function.c			\
   help.c			\
+  hash.c			\
   irc.c				\
   match.c			\
   node.c			\
