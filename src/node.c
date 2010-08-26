@@ -615,17 +615,13 @@ user_t *user_find(char *nick)
 {
   user_t *u;
   node_t *n;
-  uint32_t i;
 
-  for (i = 0; i < HASHSIZE; i++)
+  LIST_FOREACH(n, userlist[UHASH((unsigned char *)nick)].head)
   {
-    LIST_FOREACH(n, userlist[i].head)
-    {
-      u = (user_t *)n->data;
+    u = (user_t *)n->data;
 
-      if (!irccasecmp(nick, u->nick))
-        return u;
-    }
+    if (!irccasecmp(nick, u->nick))
+      return u;
   }
 
   slog(LG_DEBUG, "user_find(): called for nonexistant user `%s'", nick);
@@ -712,17 +708,13 @@ channel_t *channel_find(char *name)
 {
   channel_t *c;
   node_t *n;
-  uint32_t i;
 
-  for (i = 0; i < HASHSIZE; i++)
+  LIST_FOREACH(n, chanlist[CHASH((unsigned char *)name)].head)
   {
-    LIST_FOREACH(n, chanlist[i].head)
-    {
-      c = (channel_t *)n->data;
+    c = (channel_t *)n->data;
 
-      if (!irccasecmp(name, c->name))
-        return c;
-    }
+    if (!irccasecmp(name, c->name))
+      return c;
   }
 
   return NULL;
@@ -1045,17 +1037,13 @@ myuser_t *myuser_find(char *name)
 {
   myuser_t *mu;
   node_t *n;
-  uint32_t i;
 
-  for (i = 0; i < HASHSIZE; i++)
+  LIST_FOREACH(n, mulist[MUHASH((unsigned char *)name)].head)
   {
-    LIST_FOREACH(n, mulist[i].head)
-    {
-      mu = (myuser_t *)n->data;
+    mu = (myuser_t *)n->data;
 
-      if (!irccasecmp(name, mu->name))
-        return mu;
-    }
+    if (!irccasecmp(name, mu->name))
+      return mu;
   }
 
   return NULL;
@@ -1138,17 +1126,13 @@ mychan_t *mychan_find(char *name)
 {
   mychan_t *mc;
   node_t *n;
-  uint32_t i;
 
-  for (i = 0; i < HASHSIZE; i++)
+  LIST_FOREACH(n, mclist[MCHASH((unsigned char *)name)].head)
   {
-    LIST_FOREACH(n, mclist[i].head)
-    {
-      mc = (mychan_t *)n->data;
+    mc = (mychan_t *)n->data;
 
-      if (!irccasecmp(name, mc->name))
-        return mc;
-    }
+    if (!irccasecmp(name, mc->name))
+      return mc;
   }
 
   return NULL;
