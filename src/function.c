@@ -272,13 +272,13 @@ uint8_t regex_match(regex_t * preg, char *pattern, char *string,
 }
 
 /* generates a hash value */
-uint32_t shash(const unsigned char *text)
+uint32_t shash(const char *text)
 {
   unsigned long h = 0, g;
 
   while (*text)
   {
-    h = (h << 4) + tolower(*text++);
+    h = (h << 4) + ToLower(*text++);
 
     if ((g = (h & 0xF0000000)))
       h ^= g >> 24;
@@ -286,7 +286,7 @@ uint32_t shash(const unsigned char *text)
     h &= ~g;
   }
 
-  return h; /* the macros do the modulo */
+  return (h % HASHSIZE);
 }
 
 /* replace all occurances of 'old' with 'new' */

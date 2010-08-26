@@ -756,7 +756,7 @@ boolean_t conf_rehash(void)
 
     /* readd with new nick (so the hash works) */
     n = node_create();
-    u->hash = UHASH((unsigned char *)u->nick);
+    u->hash = shash(u->nick);
     node_add(u, n, &userlist[u->hash]);
   }
 

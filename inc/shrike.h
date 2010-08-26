@@ -57,7 +57,7 @@
 #endif
 
 #ifdef LARGE_NETWORK
-#define HASHSIZE        65535
+#define HASHSIZE        32768
 #define HEAP_CHANNEL    1024
 #define HEAP_CHANUSER   1024
 #define HEAP_USER       1024
@@ -65,7 +65,7 @@
 #define HEAP_NODE       1024
 #define HEAP_CHANACS    1024
 #else
-#define HASHSIZE        1024
+#define HASHSIZE        2048
 #define HEAP_CHANNEL    64
 #define HEAP_CHANUSER   128
 #define HEAP_USER       128

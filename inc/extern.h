@@ -87,7 +87,7 @@ E void slog(uint32_t level, const char *fmt, ...);
 E uint32_t time_msec(void);
 E uint8_t regex_match(regex_t * preg, char *pattern, char *string,
                       size_t nmatch, regmatch_t pmatch[], int eflags);
-E uint32_t shash(const unsigned char *text);
+E uint32_t shash(const char *text);
 E char *replace(char *s, int32_t size, const char *old, const char *new);
 E char *itoa(int num);
 E char *flags_to_string(int32_t flags);
