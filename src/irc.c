@@ -174,6 +174,8 @@ void irc_parse(char *line)
       return;
     if (*line == '\000')
       return;
+    if (strchr(line, '\r'))
+      line--;
 
     /* copy the original line so we know what we crashed on */
     memset((char *)&coreLine, '\0', BUFSIZE);

@@ -760,6 +760,12 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
       else
         u = user_find(nick);
 
+      if (!u)
+      {
+        slog(LG_DEBUG, "chanuser_add(): user_find() failed for %s", nick);
+        return NULL;
+      }
+
       hostbuf = make_hostmask(u->nick, u->user, u->host);
 
       /* see if we need to deop them */
@@ -794,7 +800,7 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
   u = user_find(nick);
   if (u == NULL)
   {
-    slog(LG_DEBUG, "chanuser_add(): nonexist user: %s", nick);
+    slog(LG_DEBUG, "chanuser_add(): nonexistent user: %s", nick);
     return NULL;
   }
 

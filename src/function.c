@@ -286,7 +286,7 @@ uint32_t shash(const unsigned char *text)
     h &= ~g;
   }
 
-  return (h % HASHSIZE);
+  return h; /* the macros do the modulo */
 }
 
 /* replace all occurances of 'old' with 'new' */
