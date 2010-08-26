@@ -1,3 +1,76 @@
+commit c27393369db7e95dc1dd9bef105e529c073f50c3
+Author: Eric Will <rakaur@malkier.net>
+Date:   Thu Aug 26 15:23:57 2010 -0400
+
+    Finish cleaning up hash tables! Everything is blazing fast now.
+    
+    Fixed shash() to use RFC casemapping (ToLower()).
+    Got rid of the legacy xHASH() macros.
+
+ inc/extern.h   |    2 +-
+ inc/shrike.h   |    4 ++--
+ src/conf.c     |    2 +-
+ src/function.c |    6 +++---
+ src/irc.c      |    2 +-
+ src/node.c     |   20 ++++++++++----------
+ 6 files changed, 18 insertions(+), 18 deletions(-)
+
+commit 9fa6dd864b33834daea2a21d44c985aabf5cb461
+Author: Eric Will <rakaur@malkier.net>
+Date:   Thu Aug 26 11:54:44 2010 -0400
+
+    Major performance boost to hash tables.
+    
+    Make the finders walk only a single hash bucket rather than all buckets.
+    As server_find() already did this, I have no idea why the rest didn't.
+
+ src/node.c |   48 ++++++++++++++++--------------------------------
+ 1 files changed, 16 insertions(+), 32 deletions(-)
+
+commit 02cf476eac9a28592d3c61707d28eb2fc3b1bbfb
+Author: Eric Will <rakaur@malkier.net>
+Date:   Thu Aug 26 11:11:20 2010 -0400
+
+    Working on hashes mostly.
+    
+    Fix a bug where \r hangs on to a parsed string.
+    Fix a bug where PREFIX is messed up.
+
+ src/Makefile.in |    4 ++--
+ src/function.c  |    2 +-
+ src/irc.c       |    2 ++
+ src/node.c      |    8 +++++++-
+ 4 files changed, 12 insertions(+), 4 deletions(-)
+
+commit 86360bde7f9ac62592c9cc7003a05f101badeeca
+Author: Eric Will <rakaur@malkier.net>
+Date:   Thu Aug 26 08:28:42 2010 -0400
+
+    This should be one point of super slowness for large networks.
+
+ inc/shrike.h |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+commit 974115be0b8a8eaf74d32de8775c575653039c88
+Author: Eric Will <rakaur@malkier.net>
+Date:   Tue Aug 24 09:51:39 2010 -0400
+
+    Return version to 'devel' and such.
+
+ src/Makefile.in |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit bb7549b49b202730381bb98bdb2801a53a6d5732
+Author: Eric Will <rakaur@malkier.net>
+Date:   Tue Aug 24 09:48:24 2010 -0400
+
+    Update small things for a quick bug-fix release.
+
+ ChangeLog       |  138 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ doc/RELEASE     |    6 +--
+ src/Makefile.in |    6 +-
+ 3 files changed, 143 insertions(+), 7 deletions(-)
+
 commit 3ad4460e4a9f6c68857aa6823ab1a206f2042301
 Author: Eric Will <rakaur@malkier.net>
 Date:   Tue Aug 24 09:36:02 2010 -0400

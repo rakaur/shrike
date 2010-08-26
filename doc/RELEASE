@@ -1,3 +1,5 @@
-shrike-1.2 release notes
+shrike-1.5 release notes
 
 - bug fixes
+- major speed boost due to hash table fixes
+  (speed increase from ~8.5 minutes to ~700ms in one case)
