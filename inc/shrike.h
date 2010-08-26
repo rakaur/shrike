@@ -43,7 +43,6 @@
 
 /* D E F I N E S */
 #define BUFSIZE  1024            /* maximum size of a buffer */
-#define HASHSIZE 1021            /* hash table size          */
 #define MODESTACK_WAIT 500
 #define MAXMODES 4
 #define MAXPARAMSLEN (510-32-64-34-(7+MAXMODES))
@@ -58,6 +57,7 @@
 #endif
 
 #ifdef LARGE_NETWORK
+#define HASHSIZE        65535
 #define HEAP_CHANNEL    1024
 #define HEAP_CHANUSER   1024
 #define HEAP_USER       1024
@@ -65,6 +65,7 @@
 #define HEAP_NODE       1024
 #define HEAP_CHANACS    1024
 #else
+#define HASHSIZE        1024
 #define HEAP_CHANNEL    64
 #define HEAP_CHANUSER   128
 #define HEAP_USER       128
