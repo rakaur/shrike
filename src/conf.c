@@ -729,7 +729,7 @@ boolean_t conf_rehash(void)
   }
 
   /* may change */
-  if (irccmp(hold_svs->chan, svs.chan))
+  if ((hold_svs->chan) && (irccmp(hold_svs->chan, svs.chan)))
   {
     part(hold_svs->chan, svs.nick);
 
