@@ -273,10 +273,10 @@ static void m_pong(char *origin, uint8_t parc, char *parv[])
           1000) ? (tv2ms(&burstime) / 1000) : tv2ms(&burstime),
          (tv2ms(&burstime) > 1000) ? "s" : "ms");
 
-    wallops("Finished synching to network in %d %s.",
-            (tv2ms(&burstime) >
+    wallops("Finished synching to network in %d %s.", tv2ms(&burstime), "ms");
+            /*(tv2ms(&burstime) >
              1000) ? (tv2ms(&burstime) / 1000) : tv2ms(&burstime),
-            (tv2ms(&burstime) > 1000) ? "s" : "ms");
+            (tv2ms(&burstime) > 1000) ? "s" : "ms");*/
 #else
     slog(LG_INFO, "m_pong(): finished synching with uplink");
     wallops("Finished synching to network.");
@@ -533,7 +533,7 @@ static void m_nick(char *origin, uint8_t parc, char *parv[])
 
     /* readd with new nick (so the hash works) */
     n = node_create();
-    u->hash = shash(u->nick);
+    u->hash = shash((uint32_t *)u->nick, sizeof(u->nick));
     node_add(u, n, &userlist[u->hash]);
   }
   else

@@ -452,7 +452,7 @@ server_t *server_add(char *name, uint8_t hops, char *desc)
 
   s = BlockHeapAlloc(serv_heap);
 
-  s->hash = shash(name);
+  s->hash = shash((uint32_t *)name, sizeof(name));
 
   node_add(s, n, &servlist[s->hash]);
 
@@ -520,8 +520,9 @@ server_t *server_find(char *name)
 {
   server_t *s;
   node_t *n;
+  uint32_t hash = shash((uint32_t *)name, sizeof(name));
 
-  LIST_FOREACH(n, servlist[shash(name)].head)
+  LIST_FOREACH(n, servlist[hash].head)
   {
     s = (server_t *)n->data;
 
@@ -546,7 +547,7 @@ user_t *user_add(char *nick, char *user, char *host, server_t *server)
 
   u = BlockHeapAlloc(user_heap);
 
-  u->hash = shash(nick);
+  u->hash = shash((uint32_t *)nick, sizeof(nick));
 
   node_add(u, n, &userlist[u->hash]);
 
@@ -615,8 +616,9 @@ user_t *user_find(char *nick)
 {
   user_t *u;
   node_t *n;
+  uint32_t hash = shash((uint32_t *)nick, sizeof(nick));
 
-  LIST_FOREACH(n, userlist[shash(nick)].head)
+  LIST_FOREACH(n, userlist[hash].head)
   {
     u = (user_t *)n->data;
 
@@ -659,7 +661,7 @@ channel_t *channel_add(char *name, uint32_t ts)
 
   c->name = sstrdup(name);
   c->ts = ts;
-  c->hash = shash(name);
+  c->hash = shash((uint32_t *)name, sizeof(name));
 
   if ((mc = mychan_find(c->name)))
     mc->chan = c;
@@ -708,8 +710,9 @@ channel_t *channel_find(char *name)
 {
   channel_t *c;
   node_t *n;
+  uint32_t hash = shash((uint32_t *)name, sizeof(name));
 
-  LIST_FOREACH(n, chanlist[shash(name)].head)
+  LIST_FOREACH(n, chanlist[hash].head)
   {
     c = (channel_t *)n->data;
 
@@ -971,7 +974,7 @@ myuser_t *myuser_add(char *name, char *pass, char *email)
   mu->pass = sstrdup(pass);
   mu->email = sstrdup(email);
   mu->registered = CURRTIME;
-  mu->hash = shash(name);
+  mu->hash = shash((uint32_t *)name, sizeof(name));
 
   node_add(mu, n, &mulist[mu->hash]);
 
@@ -1037,8 +1040,9 @@ myuser_t *myuser_find(char *name)
 {
   myuser_t *mu;
   node_t *n;
+  uint32_t hash = shash((uint32_t *)name, sizeof(name));
 
-  LIST_FOREACH(n, mulist[shash(name)].head)
+  LIST_FOREACH(n, mulist[hash].head)
   {
     mu = (myuser_t *)n->data;
 
@@ -1077,7 +1081,7 @@ mychan_t *mychan_add(char *name, char *pass)
   mc->successor = NULL;
   mc->registered = CURRTIME;
   mc->chan = channel_find(name);
-  mc->hash = shash(name);
+  mc->hash = shash((uint32_t *)name, sizeof(name));
 
   node_add(mc, n, &mclist[mc->hash]);
 
@@ -1126,8 +1130,9 @@ mychan_t *mychan_find(char *name)
 {
   mychan_t *mc;
   node_t *n;
+  uint32_t hash = shash((uint32_t *)name, sizeof(name));
 
-  LIST_FOREACH(n, mclist[shash(name)].head)
+  LIST_FOREACH(n, mclist[hash].head)
   {
     mc = (mychan_t *)n->data;
 

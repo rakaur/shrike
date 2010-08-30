@@ -271,22 +271,44 @@ uint8_t regex_match(regex_t * preg, char *pattern, char *string,
   return 0;
 }
 
-/* generates a hash value */
-uint32_t shash(const char *text)
+/* generates a hash value - no collisions until 2^32
+ *
+ * this is based on hashword() from lookup3.c
+ * 2006 Bob Jenkins <bob_jenkins@burtleburtle.net>
+ */
+uint32_t shash(const uint32_t *k, size_t length)
 {
-  unsigned long h = 0, g;
+  uint32_t a, b, c;
 
-  while (*text)
+  /* turn the length of the char array into a length in 32-bit integers */
+  length /= 4;
+
+  /* Set up the internal state */
+  a = b = c = 0xdeadbeef + (((uint32_t)length) << 2) + HASH_INIT;
+
+  while (length > 3)
   {
-    h = (h << 4) + ToLower(*text++);
+    a += k[0];
+    b += k[1];
+    c += k[2];
 
-    if ((g = (h & 0xF0000000)))
-      h ^= g >> 24;
+    mix(a, b, c);
 
-    h &= ~g;
+    length -= 3;
+    k += 3;
   }
 
-  return (h % HASHSIZE);
+  switch (length)
+  {
+    case 3 : c += k[2];
+    case 2 : b += k[1];
+    case 1 : a += k[0];
+      final(a, b, c);
+    case 0:
+      break;
+  }
+
+  return (c & hashmask(15));
 }
 
 /* replace all occurances of 'old' with 'new' */
