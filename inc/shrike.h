@@ -14,6 +14,7 @@
 
 /* I N C L U D E S */
 #include <stdarg.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -97,11 +98,58 @@
 #endif
 
 /* hashing macros */
-#define SHASH(server) shash(server) % HASHSIZE
-#define UHASH(nick) shash(nick) % HASHSIZE
-#define CHASH(chan) shash(chan) % HASHSIZE
-#define MUHASH(myuser) shash(myuser) % HASHSIZE
-#define MCHASH(mychan) shash(mychan) % HASHSIZE
+#define hashsize(n) ((uint32_t)1 << (n))
+#define hashmask(n) (hashsize(n) - 1)
+#define rot(x, k) (((x) << (k)) | ((x) >> (32 - (k))))
+#define HASH_SEED 114971079
+
+/* mix 3 32-bit values reversibly */
+#define mix(a, b, c) \
+{ \
+  a -= c; a ^= rot(c, 4);  c += b; \
+  b -= a; b ^= rot(a, 6);  a += c; \
+  c -= b; c ^= rot(b, 8);  b += a; \
+  a -= c; a ^= rot(c, 16); c += b; \
+  b -= a; b ^= rot(a, 19); a += c; \
+  c -= b; c ^= rot(b, 4);  b += a; \
+}
+
+/* final mixing of 3 32-bit values */
+#define final(a, b, c) \
+{ \
+  c ^= b; c -= rot(b, 14); \
+  a ^= c; a -= rot(c, 11); \
+  b ^= a; b -= rot(a, 25); \
+  c ^= b; c -= rot(b, 16); \
+  a ^= c; a -= rot(c, 4);  \
+  b ^= a; b -= rot(a, 14); \
+  c ^= b; c -= rot(b, 24); \
+}
+
+/* figure out endianness */
+#if (defined(__BYTE_ORDER) && defined(__LITTLE_ENDIAN) && \
+     __BYTE_ORDER == __LITTLE_ENDIAN) || \
+    (defined(_BYTE_ORDER) && defined(_LITTLE_ENDIAN) && \
+     _BYTE_ORDER == _LITTLE_ENDIAN) || \
+    (defined(BYTE_ORDER) && defined(LITTLE_ENDIAN) && \
+     BYTE_ORDER == LITTLE_ENDIAN) || \
+    (defined(i386) || defined(__i386__) || defined(__i486__) || \
+     defined(__i586__) || defined(__i686__) || defined(vax) || defined(MIPSEL))
+#define HASH_LITTLE_ENDIAN 1
+#define HASH_BIG_ENDIAN    0
+#elif (defined(__BYTE_ORDER) && defined(__BIG_ENDIAN) && \
+       __BYTE_ORDER == __BIG_ENDIAN) || \
+      (defined(_BYTE_ORDER) && defined(_BIG_ENDIAN) && \
+       _BYTE_ORDER == _BIG_ENDIAN) || \
+      (defined(BYTE_ORDER) && defined(BIG_ENDIAN) && \
+       BYTE_ORDER == BIG_ENDIAN) || \
+      (defined(sparc) || defined(POWERPC) || defined(mc68000) || defined(sel))
+#define HASH_LITTLE_ENDIAN 0
+#define HASH_BIG_ENDIAN    1
+#else
+#define HASH_LITTLE_ENDIAN 0
+#define HASH_BIG_ENDIAN    0
+#endif
 
 /* T Y P E D E F S */
 typedef enum { ERROR = -1, FALSE, TRUE } l_boolean_t;
