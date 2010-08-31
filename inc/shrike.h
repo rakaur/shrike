@@ -57,7 +57,7 @@
 #endif
 
 #ifdef LARGE_NETWORK
-#define HASHSIZE        32768
+#define HASHSIZE        hashsize(15)
 #define HEAP_CHANNEL    1024
 #define HEAP_CHANUSER   1024
 #define HEAP_USER       1024
@@ -65,7 +65,7 @@
 #define HEAP_NODE       1024
 #define HEAP_CHANACS    1024
 #else
-#define HASHSIZE        2048
+#define HASHSIZE        hashsize(11)
 #define HEAP_CHANNEL    64
 #define HEAP_CHANUSER   128
 #define HEAP_USER       128
@@ -97,11 +97,8 @@
 #endif
 
 /* hashing macros */
-#define SHASH(server) shash(server) % HASHSIZE
-#define UHASH(nick) shash(nick) % HASHSIZE
-#define CHASH(chan) shash(chan) % HASHSIZE
-#define MUHASH(myuser) shash(myuser) % HASHSIZE
-#define MCHASH(mychan) shash(mychan) % HASHSIZE
+#define hashsize(n) ((uint32_t)1 << (n))
+#define hashmask(n) (hashsize(n) - 1)
 
 /* T Y P E D E F S */
 typedef enum { ERROR = -1, FALSE, TRUE } l_boolean_t;

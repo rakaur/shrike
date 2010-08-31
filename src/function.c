@@ -271,22 +271,32 @@ uint8_t regex_match(regex_t * preg, char *pattern, char *string,
   return 0;
 }
 
-/* generates a hash value */
+/* generates a hash value
+ *
+ * this is based on one_at_a_time() and is used in Perl
+ * 2006 Bob Jenkins <bob_jenkins@burtleburtle.net>
+ */
 uint32_t shash(const char *text)
 {
-  unsigned long h = 0, g;
+  uint32_t hash = 0;
+  char c;
 
-  while (*text)
+  while ((c = ToLower(*text++)))
   {
-    h = (h << 4) + ToLower(*text++);
-
-    if ((g = (h & 0xF0000000)))
-      h ^= g >> 24;
-
-    h &= ~g;
+    hash += c;
+    hash += (hash << 10);
+    hash ^= (hash >> 6);
   }
 
-  return (h % HASHSIZE);
+  hash += (hash << 3);
+  hash ^= (hash >> 11);
+  hash += (hash << 15);
+
+#ifdef LARGE_NETWORK
+  return (hash & hashmask(15));
+#else
+  return (hash & hashmask(11));
+#endif
 }
 
 /* replace all occurances of 'old' with 'new' */
