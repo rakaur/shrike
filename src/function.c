@@ -280,13 +280,17 @@ uint32_t shash(const char *text)
   {
     h = (h << 4) + ToLower(*text++);
 
-    if ((g = (h & 0xF0000000)))
-      h ^= g >> 24;
+    g = (h & 0xf0000000);
+    h ^= (g >> 24);
 
     h &= ~g;
   }
 
-  return (h % HASHSIZE);
+#ifdef LARGE_NETWORK
+  return (h & hashmask(15));
+#else
+  return (h & hashmask(11));
+#endif
 }
 
 /* replace all occurances of 'old' with 'new' */
