@@ -12,7 +12,7 @@ This program is free but copyrighted software; see the LICENSE file for
 details.
 
 Information about Shrike may be found at http://shrike.malkier.net/. Development
-information and repositories can be found at http://github.com/rakaur/shrike/.
+information and repositories can be found at http://github.com/rakaur/shrike/
 
 TABLE OF CONTENTS
 -----------------
@@ -28,32 +28,35 @@ TABLE OF CONTENTS
 While Shrike isn't directly based on any other program it borrows a decent
 amount of code from Cygnus and Sentinel.
 
-Information about Cygnus can be found at http://www.habber.net/services/.
-Information about Sentinel can be found at http://ircd.botbay.net/sentinel/.
+Information about Sentinel can be found at http://ircd.botbay.net/sentinel/
 
 Currently Shrike consists of the following developers:
-  rakaur, Eric Will <rakaur@malkier.net>
-  dKingston, Michael Rodriguez <dkingston02@gmail.com>
+
+- rakaur, Eric Will <rakaur@malkier.net>
+- dKingston, Michael Rodriguez <dkingston02@gmail.com>
 
 Thanks to testers, contributors, etc:
-  sycobuny, Stephen Belcher <sycobuny@malkier.net>
-  rintaun, Matt Lanigan <rintaun@projectxero.net>
-  Hwy, W. Campbell <wcampbel@botbay.net>
-  naki, Adam Walls <naki@coreag.net>
-  Rob_X, Mikael <mickek15@hotmail.com>
-  madragoran, Mike Campbell <madragoran@avendesora.net>
+
+- sycobuny, Stephen Belcher <sycobuny@malkier.net>
+- rintaun, Matt Lanigan <rintaun@projectxero.net>
+- Hwy, W. Campbell <wcampbel@botbay.net>
+- naki, Adam Walls <naki@coreag.net>
+- Rob_X, Mikael <mickek15@hotmail.com>
+- madragoran, Mike Campbell <madragoran@avendesora.net>
 
 Special thanks to:
-  Hwy, for your continued patience while I badger you endlessly.
-  sycobuny, for your continued not-killing-me while I badger your code.
-  tanka, for the book I will someday repay you for.
-  dbn, for the original Website.
+
+- Hwy, for your continued patience while I badger you endlessly.
+- sycobuny, for your continued not-killing-me while I badger your code.
+- tanka, for the book I will someday repay you for.
+- dbn, for the original Website.
 
 Files that we didn't write most of:
-  src/balloc.c, this was stolen from ircd-ratbox.
-  src/confp.c, this was stolen from Sentinel (from csircd).
-  src/event.c, this was stolen from ircd-ratbox.
-  src/match.c, this was stolen from Sentinel (from IRCnet ircd).
+
+- src/balloc.c, this was stolen from ircd-ratbox.
+- src/confp.c, this was stolen from Sentinel (from csircd).
+- src/event.c, this was stolen from ircd-ratbox.
+- src/match.c, this was stolen from Sentinel (from IRCnet ircd).
 
 2. PRESENTATION
 ---------------
@@ -63,9 +66,10 @@ manage their channels in a secure and efficient way and allows operators to
 manage various things about their networks.
 
 Shrike currently works with:
-  ircd-ratbox 1.3 and 2.x in TS5
-  ircd-hybrid 7.0 or later
-  ircd-hybrid 6.0 or later
+
+- ircd-ratbox 1.3 and 2.x in TS5
+- ircd-hybrid 7.0 or later
+- ircd-hybrid 6.0 or later
   csircd 1.3 or later
 
 Shrike may *possibly* work with other TSora IRCd's running at least TS3.
@@ -82,20 +86,22 @@ Normally, Shrike can be run simply by invoking the "shrike" executable.  Shrike
 will then use the defaults specified in the configuraiton file and connect
 to the specified uplink server. Alternatively, any of the following
 command-line options can be specified to change the default behavior:
-  -c </path/to/file> - specify the configuration file
-  -d                 - start in debugging mode
-  -h                 - print the help message and exit
-  -n                 - do not fork into the background
-  -v                 - print the version information and exit
+
+       -c </path/to/file> - specify the configuration file
+       -d                 - start in debugging mode
+       -h                 - print the help message and exit
+       -n                 - do not fork into the background
+       -v                 - print the version information and exit
 
 Shrike also handles the following signals:
-  HUP  - force a REHASH
-  TERM - force a SHUTDOWN
-  USR2 - force a RESTART
+
+       HUP  - force a REHASH
+       TERM - force a SHUTDOWN
+       USR2 - force a RESTART
 
 Upon starting, Shrike will parse its command-line arguments, open its log file,
 parse its configuration file, load its database, connect to the uplink,
-and (assuming -n is not specified) detach into the background.  If Shrike
+and (assuming-n is not specified) detach into the background.  If Shrike
 encounters an error while parsing the configuration or database files it will
 terminate immediately. Otherwise, it will run until killed or otherwise stopped.
 
@@ -136,3 +142,4 @@ ask that you find us on IRC:
 
 If you've read this far, congratulations. You are among the few elite people
 that actually read documentation. Thank you.
+
