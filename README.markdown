@@ -11,8 +11,8 @@ Shrike-- a set of services for TSora networks
 This program is free but copyrighted software; see the LICENSE file for
 details.
 
-Information about Shrike may be found at [http://shrike.malkier.net/](http://shrike.malkier.net/). Development
-information and repositories can be found at [http://github.com/rakaur/shrike/](http://github.com/rakaur/shrike/).
+Information about Shrike may be found [here](http://shrike.malkier.net/). Development
+information and repositories can be found [here](http://github.com/rakaur/shrike/).
 
 TABLE OF CONTENTS
 -----------------
@@ -28,8 +28,7 @@ TABLE OF CONTENTS
 While Shrike isn't directly based on any other program it borrows a decent
 amount of code from Cygnus and Sentinel.
 
-Information about Cygnus can be found at [http://www.habber.net/services/](http://www.habber.net/services/).
-Information about Sentinel can be found at [http://ircd.botbay.net/sentinel/](http://ircd.botbay.net/sentinel/).
+Information about Sentinel can be found [here](http://ircd.botbay.net/sentinel/).
 
 Currently Shrike consists of the following developers:
 
