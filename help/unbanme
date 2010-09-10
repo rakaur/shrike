@@ -1,0 +1,11 @@
+Help for UNBANME:
+
+UNBANME allows you to rejoin a channel you've
+been banned from by adding a ban exemption (+e).
+
+If this fails, consider using RECOVER.
+
+Syntax: UNBANME <#channel>
+
+Example:
+    /msg &nick& UNBANME #foo

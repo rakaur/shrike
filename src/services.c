@@ -1140,7 +1140,7 @@ static void do_op(char *origin)
   }
 
   if ((!is_founder(mc, u->myuser)) && (!is_successor(mc, u->myuser)) &&
-      (!is_xop(mc, u->myuser, (CA_SOP | CA_VOP))))
+      (!is_xop(mc, u->myuser, (CA_SOP | CA_AOP))))
   {
     notice(origin, "You are not authorized to perform this operation.");
     return;
@@ -1168,7 +1168,7 @@ static void do_op(char *origin)
     }
     else if ((MC_SECURE & mc->flags) && (!is_founder(mc, u->myuser)) &&
              (!is_successor(mc, u->myuser)) &&
-             (!is_xop(mc, u->myuser, (CA_SOP | CA_AOP))))
+             (!is_xop(mc, u->myuser, (CA_AOP | CA_SOP))))
     {
       notice(origin, "\2%s\2 could not be opped on \2%s\2.", u->nick,
              mc->name);
@@ -1620,11 +1620,12 @@ static void do_info(char *origin)
 static void do_recover(char *origin)
 {
   user_t *u = user_find(origin);
-  chanuser_t *cu;
+  chanuser_t *cu, *tcu;
   mychan_t *mc;
   node_t *n;
   char *name = strtok(NULL, " ");
   char *hostbuf;
+  boolean_t in_chan;
 
   if (!name)
   {
@@ -1633,52 +1634,93 @@ static void do_recover(char *origin)
     return;
   }
 
+  /* make sure they're logged in */
   if (!u->myuser)
   {
     notice(origin, "You are not logged in.");
     return;
   }
 
+  /* make sure the channel's registered */
   if (!(mc = mychan_find(name)))
   {
     notice(origin, "No such channel: \2%s\2.", name);
     return;
   }
 
+  /* make sure they can USE this (XXX - successor?) */
   if ((!is_founder(mc, u->myuser)) && (!is_xop(mc, u->myuser, CA_SOP)))
   {
     notice(origin, "You are not authorized to perform this operation.");
     return;
   }
 
+  /* are they in it? */
+  if ((cu = chanuser_find(mc->chan, u)))
+  {
+    /* make sure they're not opped */
+    if ((CMODE_OP & cu->modes))
+    {
+      notice(origin, "You're already a channel operator in \2%s\2.", name);
+      return;
+    }
+
+    in_chan = TRUE;
+  }
+  else
+    in_chan = FALSE;
+
   verbose(mc, "\2%s\2 used RECOVER.", origin);
 
   /* deop everyone */
   LIST_FOREACH(n, mc->chan->members.head)
   {
-    cu = (chanuser_t *)n->data;
+    tcu = (chanuser_t *)n->data;
 
-    if ((CMODE_OP & cu->modes) && (irccasecmp(svs.nick, cu->user->nick)))
-      cmode(svs.nick, mc->chan->name, "-o", cu->user->nick);
+    if ((CMODE_OP & tcu->modes) && (irccasecmp(svs.nick, tcu->user->nick)) &&
+        (irccasecmp(origin, tcu->user->nick)))
+    {
+      cmode(svs.nick, mc->chan->name, "-o", tcu->user->nick);
+      tcu->modes &= ~CMODE_OP;
+    }
   }
 
   /* remove modes that keep people out */
   if (CMODE_LIMIT & mc->chan->modes)
+  {
     cmode(svs.nick, mc->chan->name, "-l", NULL);
+    mc->chan->modes &= ~CMODE_LIMIT;
+  }
 
   if (CMODE_INVITE & mc->chan->modes)
+  {
     cmode(svs.nick, mc->chan->name, "-i", NULL);
+    mc->chan->modes &= ~CMODE_INVITE;
+  }
 
   if (CMODE_KEY & mc->chan->modes)
+  {
     cmode(svs.nick, mc->chan->name, "-k", mc->chan->key);
+    mc->chan->modes &= ~CMODE_KEY;
+    free(mc->chan->key);
+    mc->chan->key = NULL;
+  }
 
-  /* set an exempt on the user calling this */
-  hostbuf = make_hostmask(u->nick, u->user, u->host);
+  if (!in_chan)
+  {
+    /* set an exempt on the user calling this */
+    hostbuf = make_hostmask(u->nick, u->user, u->host);
 
-  sts(":%s MODE %s +e %s", svs.nick, mc->chan->name, hostbuf);
+    sts(":%s MODE %s +e %s", svs.nick, mc->chan->name, hostbuf);
 
-  /* invite them back. */
-  sts(":%s INVITE %s %s", svs.nick, u->nick, mc->chan->name);
+    /* invite them back. */
+    sts(":%s INVITE %s %s", svs.nick, u->nick, mc->chan->name);
+  }
+  else
+  {
+    cmode(svs.nick, mc->chan->name, "+o", cu->user->nick);
+    cu->modes |= CMODE_OP;
+  }
 
   notice(origin, "Recover complete for \2%s\2.", mc->chan->name);
 }
@@ -2010,6 +2052,55 @@ static void do_drop(char *origin)
     notice(origin, "The username \2%s\2 has been dropped.", name);
     return;
   }
+}
+
+/* UNBANME <#channel> */
+static void do_unbanme(char *origin)
+{
+  user_t *u = user_find(origin);
+  mychan_t *mc;
+  char *name = strtok(NULL, " ");
+  char *hostbuf;
+
+  if (!name)
+  {
+    notice(origin, "Insufficient parameters specified for \2UNBANME\2.");
+    notice(origin, "Syntax: UNBANME <#channel>");
+    return;
+  }
+
+  /* make sure they're logged in */
+  if (!u->myuser)
+  {
+    notice(origin, "You are not logged in.");
+    return;
+  }
+
+  /* make sure the channel's registered */
+  if (!(mc = mychan_find(name)))
+  {
+    notice(origin, "No such channel: \2%s\2.", name);
+    return;
+  }
+
+  /* make sure they can USE this */
+  if ((!is_founder(mc, u->myuser)) && (!is_xop(mc, u->myuser, CA_SOP)) &&
+      (!is_xop(mc, u->myuser, CA_AOP)) && (!is_xop(mc, u->myuser, CA_VOP)))
+  {
+    notice(origin, "You are not authorized to perform this operation.");
+    return;
+  }
+
+  /* set an exempt on the user calling this */
+  hostbuf = make_hostmask(u->nick, u->user, u->host);
+
+  sts(":%s MODE %s +e %s", svs.nick, mc->chan->name, hostbuf);
+
+  /* invite them back. */
+  sts(":%s INVITE %s %s", svs.nick, u->nick, mc->chan->name);
+
+  notice(origin, "You have been unbanned from \2%s\2.", mc->chan->name);
+  notice(origin, "If you still cannot rejoin, consider using \2RECOVER\2");
 }
 
 /* KLINE ADD|DEL|LIST */
@@ -2715,6 +2806,7 @@ struct command_ commands[] = {
   { "RECOVER",  AC_NONE,  do_recover  },
   { "REGISTER", AC_NONE,  do_register },
   { "DROP",     AC_NONE,  do_drop     },
+  { "UNBANME",  AC_NONE,  do_unbanme  },
   { "KLINE",    AC_IRCOP, do_kline    },
   { "UPDATE",   AC_SRA,   do_update   },
   { "REHASH",   AC_SRA,   do_rehash   },
