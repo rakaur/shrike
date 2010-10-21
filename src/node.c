@@ -982,7 +982,6 @@ myuser_t *myuser_add(char *name, char *pass, char *email)
 
 void myuser_delete(char *name)
 {
-  sra_t *sra;
   myuser_t *mu = myuser_find(name);
   mychan_t *mc;
   chanacs_t *ca;
@@ -1018,7 +1017,7 @@ void myuser_delete(char *name)
   }
 
   /* remove them from the sra list */
-  if ((sra = sra_find(mu)))
+  if (sra_find(mu))
     sra_delete(mu);
 
   n = node_find(mu, &mulist[mu->hash]);

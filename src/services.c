@@ -37,7 +37,7 @@ void join(char *chan, char *nick)
   }
   else
   {
-    if ((cu = chanuser_find(c, user_find(svs.nick))))
+    if (chanuser_find(c, user_find(svs.nick)))
     {
       slog(LG_DEBUG, "join(): i'm already in `%s'", c->name);
       return;
@@ -158,12 +158,11 @@ void part(char *chan, char *nick)
 {
   user_t *u = user_find(nick);
   channel_t *c = channel_find(chan);
-  chanuser_t *cu;
 
   if (!u || !c)
     return;
 
-  if (!(cu = chanuser_find(c, u)))
+  if (!chanuser_find(c, u))
     return;
 
   /*if (!irccasecmp(svs.chan, c->name))
@@ -637,14 +636,14 @@ static void do_xop(char *origin, uint8_t level)
         return;
       }
 
-      if ((ca = chanacs_find(mc, mu, CA_VOP)))
+      if (chanacs_find(mc, mu, CA_VOP))
       {
         notice(origin, "\2%s\2 is already on the VOP list for \2%s\2.",
                mu->name, mc->name);
         return;
       }
 
-      if ((ca = chanacs_find(mc, mu, CA_AOP)))
+      if (chanacs_find(mc, mu, CA_AOP))
       {
         chanacs_delete(mc, mu, CA_AOP);
         chanacs_add(mc, mu, CA_VOP);
@@ -658,7 +657,7 @@ static void do_xop(char *origin, uint8_t level)
         return;
       }
 
-      if ((ca = chanacs_find(mc, mu, CA_SOP)))
+      if (chanacs_find(mc, mu, CA_SOP))
       {
         chanacs_delete(mc, mu, CA_SOP);
         chanacs_add(mc, mu, CA_VOP);
@@ -739,14 +738,14 @@ static void do_xop(char *origin, uint8_t level)
         return;
       }
 
-      if ((ca = chanacs_find(mc, mu, CA_AOP)))
+      if (chanacs_find(mc, mu, CA_AOP))
       {
         notice(origin, "\2%s\2 is already on the AOP list for \2%s\2.",
                mu->name, mc->name);
         return;
       }
 
-      if ((ca = chanacs_find(mc, mu, CA_VOP)))
+      if (chanacs_find(mc, mu, CA_VOP))
       {
         chanacs_delete(mc, mu, CA_VOP);
         chanacs_add(mc, mu, CA_AOP);
@@ -760,7 +759,7 @@ static void do_xop(char *origin, uint8_t level)
         return;
       }
 
-      if ((ca = chanacs_find(mc, mu, CA_SOP)))
+      if (chanacs_find(mc, mu, CA_SOP))
       {
         chanacs_delete(mc, mu, CA_SOP);
         chanacs_add(mc, mu, CA_AOP);
@@ -804,14 +803,14 @@ static void do_xop(char *origin, uint8_t level)
         return;
       }
 
-      if ((ca = chanacs_find(mc, mu, CA_SOP)))
+      if (chanacs_find(mc, mu, CA_SOP))
       {
         notice(origin, "\2%s\2 is already on the SOP list for \2%s\2.",
                mu->name, mc->name);
         return;
       }
 
-      if ((ca = chanacs_find(mc, mu, CA_VOP)))
+      if (chanacs_find(mc, mu, CA_VOP))
       {
         chanacs_delete(mc, mu, CA_VOP);
         chanacs_add(mc, mu, CA_SOP);
@@ -825,7 +824,7 @@ static void do_xop(char *origin, uint8_t level)
         return;
       }
 
-      if ((ca = chanacs_find(mc, mu, CA_AOP)))
+      if (chanacs_find(mc, mu, CA_AOP))
       {
         chanacs_delete(mc, mu, CA_AOP);
         chanacs_add(mc, mu, CA_SOP);
@@ -891,7 +890,7 @@ static void do_xop(char *origin, uint8_t level)
         return;
       }
 
-      if (!(ca = chanacs_find(mc, mu, CA_VOP)))
+      if (!chanacs_find(mc, mu, CA_VOP))
       {
         notice(origin, "\2%s\2 is not on the VOP list for \2%s\2.",
                mu->name, mc->name);
@@ -946,7 +945,7 @@ static void do_xop(char *origin, uint8_t level)
         return;
       }
 
-      if (!(ca = chanacs_find(mc, mu, CA_AOP)))
+      if (!chanacs_find(mc, mu, CA_AOP))
       {
         notice(origin, "\2%s\2 is not on the AOP list for \2%s\2.",
                mu->name, mc->name);
@@ -980,7 +979,7 @@ static void do_xop(char *origin, uint8_t level)
         return;
       }
 
-      if (!(ca = chanacs_find(mc, mu, CA_SOP)))
+      if (!chanacs_find(mc, mu, CA_SOP))
       {
         notice(origin, "\2%s\2 is not on the SOP list for \2%s\2.",
                mu->name, mc->name);
@@ -2185,7 +2184,7 @@ static void do_kline(char *origin)
         return;
       }
 
-      if ((k = kline_find(u->user, u->host)))
+      if (kline_find(u->user, u->host))
       {
         notice(origin, "KLINE \2%s@%s\2 is already matched in the database.",
                u->user, u->host);
@@ -2226,7 +2225,7 @@ static void do_kline(char *origin)
         return;
       }
 
-      if ((k = kline_find(userbuf, hostbuf)))
+      if (kline_find(userbuf, hostbuf))
       {
         notice(origin, "KLINE \2%s@%s\2 is already matched in the database.",
                userbuf, hostbuf);
@@ -2387,7 +2386,7 @@ static void do_kline(char *origin)
     userbuf = strtok(target, "@");
     hostbuf = strtok(NULL, "@");
 
-    if (!(k = kline_find(userbuf, hostbuf)))
+    if (!kline_find(userbuf, hostbuf))
     {
       notice(origin, "No such KLINE: \2%s@%s\2.", userbuf, hostbuf);
       return;

@@ -223,7 +223,7 @@ void db_load(void)
 
       if ((s = strtok(NULL, " ")))
       {
-        if ((mu = myuser_find(s)))
+        if (myuser_find(s))
           continue;
 
         muin++;
@@ -255,7 +255,7 @@ void db_load(void)
 
       if ((s = strtok(NULL, " ")))
       {
-        if ((mc = mychan_find(s)))
+        if (mychan_find(s))
           continue;
 
         mcin++;

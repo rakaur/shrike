@@ -400,7 +400,7 @@ char *time_ago(time_t event)
   int years, weeks, days, hours, minutes, seconds;
 
   event = CURRTIME - event;
-  years = weeks = days = hours = minutes = seconds = 0;
+  years = weeks = days = hours = minutes = 0;
 
   while (event >= 60 * 60 * 24 * 365)
   {
@@ -682,7 +682,6 @@ boolean_t is_successor(mychan_t *mychan, myuser_t *myuser)
 
 boolean_t is_xop(mychan_t *mychan, myuser_t *myuser, uint8_t level)
 {
-  chanacs_t *ca;
   char *hostbuf;
 
   if (!myuser)
@@ -691,11 +690,11 @@ boolean_t is_xop(mychan_t *mychan, myuser_t *myuser, uint8_t level)
   hostbuf = make_hostmask(myuser->user->nick, myuser->user->user,
                           myuser->user->host);
 
-  if ((ca = chanacs_find(mychan, myuser, level)))
+  if (chanacs_find(mychan, myuser, level))
     return TRUE;
 
 
-  if ((ca = chanacs_find_host(mychan, hostbuf, level)))
+  if (chanacs_find_host(mychan, hostbuf, level))
     return TRUE;
 
   return FALSE;
@@ -703,9 +702,7 @@ boolean_t is_xop(mychan_t *mychan, myuser_t *myuser, uint8_t level)
 
 boolean_t is_on_mychan(mychan_t *mychan, myuser_t *myuser)
 {
-  chanuser_t *cu;
-
-  if ((cu = chanuser_find(mychan->chan, myuser->user)))
+  if (chanuser_find(mychan->chan, myuser->user))
     return TRUE;
 
   return FALSE;
@@ -739,13 +736,12 @@ boolean_t should_op(mychan_t *mychan, myuser_t *myuser)
 
 boolean_t should_op_host(mychan_t *mychan, char *host)
 {
-  chanacs_t *ca;
   char *hostbuf = make_hostmask(svs.nick, svs.user, svs.host);
 
   if (!match(host, hostbuf))
     return FALSE;
 
-  if ((ca = chanacs_find_host(mychan, host, CA_AOP)))
+  if (chanacs_find_host(mychan, host, CA_AOP))
     return TRUE;
 
   return FALSE;
@@ -776,13 +772,12 @@ boolean_t should_voice(mychan_t *mychan, myuser_t *myuser)
 
 boolean_t should_voice_host(mychan_t *mychan, char *host)
 {
-  chanacs_t *ca;
   char *hostbuf = make_hostmask(svs.nick, svs.user, svs.host);
 
   if (!match(host, hostbuf))
     return FALSE;
 
-  if ((ca = chanacs_find_host(mychan, host, CA_VOP)))
+  if (chanacs_find_host(mychan, host, CA_VOP))
     return TRUE;
 
   return FALSE;
