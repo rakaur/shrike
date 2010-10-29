@@ -162,11 +162,7 @@ void channel_mode(channel_t *chan, uint8_t parc, char *parv[])
     {
       if (*pos == status_mode_list[i].mode)
       {
-        /* for some reason we apparently lose count.. */
-        if (*parv[parpos] == '+' || *parv[parpos] == '-')
-          parpos++;
-
-        cu = chanuser_find(chan, user_find(parv[parpos]));
+        cu = chanuser_find(chan, user_find(parv[++parpos]));
 
         if (cu == NULL)
         {
@@ -174,7 +170,6 @@ void channel_mode(channel_t *chan, uint8_t parc, char *parv[])
                (whatt == MTYPE_ADD) ? '+' : '-', status_mode_list[i].value,
                parv[parpos]);
 
-          parpos++;
           matched = TRUE;
         }
 
@@ -225,7 +220,6 @@ void channel_mode(channel_t *chan, uint8_t parc, char *parv[])
           cu->modes &= ~status_mode_list[i].value;
         }
 
-        parpos++;
         break;
       }
     }
