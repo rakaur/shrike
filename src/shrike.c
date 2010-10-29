@@ -108,6 +108,13 @@ int main(int argc, char *argv[])
   FILE *restart_file, *pid_file;
   struct rlimit rlim;
 
+  /* do not run as root */
+  if (geteuid() == 0)
+  {
+    fprintf(stderr, "shrike: refuses to run as root\n");
+    exit(EXIT_FAILURE);
+  }
+
   /* change to our local directory */
   if (chdir(PREFIX) < 0)
   {
