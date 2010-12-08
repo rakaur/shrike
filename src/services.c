@@ -186,7 +186,7 @@ void expire_check(void *arg)
     {
       mu = (myuser_t *)n1->data;
 
-      if (MU_HOLD & mu->flags)
+      if ((MU_HOLD & mu->flags || mu->identified)
         continue;
 
       if (((CURRTIME - mu->lastlogin) >= me.expire) ||
@@ -1928,7 +1928,10 @@ static void do_register(char *origin)
     u = user_find(origin);
 
     if (u->myuser)
+    {
+      u->myuser->identified = FALSE;
       u->myuser->user = NULL;
+    }
 
     u->myuser = mu;
     mu->user = u;
