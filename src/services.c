@@ -186,7 +186,7 @@ void expire_check(void *arg)
     {
       mu = (myuser_t *)n1->data;
 
-      if ((MU_HOLD & mu->flags || mu->identified)
+      if (MU_HOLD & mu->flags || mu->identified)
         continue;
 
       if (((CURRTIME - mu->lastlogin) >= me.expire) ||
