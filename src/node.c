@@ -589,8 +589,12 @@ void user_delete(char *nick)
 
   /* set the user's myuser `identified' to FALSE if it exists */
   if (u->myuser)
+  {
     if (u->myuser->identified)
       u->myuser->identified = FALSE;
+
+    u->myuser->lastlogin = CURRTIME;
+  }
 
   n = node_find(u, &userlist[u->hash]);
   node_del(n, &userlist[u->hash]);

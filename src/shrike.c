@@ -293,11 +293,11 @@ int main(int argc, char *argv[])
   /* we probably have a few open already... */
   me.maxfd = 3;
 
-  /* save dbs every 5 minutes */
+  /* save db every 5 minutes */
   event_add("db_save", db_save, NULL, 300);
 
-  /* check expires every hour */
-  event_add("expire_check", expire_check, NULL, 3600);
+  /* check expires every 24 hours */
+  event_add("expire_check", expire_check, NULL, 86400);
 
   /* check kline expires every minute */
   event_add("kline_expire", kline_expire, NULL, 60);
