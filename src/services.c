@@ -521,8 +521,8 @@ static void do_logout(char *origin)
 
   u->myuser->user = NULL;
   u->myuser->identified = FALSE;
-  u->myuser = NULL;
   u->myuser->lastlogin = CURRTIME;
+  u->myuser = NULL;
 }
 
 /* SOP|AOP|VOP <#channel> ADD|DEL|LIST <username|hostmask> */
