@@ -70,7 +70,7 @@ Shrike currently works with:
 - ircd-ratbox 1.3 and 2.x in TS5
 - ircd-hybrid 7.0 or later
 - ircd-hybrid 6.0 or later
-  csircd 1.3 or later
+- csircd 1.3 or later
 
 Shrike may *possibly* work with other TSora IRCd's running at least TS3.
 
@@ -137,8 +137,9 @@ short and concise you will be loved.
 
 If your problem requires extensive debugging in a real-time situation we may
 ask that you find us on IRC:
-  rakaur @ irc.malkier.net
-  dKingston @ irc.malkier.net
+
+- rakaur @ irc.malkier.net
+- dKingston @ irc.malkier.net
 
 If you've read this far, congratulations. You are among the few elite people
 that actually read documentation. Thank you.
