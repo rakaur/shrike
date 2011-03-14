@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010 Eric Will et al.
+ * Copyright (c) 2003-2011 Eric Will <rakaur@malkier.net>
  * Rights to this code are documented in doc/LICENSE.
  *
  * This file contains the main() routine.
@@ -28,7 +28,7 @@ static void print_version(void)
 printf(
 "Shrike IRC Services (shrike-%s.%s)\n\n"
 
-"Copyright (c) 2003-2010 Eric Will et al.\n"
+"Copyright (c) 2003-2011 Eric Will <rakaur@malkier.net>\n"
 "Rights to this code are documented in doc/LICENSE.\n", version, generation
 );
 }

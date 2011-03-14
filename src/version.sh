@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2003-2010 Eric Will et al.
+# Copyright (c) 2003-2011 Eric Will <rakaur@malkier.net>
 # Rights to this code are documented in doc/LICENSE.
 #
 # This file generates version.c.
@@ -32,7 +32,7 @@ else \
 
 $spitshell >version.c <<!SUB!THIS!
 /*
- * Copyright (c) 2003-2010 Eric Will et al.
+ * Copyright (c) 2003-2011 Eric Will <rakaur@malkier.net>
  * Rights to this code are documented in doc/LICENSE.
  *
  * This file contains version information.
@@ -48,7 +48,7 @@ const char *version = "$1";
 const char *infotext[] =
 {
   "Shrike IRC Services --",
-  "Copyright (c) 2003-2010 Eric Will et al.",
+  "Copyright (c) 2003-2011 Eric Will <rakaur@malkier.net>",
   " ",
   "All rights reserved.",
   " ",

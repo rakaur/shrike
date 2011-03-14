@@ -1,3 +1,167 @@
+commit c880166f864968dac8e52d0e91ca62830b5b9a67
+Author: andrew12 <goforit7arh@gmail.com>
+Date:   Sat Feb 5 00:13:01 2011 -0500
+
+    Fix some markdown stuff.
+
+ README.markdown |    7 ++++---
+ 1 files changed, 4 insertions(+), 3 deletions(-)
+
+commit 8c8a36a5822331f17ded31f8b293a1efcda230a0
+Author: Eric Will <rakaur@malkier.net>
+Date:   Sat Jan 29 00:23:33 2011 -0500
+
+    Fix a core... god this was stupid.
+
+ src/services.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit f4318f5ffd6c34d8144665a16377755554e4e5ac
+Author: Eric Will <rakaur@malkier.net>
+Date:   Thu Jan 20 10:28:18 2011 -0500
+
+    Update lastlogin time upon logout to prevent premature expirations (JStoker).
+    
+    The last change fixed expiring logged-in users, but as soon as they logged
+    out (if logged in for 30+ days) the next expire run would expire them. Now
+    we update the lastlogin time on logout.
+
+ src/node.c     |    4 ++++
+ src/services.c |    1 +
+ src/shrike.c   |    6 +++---
+ 3 files changed, 8 insertions(+), 3 deletions(-)
+
+commit 0810709b298cca08edeffc2b267b6fe6f04c1d43
+Author: Eric Will <rakaur@malkier.net>
+Date:   Wed Dec 8 13:50:07 2010 -0500
+
+    Fix syntax error. Whoops.
+
+ src/services.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 26340cc41b97268aec2d965df0c4251ba3c99fb2
+Author: Eric Will <rakaur@malkier.net>
+Date:   Wed Dec 8 13:45:44 2010 -0500
+
+    Don't expire logged in usernames.
+
+ src/services.c |    5 ++++-
+ 1 files changed, 4 insertions(+), 1 deletions(-)
+
+commit 9e0b78a262b990b9a06da20caa12dbaff8614a37
+Author: Eric Will <rakaur@malkier.net>
+Date:   Fri Oct 29 15:42:00 2010 -0400
+
+    Fix a super tricky core where a status mode before param modes exploded.
+    
+    If you have a status mode, like +o before a param mode, like +l or +k,
+    the status mode code would increment the param counter too far and shrike
+    would core when trying to set the key or limit. For example, "+okl op key 1"
+    would core before this patch. The fix is deceptively difficult.
+
+ src/cmode.c |    8 +-------
+ 1 files changed, 1 insertions(+), 7 deletions(-)
+
+commit 58eba7605890767ce5b415deab1989933a5702dd
+Author: dkingston <dkingston@gir.localdomain>
+Date:   Fri Oct 29 13:02:45 2010 -0400
+
+    Do not run shrike as root for security reasons.
+    IRC stuff should never be ran as root for this reason, and plus there's absolutely no point to it.
+
+ src/shrike.c |    7 +++++++
+ 1 files changed, 7 insertions(+), 0 deletions(-)
+
+commit d40ed06c1ef22c42e8b0390f0361a584b2627d65
+Author: Eric Will <rakaur@malkier.net>
+Date:   Thu Oct 21 12:29:02 2010 -0400
+
+    Clean up some stuff thanks to clang's static analyzer.
+
+ src/db.c       |    4 ++--
+ src/function.c |   17 ++++++-----------
+ src/node.c     |    3 +--
+ src/services.c |   35 +++++++++++++++++------------------
+ 4 files changed, 26 insertions(+), 33 deletions(-)
+
+commit 2d4243685d1afc20d4db9d1bcb50ba894d1e1135
+Author: Eric Will <rakaur@malkier.net>
+Date:   Fri Sep 10 10:36:24 2010 -0400
+
+    Return build settings to dev, etc.
+
+ src/Makefile.in |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit 3e5f00f8ab58bd1f2f764fc230b1a1c665dafae8
+Author: Eric Will <rakaur@malkier.net>
+Date:   Fri Sep 10 10:34:12 2010 -0400
+
+    Fix RECOVER, add UNBANME, and fix a bug in OP.
+    
+    RECOVER was not updating internal state for modes it changed. Desync!
+    RECOVER now works as expected if you're deopped but still in the channel.
+    UNBANME was requested, and adds a +e for qualifying hostmasks.
+    There was a typo in do_op() that allowed VOPs to use the command! :X
+
+ help/unbanme    |   11 +++++
+ src/Makefile.in |    6 +-
+ src/help.c      |    2 +
+ src/services.c  |  114 +++++++++++++++++++++++++++++++++++++++++++++++++-----
+ 4 files changed, 119 insertions(+), 14 deletions(-)
+
+commit 4f561e059093ed47cb4994803fe3b94a4f73b98a
+Author: Mark Szymanski <mrman208@me.com>
+Date:   Thu Sep 9 16:11:27 2010 -0500
+
+    Converted README to Markdown.
+
+ README          |  138 ----------------------------------------------------
+ README.markdown |  145 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 145 insertions(+), 138 deletions(-)
+
+commit 15cabadc83413fa66cb96302ab5e9bc3b9c4a70f
+Author: Eric Will <rakaur@malkier.net>
+Date:   Tue Aug 31 10:08:56 2010 -0400
+
+    Use the one-at-a-time hash by Bob Jenkins (modified for us).
+
+ inc/shrike.h   |   11 ++++-------
+ src/function.c |   30 ++++++++++++++++++++----------
+ 2 files changed, 24 insertions(+), 17 deletions(-)
+
+commit 348c5a92aa0248285ceee3dea9988a6d3740f2eb
+Author: Eric Will <rakaur@malkier.net>
+Date:   Mon Aug 30 08:48:03 2010 -0400
+
+    Fix a core in conf_rehash().
+    
+    Cores when conf_rehash() is called and no join_chan is defined in conf.
+
+ src/conf.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit d686b8f4db94b5b688a1a919484129d87c22f6ec
+Author: Eric Will <rakaur@malkier.net>
+Date:   Thu Aug 26 17:10:24 2010 -0400
+
+    Return version, CFLAGS to dev settings.
+
+ src/Makefile.in |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit 0c8c5baf924cc50512d6304dec7c561753b564cf
+Author: Eric Will <rakaur@malkier.net>
+Date:   Thu Aug 26 17:05:46 2010 -0400
+
+    Update a last few things for a 1.5 release!
+
+ ChangeLog       |   73 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ doc/RELEASE     |    4 ++-
+ src/Makefile.in |    6 ++--
+ 3 files changed, 79 insertions(+), 4 deletions(-)
+
 commit c27393369db7e95dc1dd9bef105e529c073f50c3
 Author: Eric Will <rakaur@malkier.net>
 Date:   Thu Aug 26 15:23:57 2010 -0400

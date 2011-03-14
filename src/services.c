@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2003-2010 Eric Will et al.
+ * Copyright (c) 2003-2011 Eric Will <rakaur@malkier.net>
  * Rights to this code are documented in doc/LICENSE.
  *
  * This file contains client interaction routines.
