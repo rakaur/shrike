@@ -433,7 +433,8 @@ struct myuser_
   char *pass;
   char *email;
 
-  user_t *user;
+  user_t *user; /* XXX - this is only here so it'll compile for now... */
+  list_t users;
   time_t registered;
   time_t lastlogin;
 
@@ -480,7 +481,7 @@ struct mychan_
   char *mlock_key;
 
   uint32_t flags;
-  int32_t hash; 
+  int32_t hash;
 };
 
 #define MC_HOLD        0x00000001

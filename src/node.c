@@ -259,6 +259,38 @@ sra_t *sra_find(myuser_t *myuser)
   return NULL;
 }
 
+/* functions to manage the myuser users list */
+void add_to_users(user_t *user, myuser_t *myuser)
+{
+  node_t *n = node_create();
+  node_add(user, n, &myuser->users);
+}
+
+void remove_from_users(user_t *user, myuser_t *myuser)
+{
+  node_t *n;
+
+  n = node_find(user, &myuser->users);
+  node_del(n, &myuser->users);
+  node_free(n);
+}
+
+user_t *find_in_users(char *name, myuser_t *myuser)
+{
+  node_t *n;
+  user_t *u;
+
+  LIST_FOREACH(n, myuser->users.head)
+  {
+    u = (user_t *)n->data;
+
+    if (!strcasecmp(name, u->nick))
+      return u;
+  }
+
+  return NULL;
+}
+
 /***********
  * T L D S *
  ***********/

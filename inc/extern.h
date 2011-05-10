@@ -185,6 +185,10 @@ E sra_t *sra_add(char *name);
 E void sra_delete(myuser_t *myuser);
 E sra_t *sra_find(myuser_t *myuser);
 
+E void add_to_users(user_t *user, myuser_t *myuser);
+E void remove_from_users(user_t *user, myuser_t *myuser);
+E user_t *find_in_users(char *name, myuser_t *myuser);
+
 E tld_t *tld_add(char *name);
 E void tld_delete(char *name);
 E tld_t *tld_find(char *name);

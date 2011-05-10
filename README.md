@@ -33,7 +33,6 @@ Information about Sentinel can be found at http://ircd.botbay.net/sentinel/
 Currently Shrike consists of the following developers:
 
 - rakaur, Eric Will <rakaur@malkier.net>
-- dKingston, Michael Rodriguez <dkingston02@gmail.com>
 
 Thanks to testers, contributors, etc:
 
@@ -43,6 +42,7 @@ Thanks to testers, contributors, etc:
 - naki, Adam Walls <naki@coreag.net>
 - Rob_X, Mikael <mickek15@hotmail.com>
 - madragoran, Mike Campbell <madragoran@avendesora.net>
+- dKingston, Michael Rodriguez <dkingston02@gmail.com>
 
 Special thanks to:
 
