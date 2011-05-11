@@ -220,7 +220,7 @@ int conn(char *host, uint32_t port)
   uint32_t s, optval, flags;
 
   /* get the socket */
-  if ((s = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+  if ((s = socket(AF_INET, SOCK_STREAM, 0)) == -1)
   {
     slog(LG_ERROR, "conn(): unable to create socket");
     return -1;

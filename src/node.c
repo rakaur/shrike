@@ -260,10 +260,14 @@ sra_t *sra_find(myuser_t *myuser)
 }
 
 /* functions to manage the myuser users list */
+
 void add_to_users(user_t *user, myuser_t *myuser)
 {
   node_t *n = node_create();
   node_add(user, n, &myuser->users);
+
+  slog(LG_DEBUG, "add_to_users(): added `%s' to `%s' (%d)",
+    user->nick, myuser->name, myuser->users.count);
 }
 
 void remove_from_users(user_t *user, myuser_t *myuser)
@@ -273,6 +277,9 @@ void remove_from_users(user_t *user, myuser_t *myuser)
   n = node_find(user, &myuser->users);
   node_del(n, &myuser->users);
   node_free(n);
+
+  slog(LG_DEBUG, "remove_from_users(): removed `%s' from `%s' (%d)",
+    user->nick, myuser->name, myuser->users.count);
 }
 
 user_t *find_in_users(char *name, myuser_t *myuser)
@@ -634,7 +641,8 @@ void user_delete(char *nick)
 
   if (u->myuser)
   {
-    u->myuser->user = NULL;
+    remove_from_users(u, u->myuser);
+    u->myuser->user = NULL; /* XXX - multiuser */
     u->myuser = NULL;
   }
 
@@ -874,12 +882,12 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
   /* auto stuff */
   if (((mc = mychan_find(chan->name))) && (u->myuser))
   {
-    if (should_voice(mc, u->myuser))
+    if (should_voice(mc, u))
     {
       cmode(svs.nick, chan->name, "+v", u->nick);
       cu->modes |= CMODE_VOICE;
     }
-    if (should_op(mc, u->myuser))
+    if (should_op(mc, u))
     {
       cmode(svs.nick, chan->name, "+o", u->nick);
       cu->modes |= CMODE_OP;

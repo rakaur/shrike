@@ -667,17 +667,21 @@ boolean_t is_successor(mychan_t *mychan, myuser_t *myuser)
 
 boolean_t is_xop(mychan_t *mychan, myuser_t *myuser, uint8_t level)
 {
-  char hostbuf[BUFSIZE];
 
   if (!myuser)
     return FALSE;
 
-  snprintf(hostbuf, BUFSIZE, "%s!%s@%s",
-    myuser->user->nick, myuser->user->user, myuser->user->host);
-
   if (chanacs_find(mychan, myuser, level))
     return TRUE;
 
+  return FALSE;
+}
+
+boolean_t is_xop_host(mychan_t *mychan, user_t *user, uint8_t level)
+{
+  char hostbuf[BUFSIZE];
+
+  snprintf(hostbuf, BUFSIZE, "%s!%s@%s", user->nick, user->user, user->host);
 
   if (chanacs_find_host(mychan, hostbuf, level))
     return TRUE;
@@ -685,35 +689,31 @@ boolean_t is_xop(mychan_t *mychan, myuser_t *myuser, uint8_t level)
   return FALSE;
 }
 
-boolean_t is_on_mychan(mychan_t *mychan, myuser_t *myuser)
-{
-  if (chanuser_find(mychan->chan, myuser->user))
-    return TRUE;
-
-  return FALSE;
-}
-
-boolean_t should_op(mychan_t *mychan, myuser_t *myuser)
+boolean_t should_op(mychan_t *mychan, user_t *user)
 {
   chanuser_t *cu;
+  myuser_t *mu = user->myuser;
+
+  if (!mu)
+    return FALSE;
 
   if (MC_NEVEROP & mychan->flags)
     return FALSE;
 
-  if (MU_NEVEROP & myuser->flags)
+  if (MU_NEVEROP & mu->flags)
     return FALSE;
 
-  cu = chanuser_find(mychan->chan, myuser->user);
+  cu = chanuser_find(mychan->chan, user);
   if (!cu)
     return FALSE;
 
   if (CMODE_OP & cu->modes)
     return FALSE;
 
-  if ((is_founder(mychan, myuser)) || (is_successor(mychan, myuser)))
+  if ((is_founder(mychan, mu)) || (is_successor(mychan, mu)))
     return TRUE;
 
-  if (is_xop(mychan, myuser, (CA_SOP | CA_AOP)))
+  if (is_xop(mychan, mu, (CA_SOP | CA_AOP)))
     return TRUE;
 
   return FALSE;
@@ -734,24 +734,28 @@ boolean_t should_op_host(mychan_t *mychan, char *host)
   return FALSE;
 }
 
-boolean_t should_voice(mychan_t *mychan, myuser_t *myuser)
+boolean_t should_voice(mychan_t *mychan, user_t *user)
 {
   chanuser_t *cu;
+  myuser_t *mu = user->myuser;
+
+  if (!mu)
+    return FALSE;
 
   if (MC_NEVEROP & mychan->flags)
     return FALSE;
 
-  if (MU_NEVEROP & myuser->flags)
+  if (MU_NEVEROP & mu->flags)
     return FALSE;
 
-  cu = chanuser_find(mychan->chan, myuser->user);
+  cu = chanuser_find(mychan->chan, user);
   if (!cu)
     return FALSE;
 
   if (CMODE_VOICE & cu->modes)
     return FALSE;
 
-  if (is_xop(mychan, myuser, CA_VOP))
+  if (is_xop(mychan, mu, CA_VOP))
     return TRUE;
 
   return FALSE;

@@ -817,8 +817,10 @@ static void do_set_secure(char *origin, char *name, char *params)
 static void do_set_successor(char *origin, char *name, char *params)
 {
   user_t *u = user_find(origin);
+  user_t *tu;
   myuser_t *mu;
   mychan_t *mc;
+  node_t *n;
 
   if (*name != '#')
   {
@@ -860,9 +862,15 @@ static void do_set_successor(char *origin, char *name, char *params)
            mc->successor->name, mc->name);
 
     /* if they're online, let them know about it */
-    if (mc->successor->user != NULL)
-      notice(mc->successor->user->nick,
-             "You are no longer the successor of \2%s\2.", mc->name);
+    if (mc->successor != NULL)
+    {
+      LIST_FOREACH(n, mc->successor->users.head)
+      {
+        tu = (user_t *)n->data;
+        notice(tu->nick,
+          "You are no longer the successor of \2%s\2.", mc->name);
+      }
+    }
 
     mc->successor = NULL;
 
@@ -902,9 +910,12 @@ static void do_set_successor(char *origin, char *name, char *params)
     notice(origin, "\2%s\2 is no longer the successor of \2%s\2.",
            mc->successor->name, mc->name);
 
-    if (mc->successor->user != NULL)
-      notice(mc->successor->user->nick,
-             "You are no longer the successor of \2%s\2.", mc->name);
+    LIST_FOREACH(n, mc->successor->users.head)
+    {
+      tu = (user_t *)n->data;
+      notice(tu->nick,
+        "You are no longer the successor of \2%s\2.", mc->name);
+    }
 
     chanacs_delete(mc, mc->successor, CA_SUCCESSOR);
     mc->successor = NULL;
@@ -921,9 +932,15 @@ static void do_set_successor(char *origin, char *name, char *params)
   notice(origin, "\2%s\2 is now the successor of \2%s\2.", mu->name, mc->name);
 
   /* if they're online, let them know about it */
-  if (mu->user != NULL)
-    notice(mu->user->nick, "\2%s\2 has set you as the successor of \2%s\2.",
-           u->myuser->name, mc->name);
+  if (mu->identified)
+  {
+    LIST_FOREACH(n, mu->users.head)
+    {
+      tu = (user_t *)n->data;
+      notice(tu->nick, "\2%s\2 has set you as the successor of \2%s\2.",
+        u->myuser->name, mc->name);
+    }
+  }
 }
 
 static void do_set_verbose(char *origin, char *name, char *params)
@@ -1005,7 +1022,7 @@ struct set_command_ set_commands[] = {
   { "NOOP",       AC_NONE, do_set_noop       },
   { "PASSWORD",   AC_NONE, do_set_password   },
   { "SECURE",     AC_NONE, do_set_secure     },
-  { "SUCCESSOR",  AC_NONE, do_set_successor  }, 
+  { "SUCCESSOR",  AC_NONE, do_set_successor  },
   { "VERBOSE",    AC_NONE, do_set_verbose    },
   { NULL }
 };

@@ -447,12 +447,12 @@ static void do_login(char *origin)
       cu = chanuser_find(ca->mychan->chan, u);
       if (cu)
       {
-        if (should_voice(ca->mychan, ca->myuser))
+        if (should_voice(ca->mychan, u))
         {
           cmode(svs.nick, ca->mychan->name, "+v", u->nick);
           cu->modes |= CMODE_VOICE;
         }
-        if (should_op(ca->mychan, ca->myuser))
+        if (should_op(ca->mychan, u))
         {
           cmode(svs.nick, ca->mychan->name, "+o", u->nick);
           cu->modes |= CMODE_OP;
@@ -1049,13 +1049,8 @@ static void do_xop(char *origin, uint8_t level)
         {
           if (ca->host)
             notice(origin, "%d: \2%s\2", ++i, ca->host);
-
-          else if (ca->myuser->user)
-            notice(origin, "%d: \2%s\2 (logged in from \2%s\2)", ++i,
-                   ca->myuser->name, ca->myuser->user->nick);
           else
-            notice(origin, "%d: \2%s\2 (not logged in)", ++i,
-                   ca->myuser->name);
+            notice(origin, "%d: \2%s\2", ++i, ca->myuser->name);
         }
       }
 
@@ -1078,13 +1073,8 @@ static void do_xop(char *origin, uint8_t level)
         {
           if (ca->host)
             notice(origin, "%d: \2%s\2", ++i, ca->host);
-
-          else if (ca->myuser->user)
-            notice(origin, "%d: \2%s\2 (logged in from \2%s\2)", ++i,
-                   ca->myuser->name, ca->myuser->user->nick);
           else
-            notice(origin, "%d: \2%s\2 (not logged in)", ++i,
-                   ca->myuser->name);
+            notice(origin, "%d: \2%s\2", ++i, ca->myuser->name);
         }
       }
 
@@ -1104,14 +1094,7 @@ static void do_xop(char *origin, uint8_t level)
         ca = (chanacs_t *)n->data;
 
         if (CA_SOP & ca->level)
-        {
-          if (ca->myuser->user)
-            notice(origin, "%d: \2%s\2 (logged in from \2%s\2)", ++i,
-                   ca->myuser->name, ca->myuser->user->nick);
-          else
-            notice(origin, "%d: \2%s\2 (not logged in)", ++i,
-                   ca->myuser->name);
-        }
+          notice(origin, "%d: \2%s\2", ++i, ca->myuser->name);
       }
 
       notice(origin, "Total of \2%d\2 %s in \2%s\2's SOP list.",
@@ -1159,14 +1142,16 @@ static void do_op(char *origin)
   }
 
   u = user_find(origin);
-  if (!u->myuser)
+
+  if ((!u->myuser) && (!is_xop_host(mc, u, CA_AOP)))
   {
-    notice(origin, "You are not logged in.");
+    notice(origin, "You are not authorized to perform this operation.");
     return;
   }
 
-  if ((!is_founder(mc, u->myuser)) && (!is_successor(mc, u->myuser)) &&
-      (!is_xop(mc, u->myuser, (CA_SOP | CA_AOP))))
+  if ((u->myuser) && (!is_founder(mc, u->myuser)) &&
+     (!is_successor(mc, u->myuser)) &&
+     (!is_xop(mc, u->myuser, (CA_SOP | CA_AOP))))
   {
     notice(origin, "You are not authorized to perform this operation.");
     return;
@@ -1243,14 +1228,16 @@ static void do_deop(char *origin)
   }
 
   u = user_find(origin);
-  if (!u->myuser)
+
+  if ((!u->myuser) && (!is_xop_host(mc, u, CA_AOP)))
   {
-    notice(origin, "You are not logged in.");
+    notice(origin, "You are not authorized to perform this operation.");
     return;
   }
 
-  if ((!is_founder(mc, u->myuser)) && (!is_successor(mc, u->myuser)) &&
-      (!is_xop(mc, u->myuser, (CA_AOP | CA_SOP))))
+  if ((u->myuser) && (!is_founder(mc, u->myuser)) &&
+     (!is_successor(mc, u->myuser)) &&
+     (!is_xop(mc, u->myuser, (CA_SOP | CA_AOP))))
   {
     notice(origin, "You are not authorized to perform this operation.");
     return;
@@ -1505,21 +1492,10 @@ static void do_info(char *origin)
     strftime(strfbuf, sizeof(strfbuf) - 1, "%b %d %H:%M:%S %Y", &tm);
 
     notice(origin, "Information on \2%s\2", mc->name);
-
-    if (mc->founder->user)
-      notice(origin, "Founder    : %s (logged in from \2%s\2)",
-             mc->founder->name, mc->founder->user->nick);
-    else
-      notice(origin, "Founder    : %s (not logged in)", mc->founder->name);
+    notice(origin, "Founder    : %s", mc->founder->name);
 
     if (mc->successor)
-    {
-      if (mc->successor->user)
-        notice(origin, "Successor  : %s (logged in from \2%s\2)",
-               mc->successor->name, mc->successor->user->nick);
-      else
-        notice(origin, "Successor  : %s (not logged in)", mc->successor->name);
-    }
+      notice(origin, "Successor  : %s", mc->successor->name);
 
     notice(origin, "Registered : %s (%s ago)", strfbuf,
            time_ago(mc->registered));
@@ -1955,13 +1931,12 @@ static void do_register(char *origin)
     u = user_find(origin);
 
     if (u->myuser)
-    {
       u->myuser->identified = FALSE;
-      u->myuser->user = NULL;
-    }
 
     u->myuser = mu;
-    mu->user = u;
+    mu->user = u; /* XXX - multiuser */
+    add_to_users(u, mu);
+
     mu->registered = CURRTIME;
     mu->identified = TRUE;
     mu->lastlogin = CURRTIME;
