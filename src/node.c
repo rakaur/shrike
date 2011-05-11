@@ -768,7 +768,7 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
   chanuser_t *cu, *tcu;
   mychan_t *mc;
   uint32_t flags = 0;
-  char *hostbuf;
+  char hostbuf[BUFSIZE];
 
   if (*chan->name != '#')
   {
@@ -794,7 +794,7 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
         return NULL;
       }
 
-      hostbuf = make_hostmask(u->nick, u->user, u->host);
+      snprintf(hostbuf, BUFSIZE, "%s!%s@%s", u->nick, u->user, u->host);
 
       /* see if we need to deop them */
       if ((mc = mychan_find(chan->name)))
@@ -888,16 +888,9 @@ chanuser_t *chanuser_add(channel_t *chan, char *nick)
 
   if (mc)
   {
-    /* XXX - for some reason make_hostmask doesn't work here */
     char newhostbuf[BUFSIZE];
 
-    newhostbuf[0] = '\0';
-
-    strlcat(newhostbuf, u->nick, BUFSIZE);
-    strlcat(newhostbuf, "!", BUFSIZE);
-    strlcat(newhostbuf, u->user, BUFSIZE);
-    strlcat(newhostbuf, "@", BUFSIZE);
-    strlcat(newhostbuf, u->host, BUFSIZE);
+    snprintf(newhostbuf, BUFSIZE, "%s!%s@%s", u->nick, u->user, u->host);
 
     if (should_voice_host(mc, newhostbuf))
     {

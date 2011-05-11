@@ -1,16 +1,15 @@
 Help for LOGOUT:
 
 LOGOUT logs you out of services so that you
-can log into another username or whatever else
-melts your butter. Note that you are automatically
-logged out when you sign off.
+can log into another username, etc. Note that
+you are automatically logged out when you sign off.
 
-If the last two parameters are present it will
-logout whomever is currently logged in as the
-supplied username.
+If the last parameter is present it will log out the
+indicated nickname from the username you're currently
+logged in as.
 
-Syntax: LOGOUT [username] [password]
+Syntax: LOGOUT [nickname]
 
 Examples:
     /msg &nick& LOGOUT
-    /msg &nick& LOGOUT foo bar
+    /msg &nick& LOGOUT foo

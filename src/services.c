@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2003-2011 Eric Will <rakaur@malkier.net>
  * Rights to this code are documented in doc/LICENSE.
  *
@@ -176,9 +176,10 @@ void part(char *chan, char *nick)
 void expire_check(void *arg)
 {
   uint32_t i, j, w, tcnt;
+  user_t *tu;
   myuser_t *mu;
   mychan_t *mc, *tmc;
-  node_t *n1, *n2, *tn, *n3;
+  node_t *n1, *n2, *tn, *n3, *n4;
 
   for (i = 0; i < HASHSIZE; i++)
   {
@@ -226,9 +227,14 @@ void expire_check(void *arg)
                 mc->founder = mc->successor;
                 mc->successor = NULL;
 
-                if (mc->founder->user)
-                  notice(mc->founder->user->nick,
-                         "You are now founder on \2%s\2.", mc->name);
+                /*if (mc->founder->user) XXX multiuser */
+
+                /* let them know */
+                LIST_FOREACH(n4, mc->founder->users.head)
+                {
+                  tu = (user_t *)n4->data;
+                  notice(tu->nick, "You are now founder on \2%s\2.", mc->name);
+                }
 
                 return;
               }
@@ -340,13 +346,15 @@ void services(char *origin, uint8_t parc, char *parv[])
 static void do_login(char *origin)
 {
   user_t *u = user_find(origin);
+  user_t *tu;
   myuser_t *mu;
   chanuser_t *cu;
   chanacs_t *ca;
   node_t *n;
   char *username = strtok(NULL, " ");
   char *password = strtok(NULL, " ");
-  char buf[BUFSIZE], strfbuf[32];
+  char strfbuf[32];
+  char hostbuf[BUFSIZE];
   struct tm tm;
 
   if (!username || !password)
@@ -370,12 +378,13 @@ static void do_login(char *origin)
     return;
   }
 
+  /* XXX - multiuser
   if (mu->user)
   {
     notice(origin, "\2%s\2 is already logged in as \2%s\2.", mu->user->nick,
            mu->name);
     return;
-  }
+  }*/
 
   if (!strcmp(password, mu->pass))
   {
@@ -388,12 +397,24 @@ static void do_login(char *origin)
     }
 
     u->myuser = mu;
-    mu->user = u;
+    mu->user = u; /* XXX - multiuser */
+    add_to_users(u, mu);
     mu->identified = TRUE;
 
     notice(origin,
            "Authentication successful. You are now logged in as \2%s\2.",
            u->myuser->name);
+
+    /* let others logged into this username know */
+    LIST_FOREACH(n, mu->users.head)
+    {
+      tu = (user_t *)n->data;
+
+      if (u == tu)
+        continue;
+
+      notice(tu->nick, "\2%s\2 has logged into \2%s\2.", u->nick, mu->name);
+    }
 
     /* check for failed attempts and let them know */
     if (u->myuser->failnum != 0)
@@ -454,12 +475,9 @@ static void do_login(char *origin)
     mu->lastfail = NULL;
   }
 
-  strlcpy(buf, u->nick, BUFSIZE);
-  strlcat(buf, "!", BUFSIZE);
-  strlcat(buf, u->user, BUFSIZE);
-  strlcat(buf, "@", BUFSIZE);
-  strlcat(buf, u->host, BUFSIZE);
-  mu->lastfail = sstrdup(buf);
+  snprintf(hostbuf, BUFSIZE, "%s!%s@%s", u->nick, u->user, u->host);
+
+  mu->lastfail = sstrdup(hostbuf);
   mu->failnum++;
   mu->lastfailon = CURRTIME;
 
@@ -477,49 +495,57 @@ static void do_login(char *origin)
 static void do_logout(char *origin)
 {
   user_t *u = user_find(origin);
-  char *user = strtok(NULL, " ");
-  char *pass = strtok(NULL, " ");
+  char *nick = strtok(NULL, " ");
 
-  if ((!u->myuser) && (!user || !pass))
+  if (!u->myuser)
   {
     notice(origin, "You are not logged in.");
     return;
   }
 
-  if (user && pass)
+  if (nick)
   {
-    myuser_t *mu = myuser_find(user);
+    user_t *ou = user_find(nick);
 
-    if (!mu)
+    if (!ou)
     {
-      notice(origin, "No such username: \2%s\2.", user);
+      notice(origin, "No such nickname: \2%s\2.", nick);
       return;
     }
 
-    if ((!strcmp(mu->pass, pass)) && (mu->user))
+    if (!ou->myuser)
     {
-      u = mu->user;
-      notice(u->nick, "You were logged out by \2%s\2.", origin);
-    }
-    else
-    {
-      notice(origin, "Authentication failed. Invalid password for \2%s\2.",
-             mu->name);
+      notice(origin, "\2%s\2 is not logged in.", ou->nick);
       return;
     }
+
+    if (u->myuser != ou->myuser)
+    {
+      notice(origin, "\2%s\2 is not logged in as \2%s\2.",
+        ou->nick, u->myuser->name);
+      return;
+    }
+
+    notice(ou->nick, "You have been logged out by \2%s\2.", u->nick);
+
+    snoop("LOGOUT: \2%s\2 from \2%s\2 by \2%s\2",
+      ou->nick, ou->myuser->name, u->nick);
+
+    u = ou; /* the rest of the function acts on this user instead of origin */
   }
+  else
+    snoop("LOGOUT: \2%s\2 from \2%s\2", u->nick, u->myuser->name);
 
   if (is_sra(u->myuser))
     snoop("DESRA: \2%s\2 as \2%s\2", u->nick, u->myuser->name);
-
-  snoop("LOGOUT: \2%s\2 from \2%s\2", u->nick, u->myuser->name);
 
   if (irccasecmp(origin, u->nick))
     notice(origin, "\2%s\2 has been logged out.", u->nick);
   else
     notice(origin, "You have been logged out.");
 
-  u->myuser->user = NULL;
+  remove_from_users(u, u->myuser);
+  u->myuser->user = NULL; /* XXX - multiuser */
   u->myuser->identified = FALSE;
   u->myuser->lastlogin = CURRTIME;
   u->myuser = NULL;
@@ -537,7 +563,7 @@ static void do_xop(char *origin, uint8_t level)
   char *chan = strtok(NULL, " ");
   char *cmd = strtok(NULL, " ");
   char *uname = strtok(NULL, " ");
-  char *hostbuf;
+  char hostbuf[BUFSIZE];
 
   if (!cmd || !chan)
   {
@@ -617,14 +643,17 @@ static void do_xop(char *origin, uint8_t level)
           if (cu->modes & CMODE_VOICE)
             return;
 
-          hostbuf = make_hostmask(cu->user->nick, cu->user->user,
-                                  cu->user->host);
+          snprintf(hostbuf, BUFSIZE, "%s!%s@%s",
+            cu->user->nick, cu->user->user, cu->user->host);
+
+          slog(LG_DEBUG, "do_xop(): trying to voice host %s", hostbuf);
 
           if (should_voice_host(mc, hostbuf))
           {
             cmode(svs.nick, mc->name, "+v", cu->user->nick);
             cu->modes |= CMODE_VOICE;
           }
+          slog(LG_DEBUG, "do_xop: tried to do should_voice_host(%s, %s)", mc->name, hostbuf);
         }
 
         return;
@@ -726,8 +755,8 @@ static void do_xop(char *origin, uint8_t level)
           if (cu->modes & CMODE_OP)
             return;
 
-          hostbuf = make_hostmask(cu->user->nick, cu->user->user,
-                                  cu->user->host);
+          snprintf(hostbuf, BUFSIZE, "%s!%s@%s",
+            cu->user->nick, cu->user->user, cu->user->host);
 
           if (should_op_host(mc, hostbuf))
           {
@@ -1116,7 +1145,7 @@ static void do_op(char *origin)
   mychan_t *mc;
   user_t *u;
   chanuser_t *cu;
-  char *hostbuf;
+  char hostbuf[BUFSIZE];
 
   if (!chan)
   {
@@ -1157,7 +1186,7 @@ static void do_op(char *origin)
     return;
   }
 
-  hostbuf = make_hostmask(u->nick, u->user, u->host);
+  snprintf(hostbuf, BUFSIZE, "%s!%s@%s", u->nick, u->user, u->host);
 
   if (!chanacs_find_host(mc, hostbuf, CA_AOP))
   {
@@ -1624,7 +1653,7 @@ static void do_recover(char *origin)
   mychan_t *mc;
   node_t *n;
   char *name = strtok(NULL, " ");
-  char *hostbuf;
+  char hostbuf[BUFSIZE];
   boolean_t in_chan;
 
   if (!name)
@@ -1709,7 +1738,7 @@ static void do_recover(char *origin)
   if (!in_chan)
   {
     /* set an exempt on the user calling this */
-    hostbuf = make_hostmask(u->nick, u->user, u->host);
+    snprintf(hostbuf, BUFSIZE, "%s!%s@%s", u->nick, u->user, u->host);
 
     sts(":%s MODE %s +e %s", svs.nick, mc->chan->name, hostbuf);
 
@@ -2063,7 +2092,7 @@ static void do_unbanme(char *origin)
   user_t *u = user_find(origin);
   mychan_t *mc;
   char *name = strtok(NULL, " ");
-  char *hostbuf;
+  char hostbuf[BUFSIZE];
 
   if (!name)
   {
@@ -2095,7 +2124,7 @@ static void do_unbanme(char *origin)
   }
 
   /* set an exempt on the user calling this */
-  hostbuf = make_hostmask(u->nick, u->user, u->host);
+  snprintf(hostbuf, BUFSIZE, "%s!%s@%s", u->nick, u->user, u->host);
 
   sts(":%s MODE %s +e %s", svs.nick, mc->chan->name, hostbuf);
 

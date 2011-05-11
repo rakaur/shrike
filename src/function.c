@@ -177,21 +177,6 @@ void strip(char *line)
   }
 }
 
-/* creates a hostmask based on params */
-char *make_hostmask(char *nick, char *user, char *host)
-{
-    static char buf[BUFSIZE];
-    buf[0] = '\0';
-
-    strlcat(buf, nick, BUFSIZE);
-    strlcat(buf, "!", BUFSIZE);
-    strlcat(buf, user, BUFSIZE);
-    strlcat(buf, "@", BUFSIZE);
-    strlcat(buf, host, BUFSIZE);
-
-    return buf;
-}
-
 /* logs something to shrike.log */
 void slog(uint32_t level, const char *fmt, ...)
 {
@@ -682,13 +667,13 @@ boolean_t is_successor(mychan_t *mychan, myuser_t *myuser)
 
 boolean_t is_xop(mychan_t *mychan, myuser_t *myuser, uint8_t level)
 {
-  char *hostbuf;
+  char hostbuf[BUFSIZE];
 
   if (!myuser)
     return FALSE;
 
-  hostbuf = make_hostmask(myuser->user->nick, myuser->user->user,
-                          myuser->user->host);
+  snprintf(hostbuf, BUFSIZE, "%s!%s@%s",
+    myuser->user->nick, myuser->user->user, myuser->user->host);
 
   if (chanacs_find(mychan, myuser, level))
     return TRUE;
@@ -736,7 +721,9 @@ boolean_t should_op(mychan_t *mychan, myuser_t *myuser)
 
 boolean_t should_op_host(mychan_t *mychan, char *host)
 {
-  char *hostbuf = make_hostmask(svs.nick, svs.user, svs.host);
+  char hostbuf[BUFSIZE];
+
+  snprintf(hostbuf, BUFSIZE, "%s!%s@%s", svs.nick, svs.user, svs.host);
 
   if (!match(host, hostbuf))
     return FALSE;
@@ -772,7 +759,9 @@ boolean_t should_voice(mychan_t *mychan, myuser_t *myuser)
 
 boolean_t should_voice_host(mychan_t *mychan, char *host)
 {
-  char *hostbuf = make_hostmask(svs.nick, svs.user, svs.host);
+  char hostbuf[BUFSIZE];
+
+  snprintf(hostbuf, BUFSIZE, "%s!%s@%s", svs.nick, svs.user, svs.host);
 
   if (!match(host, hostbuf))
     return FALSE;

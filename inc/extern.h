@@ -82,7 +82,6 @@ E void *scalloc(size_t elsize, size_t els);
 E void *srealloc(void *oldptr, size_t newsize);
 E char *sstrdup(const char *s);
 E void strip(char *line);
-E char *make_hostmask(char *nick, char *user, char *host);
 E void slog(uint32_t level, const char *fmt, ...);
 E uint32_t time_msec(void);
 E uint8_t regex_match(regex_t * preg, char *pattern, char *string,
