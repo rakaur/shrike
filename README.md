@@ -1,9 +1,7 @@
-/*
- * Copyright (c) 2003-2011 Eric Will <rakaur@malkier.net>
- * Rights to this code are documented in doc/LICENSE.
- *
- * General documentation.
- */
+    Copyright (c) 2003-2011 Eric Will <rakaur@malkier.net>
+    Rights to this code are documented in doc/LICENSE.
+
+    General documentation.
 
 Shrike -- a set of services for TSora networks
 ==============================================
@@ -22,8 +20,8 @@ TABLE OF CONTENTS
   4. Command line options
   5. Contact and support
 
-1. CREDITS
-----------
+1\. CREDITS
+-----------
 
 While Shrike isn't directly based on any other program it borrows a decent
 amount of code from Cygnus and Sentinel.
@@ -58,8 +56,8 @@ Files that we didn't write most of:
 - src/event.c, this was stolen from ircd-ratbox.
 - src/match.c, this was stolen from Sentinel (from IRCnet ircd).
 
-2. PRESENTATION
----------------
+2\. PRESENTATION
+----------------
 
 Shrike is a set of services for TSora-based IRC networks that allows users to
 manage their channels in a secure and efficient way and allows operators to
@@ -74,30 +72,30 @@ Shrike currently works with:
 
 Shrike may *possibly* work with other TSora IRCd's running at least TS3.
 
-3. INSTALLATION
----------------
+3\. INSTALLATION
+----------------
 
 See the INSTALL file.
 
-4. COMMAND LINE OPTIONS
------------------------
+4\. COMMAND LINE OPTIONS
+------------------------
 
 Normally, Shrike can be run simply by invoking the "shrike" executable.  Shrike
-will then use the defaults specified in the configuraiton file and connect
+will then use the defaults specified in the configuration file and connect
 to the specified uplink server. Alternatively, any of the following
 command-line options can be specified to change the default behavior:
 
-       -c </path/to/file> - specify the configuration file
-       -d                 - start in debugging mode
-       -h                 - print the help message and exit
-       -n                 - do not fork into the background
-       -v                 - print the version information and exit
+- `-c </path/to/file>` - specify the configuration file
+- `-d` - start in debugging mode
+- `-h` - print the help message and exit
+- `-n` - do not fork into the background
+- `-v` - print the version information and exit
 
 Shrike also handles the following signals:
 
-       HUP  - force a REHASH
-       TERM - force a SHUTDOWN
-       USR2 - force a RESTART
+- `HUP` - force a `REHASH`
+- `TERM` - force a `SHUTDOWN`
+- `USR2` - force a `RESTART`
 
 Upon starting, Shrike will parse its command-line arguments, open its log file,
 parse its configuration file, load its database, connect to the uplink,
@@ -105,8 +103,8 @@ and (assuming-n is not specified) detach into the background.  If Shrike
 encounters an error while parsing the configuration or database files it will
 terminate immediately. Otherwise, it will run until killed or otherwise stopped.
 
-5. CONTACT AND SUPPORT
-----------------------
+5\. CONTACT AND SUPPORT
+-----------------------
 
 Okay, here's the deal. We enjoy coding this program, and we do it for free. You
 didn't pay anything for this, did you? No. Our time and our effort went into
@@ -131,7 +129,7 @@ on how to reproduce the problem. If you can't reproduce it, you're likely out
 of luck. You can go ahead and report the problem but chances are if we can't
 find the cause then we can't fix it. If Shrike crashed (with a core file) be
 sure to include a backtrace for us. You can do this by running something along
-the lines of "gdb bin/shrike shrike.core" and typing "bt" at the "(gdb)"
+the lines of `gdb bin/shrike shrike.core` and typing `bt` at the `(gdb)`
 prompt. If you do all of these things and still manage to keep your report
 short and concise you will be loved.
 
