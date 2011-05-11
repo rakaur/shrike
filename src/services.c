@@ -641,19 +641,16 @@ static void do_xop(char *origin, uint8_t level)
           cu = (chanuser_t *)n->data;
 
           if (cu->modes & CMODE_VOICE)
-            return;
+            continue;
 
           snprintf(hostbuf, BUFSIZE, "%s!%s@%s",
             cu->user->nick, cu->user->user, cu->user->host);
-
-          slog(LG_DEBUG, "do_xop(): trying to voice host %s", hostbuf);
 
           if (should_voice_host(mc, hostbuf))
           {
             cmode(svs.nick, mc->name, "+v", cu->user->nick);
             cu->modes |= CMODE_VOICE;
           }
-          slog(LG_DEBUG, "do_xop: tried to do should_voice_host(%s, %s)", mc->name, hostbuf);
         }
 
         return;
@@ -753,7 +750,7 @@ static void do_xop(char *origin, uint8_t level)
           cu = (chanuser_t *)n->data;
 
           if (cu->modes & CMODE_OP)
-            return;
+            continue;
 
           snprintf(hostbuf, BUFSIZE, "%s!%s@%s",
             cu->user->nick, cu->user->user, cu->user->host);
