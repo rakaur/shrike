@@ -227,8 +227,6 @@ void expire_check(void *arg)
                 mc->founder = mc->successor;
                 mc->successor = NULL;
 
-                /*if (mc->founder->user) XXX multiuser */
-
                 /* let them know */
                 LIST_FOREACH(n4, mc->founder->users.head)
                 {
@@ -378,14 +376,6 @@ static void do_login(char *origin)
     return;
   }
 
-  /* XXX - multiuser
-  if (mu->user)
-  {
-    notice(origin, "\2%s\2 is already logged in as \2%s\2.", mu->user->nick,
-           mu->name);
-    return;
-  }*/
-
   if (!strcmp(password, mu->pass))
   {
     snoop("LOGIN:AS: \2%s\2 to \2%s\2", u->nick, mu->name);
@@ -397,7 +387,6 @@ static void do_login(char *origin)
     }
 
     u->myuser = mu;
-    mu->user = u; /* XXX - multiuser */
     add_to_users(u, mu);
     mu->identified = TRUE;
 
@@ -545,7 +534,6 @@ static void do_logout(char *origin)
     notice(origin, "You have been logged out.");
 
   remove_from_users(u, u->myuser);
-  u->myuser->user = NULL; /* XXX - multiuser */
   u->myuser->identified = FALSE;
   u->myuser->lastlogin = CURRTIME;
   u->myuser = NULL;
@@ -1650,8 +1638,9 @@ static void do_recover(char *origin)
     return;
   }
 
-  /* make sure they can USE this (XXX - successor?) */
-  if ((!is_founder(mc, u->myuser)) && (!is_xop(mc, u->myuser, CA_SOP)))
+  /* make sure they can USE this */
+  if ((!is_founder(mc, u->myuser)) && (!is_successor(mc, u->myuser)) &&
+     (!is_xop(mc, u->myuser, CA_SOP)))
   {
     notice(origin, "You are not authorized to perform this operation.");
     return;
@@ -1934,7 +1923,6 @@ static void do_register(char *origin)
       u->myuser->identified = FALSE;
 
     u->myuser = mu;
-    mu->user = u; /* XXX - multiuser */
     add_to_users(u, mu);
 
     mu->registered = CURRTIME;

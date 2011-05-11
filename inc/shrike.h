@@ -433,7 +433,6 @@ struct myuser_
   char *pass;
   char *email;
 
-  user_t *user; /* XXX - this is only here so it'll compile for now... */
   list_t users;
   time_t registered;
   time_t lastlogin;

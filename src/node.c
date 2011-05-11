@@ -642,7 +642,6 @@ void user_delete(char *nick)
   if (u->myuser)
   {
     remove_from_users(u, u->myuser);
-    u->myuser->user = NULL; /* XXX - multiuser */
     u->myuser = NULL;
   }
 
