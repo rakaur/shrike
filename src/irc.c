@@ -380,13 +380,11 @@ static void m_privmsg(char *origin, uint8_t parc, char *parv[])
     }
   }
 
-  /* is it for our services client? */
-  if (!irccasecmp(parv[0], svs.nick))
-  {
-    /* for nick@server messages.. */
-    snprintf(buf, sizeof(buf), "%s@%s", svs.nick, me.name);
+  snprintf(buf, BUFSIZE, "%s!%s@%s", svs.nick, svs.user, me.name);
 
-    /* okay, give it to our client */
+  /* is it for our services client? */
+  if ((!irccasecmp(parv[0], svs.nick)) || (!irccasecmp(parv[0], buf)))
+  {
     services(origin, parc, parv);
     return;
   }
