@@ -1496,25 +1496,25 @@ static void do_info(char *origin)
 
       if (mc->mlock_on)
       {
-        strcat(buf, "+");
-        strcat(buf, flags_to_string(mc->mlock_on));
+        strlcat(buf, "+", BUFSIZE);
+        strlcat(buf, flags_to_string(mc->mlock_on), BUFSIZE);
 
         /* add these in manually */
         if (mc->mlock_limit)
         {
-          strcat(buf, "l");
-          strcat(params, " ");
-          strcat(params, itoa(mc->mlock_limit));
+          strlcat(buf, "l", BUFSIZE);
+          strlcat(params, " ", BUFSIZE);
+          strlcat(params, itoa(mc->mlock_limit), BUFSIZE);
         }
 
         if (mc->mlock_key)
-          strcat(buf, "k");
+          strlcat(buf, "k", BUFSIZE);
       }
 
       if (mc->mlock_off)
       {
-        strcat(buf, "-");
-        strcat(buf, flags_to_string(mc->mlock_off));
+        strlcat(buf, "-", BUFSIZE);
+        strlcat(buf, flags_to_string(mc->mlock_off), BUFSIZE);
       }
 
       if (*buf)
@@ -1524,28 +1524,28 @@ static void do_info(char *origin)
     *buf = '\0';
 
     if (MC_HOLD & mc->flags)
-      strcat(buf, "HOLD");
+      strlcat(buf, "HOLD", BUFSIZE);
 
     if (MC_NEVEROP & mc->flags)
     {
       if (*buf)
-        strcat(buf, " ");
+        strlcat(buf, " ", BUFSIZE);
 
-      strcat(buf, "NEVEROP");
+      strlcat(buf, "NEVEROP", BUFSIZE);
     }
     if (MC_SECURE & mc->flags)
     {
       if (*buf)
-        strcat(buf, " ");
+        strlcat(buf, " ", BUFSIZE);
 
-      strcat(buf, "SECURE");
+      strlcat(buf, "SECURE", BUFSIZE);
     }
     if (MC_VERBOSE & mc->flags)
     {
       if (*buf)
-        strcat(buf, " ");
+        strlcat(buf, " ", BUFSIZE);
 
-      strcat(buf, "VERBOSE");
+      strlcat(buf, "VERBOSE", BUFSIZE);
     }
 
     if (*buf)
@@ -1576,28 +1576,28 @@ static void do_info(char *origin)
     *buf = '\0';
 
     if (MU_HIDEMAIL & mu->flags)
-      strcat(buf, "HIDEMAIL");
+      strlcat(buf, "HIDEMAIL", BUFSIZE);
 
     if (MU_HOLD & mu->flags)
     {
       if (*buf)
-        strcat(buf, " ");
+        strlcat(buf, " ", BUFSIZE);
 
-      strcat(buf, "HOLD");
+      strlcat(buf, "HOLD", BUFSIZE);
     }
     if (MU_NEVEROP & mu->flags)
     {
       if (*buf)
-        strcat(buf, " ");
+        strlcat(buf, " ", BUFSIZE);
 
-      strcat(buf, "NEVEROP");
+      strlcat(buf, "NEVEROP", BUFSIZE);
     }
     if (MU_NOOP & mu->flags)
     {
       if (*buf)
-        strcat(buf, " ");
+        strlcat(buf, " ", BUFSIZE);
 
-      strcat(buf, "NOOP");
+      strlcat(buf, "NOOP", BUFSIZE);
     }
 
     if (*buf)
@@ -1610,9 +1610,9 @@ static void do_info(char *origin)
       tu = (user_t *)n->data;
 
       if (*buf)
-        strcat(buf, " ");
+        strlcat(buf, " ", BUFSIZE);
 
-      strcat(buf, tu->nick);
+      strlcat(buf, tu->nick, BUFSIZE);
     }
 
     if (*buf)
