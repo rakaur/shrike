@@ -165,9 +165,6 @@ void part(char *chan, char *nick)
   if (!chanuser_find(c, u))
     return;
 
-  /*if (!irccasecmp(svs.chan, c->name))
-     return; */
-
   sts(":%s PART %s", u->nick, c->name);
 
   chanuser_delete(c, u);
@@ -1453,8 +1450,10 @@ static void do_invite(char *origin)
 static void do_info(char *origin)
 {
   user_t *u = user_find(origin);
+  user_t *tu;
   myuser_t *mu;
   mychan_t *mc;
+  node_t *n;
   char *name = strtok(NULL, " ");
   char buf[BUFSIZE], strfbuf[32];
   struct tm tm;
@@ -1603,6 +1602,21 @@ static void do_info(char *origin)
 
     if (*buf)
       notice(origin, "Flags      : %s", buf);
+
+    *buf = '\0';
+
+    LIST_FOREACH(n, mu->users.head)
+    {
+      tu = (user_t *)n->data;
+
+      if (*buf)
+        strcat(buf, " ");
+
+      strcat(buf, tu->nick);
+    }
+
+    if (*buf)
+      notice(origin, "Logged in  : %s", buf);
   }
 }
 
