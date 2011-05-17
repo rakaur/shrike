@@ -107,6 +107,8 @@ int main(int argc, char *argv[])
   int i, pid, r;
   FILE *restart_file, *pid_file;
   struct rlimit rlim;
+  myuser_t *mu;
+  node_t *n, *tn;
 
   /* do not run as root */
   if (geteuid() == 0)
@@ -313,6 +315,23 @@ int main(int argc, char *argv[])
   io_loop();
 
   /* we're shutting down */
+
+  /* log everyone out */
+  for (i = 0; i < HASHSIZE; i++)
+  {
+    LIST_FOREACH_SAFE(n, tn, mulist[i].head)
+    {
+      mu = (myuser_t *)n->data;
+
+      if (mu->identified)
+      {
+        mu->identified = FALSE;
+        mu->lastlogin = CURRTIME;
+      }
+    }
+  }
+
+  /* save the db */
   db_save(NULL);
 
   /* should we restart? */
