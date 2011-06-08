@@ -1949,7 +1949,7 @@ static void do_register(char *origin)
       mu->key = makekey();
       mu->flags |= MU_WAITAUTH;
 
-      notice(origin, "An email containing username activiation instructions "
+      notice(origin, "An email containing username activation instructions "
              "has been sent to \2%s\2.", mu->email);
       notice(origin, "If you do not complete registration within one day your "
              "username will expire.");
